@@ -1,0 +1,39 @@
+.leading-tight{
+    font-size: 15px !important;
+    font-weight: 600;
+}
+.breadcrumbs{
+    background: #67b3ff9c;
+    padding: 8px 10px;
+    color: #051b71;
+    border-radius: 4px;
+}
+.anychart-credits{
+    display: none;
+}
+#aside ul ul ul li   a.custom-dropdwon{
+    padding-left:40px;
+}
+
+/*filter box*/
+.filter-box{
+    background:#fff;
+    border:1px solid #bfbfbf;
+}
+.category-modal {
+  width: 900px;
+}
+
+.batch-edit-modal-class {
+  width: 800px;
+  height: 700px;
+}
+
+.batches-detail {
+  width: 700px;
+  height: 500px;
+}
+.requested-detail-box {
+  width: 900px;
+  height: 700px;
+}

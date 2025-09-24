@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "baseUrl": "https://localhost:8000",
+        "paths": {
+            "@/*": ["resources/js/*"]
+        }
+    },
+    "exclude": ["node_modules", "public"]
+}
