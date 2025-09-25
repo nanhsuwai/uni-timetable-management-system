@@ -60,8 +60,8 @@ const filteredPrograms = computed(() => {
 });
 
 const filteredSemesters = computed(() => {
-  if (!filterProgram.value) return props.semesters;
-  return props.semesters.filter(s => s.program_id == filterProgram.value);
+  if (!filterYear.value) return props.semesters;
+  return props.semesters.filter(s => s.academic_year_id == filterYear.value);
 });
 
 const filteredLevels = computed(() => {

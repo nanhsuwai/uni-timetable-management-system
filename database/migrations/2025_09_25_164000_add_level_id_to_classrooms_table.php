@@ -13,8 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('academic_programs', function (Blueprint $table) {
-            $table->enum('program_type', ['CST', 'CS', 'CT', 'Master'])->after('name');
+        Schema::table('classrooms', function (Blueprint $table) {
+            $table->foreignId('level_id')
+                ->nullable()
+                ->constrained('academic_levels')
+                ->nullOnDelete()
+                ->after('id');
         });
     }
 
@@ -25,8 +29,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('academic_programs', function (Blueprint $table) {
-            $table->dropColumn('program_type');
+        Schema::table('classrooms', function (Blueprint $table) {
+            $table->dropForeign(['level_id']);
+            $table->dropColumn('level_id');
         });
     }
 };

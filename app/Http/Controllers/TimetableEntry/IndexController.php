@@ -52,7 +52,7 @@ class IndexController extends Controller
 
         $referenceData = [
             'academicYears' => AcademicYear::select('id','name')->get(),
-            'semesters' => Semester::select('id','name','program_id')->get(),
+            'semesters' => Semester::select('id','name')->get(),
             'programs' => AcademicProgram::select('id','name','academic_year_id')->get(),
             'levels' => AcademicLevel::select('id','name','program_id')->get(),
             'sections' => Section::select('id','name','level_id')->get(),

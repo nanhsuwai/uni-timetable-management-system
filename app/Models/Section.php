@@ -25,4 +25,8 @@ class Section extends Model
     {
         return $this->hasMany(TimetableEntry::class);
     }
+    public function classroom()
+    {
+        return $this->hasOne(Classroom::class, 'section_id');
+    }
 }

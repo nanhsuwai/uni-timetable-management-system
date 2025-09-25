@@ -38,20 +38,20 @@ export default [
     permission_code: "manage_time_slot",
     show: true
   },
-  {
-    route: "semester:all",
-    icon: mdiCalendar,
-    label: "Semesters",
-    permission_code: "manage_semester",
-    show: true
-  },
-  {
-    route: "academic_program:all",
-    icon: mdiFileDocument,
-    label: "Academic Programs",
-    permission_code: "manage_academic_program",
-    show: true
-  },
+  // {
+  //   route: "semester:all",
+  //   icon: mdiCalendar,
+  //   label: "Semesters",
+  //   permission_code: "manage_semester",
+  //   show: false
+  // },
+  // {
+  //   route: "academic_program:all",
+  //   icon: mdiFileDocument,
+  //   label: "Academic Programs",
+  //   permission_code: "manage_academic_program",
+  //   show: true
+  // },
   {
     route: "academic_level:all",
     icon: mdiFileChart,
@@ -59,13 +59,13 @@ export default [
     permission_code: "manage_academic_level",
     show: true
   },
-  {
-    route: "section:all",
-    icon: mdiAccountSchool,
-    label: "Sections",
-    permission_code: "manage_section",
-    show: true
-  },
+  // {
+  //   route: "section:all",
+  //   icon: mdiAccountSchool,
+  //   label: "Sections",
+  //   permission_code: "manage_section",
+  //   show: false
+  // },
   {
     route: "classroom:all",
     icon: mdiShape,

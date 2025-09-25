@@ -17,14 +17,14 @@ class IndexController extends Controller
 
         $types = Type::select('id', 'name', 'code')->get();
 
-        $data = User::with('permissions:id,name,granted_system_id')
+        $data = User::with('permissions:id,name')
                 ->when($request->filterUsername, function($q, $filterUsername) {
                     $q->where('name', 'like', '%'.$filterUsername.'%');
                 })
                 ->when($request->filterType, function($q, $filterType) {
                     $q->where('user_type', $filterType['code']);
                 })
-                ->paginate(10)->withQueryString();
+                ->paginate(10);
         $users = UserResource::collection($data);
 
         return Inertia::render('User/Index',[

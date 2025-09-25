@@ -28,6 +28,20 @@ const props = defineProps({
   },
 });
 
+// Semester Form
+const semesterForm = useForm({
+  name: "",
+  start_date: "",
+  end_date: "",
+});
+
+// Semester States
+const confirmingSemesterModal = ref(false);
+const showingSemesterFormModal = ref(false);
+const editingSemester = ref(null);
+const deletingSemester = ref(null);
+const selectedAcademicYear = ref(null);
+
 // Filter
 const filterName = ref(props.filters.filterName || "");
 watch(filterName, (newVal) => {
@@ -83,7 +97,9 @@ const createOrUpdateAcademicYear = () => {
           closeModal();
           toast.add({ message: "Academic Year updated!" });
         },
-        onError: () => form.reset(),
+        onError: () => {
+          toast.add({ message: "Error updating Academic Year.", type: "error" });
+        },
       }
     );
   } else {
@@ -93,7 +109,9 @@ const createOrUpdateAcademicYear = () => {
         closeModal();
         toast.add({ message: "Academic Year created!" });
       },
-      onError: () => form.reset(),
+      onError: () => {
+        toast.add({ message: "Error creating Academic Year.", type: "error" });
+      },
     });
   }
 };
@@ -132,15 +150,91 @@ const toggleStatus = (academicYear) => {
     }
   );
 };
+
+// Semester Modal Handlers
+const openSemesterModal = (academicYear) => {
+  selectedAcademicYear.value = academicYear;
+  confirmingSemesterModal.value = true;
+  semesterForm.reset();
+  editingSemester.value = null;
+};
+
+const closeSemesterModal = () => {
+  confirmingSemesterModal.value = false;
+  showingSemesterFormModal.value = false;
+  semesterForm.reset();
+  editingSemester.value = null;
+  selectedAcademicYear.value = null;
+};
+
+const openEditSemesterModal = (semester) => {
+  editingSemester.value = semester;
+  showingSemesterFormModal.value = true;
+  if (semester) {
+    semesterForm.name = semester.name;
+    semesterForm.start_date = semester.start_date;
+    semesterForm.end_date = semester.end_date;
+  } else {
+    semesterForm.reset();
+  }
+};
+
+const closeEditSemesterModal = () => {
+  showingSemesterFormModal.value = false;
+  editingSemester.value = null;
+  // semesterForm.reset();
+};
+
+const saveSemester = () => {
+  const url = editingSemester.value
+    ? route("academic-year:semesters:update", { academicYear: selectedAcademicYear.value.id, semester: editingSemester.value.id })
+    : route("academic-year:semesters:create", { academicYear: selectedAcademicYear.value.id });
+
+  semesterForm.post(url, {
+    preserveScroll: true,
+    onSuccess: () => {
+      closeEditSemesterModal();
+      closeSemesterModal();
+      toast.add({
+        message: editingSemester.value
+          ? "✅ Semester updated!"
+          : "✅ Semester created!",
+      });
+    },
+    onError: () => semesterForm.reset(),
+  });
+};
+
+const confirmDeleteSemester = (semester) => {
+  deletingSemester.value = semester;
+};
+
+const deleteSemester = () => {
+  if (!deletingSemester.value) return;
+  router.delete(route("academic-year:semesters:delete", { academicYear: selectedAcademicYear.value.id, semester: deletingSemester.value.id }), {
+    preserveScroll: true,
+    onSuccess: () => {
+      deletingSemester.value = null;
+      toast.add({ message: "✅ Semester deleted!" });
+    },
+  });
+};
+
+const toggleSemesterStatus = (semester) => {
+  router.post(route("academic-year:semesters:toggle-status", { academicYear: selectedAcademicYear.value.id, semester: semester.id }), {
+    data: { status: semester.status === 'active' ? 'inactive' : 'active' },
+    preserveScroll: true,
+    onSuccess: () => {
+      toast.add({ message: "✅ Status updated!" });
+    },
+  });
+};
 </script>
 
 <template>
   <LayoutAuthenticated>
     <!-- Header -->
-    <SectionTitleLineWithButton
-      :icon="mdiShapePlus"
-      title="Academic Years"
-    >
+    <SectionTitleLineWithButton :icon="mdiShapePlus" title="Academic Years">
       <PrimaryButton @click.prevent="showCreateModal">
         + Add Academic Year
       </PrimaryButton>
@@ -150,13 +244,7 @@ const toggleStatus = (academicYear) => {
       <!-- Filter -->
       <div class="mb-6">
         <InputLabel for="filterName" value="Search Academic Year" />
-        <TextInput
-          id="filterName"
-          v-model="filterName"
-          type="text"
-          placeholder="e.g., 2024-2025"
-          class="w-full"
-        />
+        <TextInput id="filterName" v-model="filterName" type="text" placeholder="e.g., 2024-2025" class="w-full" />
       </div>
 
       <!-- Table -->
@@ -170,14 +258,13 @@ const toggleStatus = (academicYear) => {
               <th class="px-4 py-2">End Date</th>
               <th class="px-4 py-2 text-center">Status</th>
               <th class="px-4 py-2 text-center">Actions</th>
+              <th class="px-4 py-2 text-center">Semesters</th>
+              <th class="px-4 py-2 text-center">Programs</th>
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(academicYear, index) in props.academicYears.data"
-              :key="academicYear.id"
-              class="border-t hover:bg-gray-50"
-            >
+            <tr v-for="(academicYear, index) in props.academicYears.data" :key="academicYear.id"
+              class="border-t hover:bg-gray-50">
               <td class="px-4 py-2 text-center">
                 {{ index + 1 + (props.academicYears.per_page * (props.academicYears.current_page - 1)) }}
               </td>
@@ -185,32 +272,38 @@ const toggleStatus = (academicYear) => {
               <td class="px-4 py-2">{{ academicYear.start_date }}</td>
               <td class="px-4 py-2">{{ academicYear.end_date }}</td>
               <td class="px-4 py-2 text-center">
-                <button
-                  @click.prevent="toggleStatus(academicYear)"
-                  :class="[
-                    'px-3 py-1 rounded-full text-xs font-semibold',
-                    academicYear.status === 'active'
-                      ? 'bg-green-100 text-green-700 border border-green-400'
-                      : 'bg-gray-200 text-gray-600 border border-gray-300'
-                  ]"
-                >
+                <button @click.prevent="toggleStatus(academicYear)" :class="[
+                  'px-3 py-1 rounded-full text-xs font-semibold',
+                  academicYear.status === 'active'
+                    ? 'bg-green-100 text-green-700 border border-green-400'
+                    : 'bg-gray-200 text-gray-600 border border-gray-300'
+                ]">
                   {{ academicYear.status === 'active' ? 'Active' : 'Inactive' }}
                 </button>
               </td>
               <td class="px-4 py-2 flex justify-center gap-2">
-                <button
-                  @click.prevent="showEditModal(academicYear)"
-                  class="px-2 py-1 rounded text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white text-xs"
-                >
+                <button @click.prevent="showEditModal(academicYear)"
+                  class="px-2 py-1 rounded text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white text-xs">
                   Edit
                 </button>
-                <button
-                  @click.prevent="showDeleteAcademicYearModal(academicYear)"
-                  class="px-2 py-1 rounded text-red-600 border border-red-600 hover:bg-red-600 hover:text-white text-xs"
-                >
+                <button @click.prevent="showDeleteAcademicYearModal(academicYear)"
+                  class="px-2 py-1 rounded text-red-600 border border-red-600 hover:bg-red-600 hover:text-white text-xs">
                   Delete
                 </button>
               </td>
+              <td class="px-4 py-2 text-center">
+                <button @click.prevent="openSemesterModal(academicYear)"
+                  class="px-2 py-1 rounded text-green-600 border border-green-600 hover:bg-green-600 hover:text-white text-xs">
+                  Semesters ({{ academicYear.semesters ? academicYear.semesters.length : 0 }})
+                </button>
+              </td>
+              <td class="px-4 py-2 text-center">
+                <button @click.prevent="$inertia.visit(route('academic-year:programs', academicYear.id))"
+                  class="px-2 py-1 rounded text-purple-600 border border-purple-600 hover:bg-purple-600 hover:text-white text-xs">
+                  Programs ({{ academicYear.academic_programs ? academicYear.academic_programs.length : 0 }})
+                </button>
+              </td>
+
             </tr>
           </tbody>
         </table>
@@ -231,12 +324,7 @@ const toggleStatus = (academicYear) => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <InputLabel for="name" value="Name" />
-              <TextInput
-                id="name"
-                v-model="form.name"
-                type="text"
-                placeholder="e.g., Academic Year 2024-2025"
-              />
+              <TextInput id="name" v-model="form.name" type="text" placeholder="e.g., Academic Year 2024-2025" />
               <InputError :message="form.errors.name" />
             </div>
 
@@ -255,11 +343,8 @@ const toggleStatus = (academicYear) => {
 
           <div class="mt-6 flex justify-end gap-3 border-t pt-4">
             <SecondaryButton @click.prevent="closeModal">Cancel</SecondaryButton>
-            <PrimaryButton
-              :class="{ 'opacity-25': form.processing }"
-              :disabled="form.processing"
-              @click.prevent="createOrUpdateAcademicYear"
-            >
+            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
+              @click.prevent="createOrUpdateAcademicYear">
               {{ editingAcademicYear ? "Update" : "Create" }}
             </PrimaryButton>
           </div>
@@ -273,12 +358,132 @@ const toggleStatus = (academicYear) => {
           <p class="text-gray-700">Are you sure you want to delete this academic year? This action cannot be undone.</p>
           <div class="mt-6 flex justify-end gap-3">
             <SecondaryButton @click.prevent="closeDeleteModal">Cancel</SecondaryButton>
-            <PrimaryButton
-              class="bg-red-600 hover:bg-red-700 text-white"
-              :class="{ 'opacity-25': form.processing }"
-              :disabled="form.processing"
-              @click.prevent="deleteAcademicYear"
-            >
+            <PrimaryButton class="bg-red-600 hover:bg-red-700 text-white" :class="{ 'opacity-25': form.processing }"
+              :disabled="form.processing" @click.prevent="deleteAcademicYear">
+              Delete
+            </PrimaryButton>
+          </div>
+        </div>
+      </Modal>
+
+      <!-- Semester Modal -->
+      <Modal :show="confirmingSemesterModal" @close="closeSemesterModal" max-width="2xl">
+        <div class="p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+            Semesters for {{ selectedAcademicYear?.name }}
+          </h2>
+
+          <!-- Add Semester Button -->
+          <div class="mb-4">
+            <PrimaryButton @click.prevent="openEditSemesterModal(null)">
+              + Add Semester
+            </PrimaryButton>
+          </div>
+
+          <!-- Semester List -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left border-collapse border border-gray-300">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="px-4 py-2 border border-gray-300">#</th>
+                  <th class="px-4 py-2 border border-gray-300">Name</th>
+                  <th class="px-4 py-2 border border-gray-300">Start Date</th>
+                  <th class="px-4 py-2 border border-gray-300">End Date</th>
+                  <th class="px-4 py-2 border border-gray-300 text-center">Status</th>
+                  <th class="px-4 py-2 border border-gray-300 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(semester, index) in selectedAcademicYear?.semesters" :key="semester.id"
+                  class="border-t hover:bg-gray-50">
+                  <td class="px-4 py-2 border border-gray-300">{{ index + 1 }}</td>
+                  <td class="px-4 py-2 border border-gray-300">{{ semester.name }}</td>
+                  <td class="px-4 py-2 border border-gray-300">{{ semester.start_date }}</td>
+                  <td class="px-4 py-2 border border-gray-300">{{ semester.end_date }}</td>
+                  <td class="px-4 py-2 border border-gray-300 text-center">
+                    <button @click.prevent="toggleSemesterStatus(semester)" :class="[
+                      'px-3 py-1 rounded-full text-xs font-semibold',
+                      semester.status === 'active'
+                        ? 'bg-green-100 text-green-700 border border-green-400'
+                        : 'bg-gray-200 text-gray-600 border border-gray-300'
+                    ]">
+                      {{ semester.status === 'active' ? 'Active' : 'Inactive' }}
+                    </button>
+                  </td>
+                  <td class="px-4 py-2 border border-gray-300 flex justify-center gap-2">
+                    <button @click.prevent="openEditSemesterModal(semester)"
+                      class="px-2 py-1 rounded text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white text-xs">
+                      Edit
+                    </button>
+                    <button @click.prevent="confirmDeleteSemester(semester)"
+                      class="px-2 py-1 rounded text-red-600 border border-red-600 hover:bg-red-600 hover:text-white text-xs">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+                <tr v-if="!selectedAcademicYear?.semesters?.length">
+                  <td colspan="6" class="px-4 py-2 text-center text-gray-500">No semesters found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-6 flex justify-end">
+            <SecondaryButton @click.prevent="closeSemesterModal">Close</SecondaryButton>
+          </div>
+        </div>
+      </Modal>
+
+      <!-- Semester Create/Edit Modal -->
+      <Modal :show="showingSemesterFormModal" @close="closeEditSemesterModal">
+        <div class="p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+            {{ editingSemester ? "Edit Semester" : "Add Semester" }}
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <InputLabel for="semester_name" value="Semester Name" />
+              <select id="semester_name" v-model="semesterForm.name"
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">Select Semester</option>
+                <option value="First Semester">First Semester</option>
+                <option value="Second Semester">Second Semester</option>
+              </select>
+              <InputError :message="semesterForm.errors.name" />
+            </div>
+            <div>
+              <InputLabel for="semester_start_date" value="Start Date" />
+              <TextInput id="semester_start_date" v-model="semesterForm.start_date" type="date" class="w-full" />
+              <InputError :message="semesterForm.errors.start_date" />
+            </div>
+            <div>
+              <InputLabel for="semester_end_date" value="End Date" />
+              <TextInput id="semester_end_date" v-model="semesterForm.end_date" type="date" class="w-full" />
+              <InputError :message="semesterForm.errors.end_date" />
+            </div>
+          </div>
+          <div class="mt-6 flex justify-end space-x-2">
+            <SecondaryButton @click.prevent="closeEditSemesterModal">Cancel</SecondaryButton>
+            <PrimaryButton :disabled="semesterForm.processing" @click.prevent="saveSemester">
+              {{ editingSemester ? "Update" : "Add" }}
+            </PrimaryButton>
+          </div>
+        </div>
+      </Modal>
+
+      <!-- Delete Semester Modal -->
+      <Modal :show="!!deletingSemester" @close="() => (deletingSemester = null)">
+        <div class="p-6">
+          <h2 class="text-lg font-semibold text-red-600 mb-2">Delete Semester</h2>
+          <p class="text-sm text-gray-600">
+            Are you sure you want to delete this semester? This action cannot be undone.
+          </p>
+          <div class="mt-6 flex justify-end space-x-2">
+            <SecondaryButton @click.prevent="() => (deletingSemester = null)">
+              Cancel
+            </SecondaryButton>
+            <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="semesterForm.processing"
+              @click.prevent="deleteSemester">
               Delete
             </PrimaryButton>
           </div>
@@ -287,4 +492,3 @@ const toggleStatus = (academicYear) => {
     </div>
   </LayoutAuthenticated>
 </template>
-

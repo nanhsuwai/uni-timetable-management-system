@@ -12,7 +12,7 @@ class IndexController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $query = Classroom::with('section');
+        $query = Classroom::with('section','section.academicLevel', 'section.academicLevel.academicProgram')->where('status', 'active');
 
         if ($request->has('filterRoomNo') && $request->filterRoomNo != '') {
             $query->where('room_no', 'like', '%' . $request->filterRoomNo . '%');

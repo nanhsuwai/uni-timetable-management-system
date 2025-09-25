@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm, router } from "@inertiajs/vue3";
+import { Head, useForm, router, Link } from "@inertiajs/vue3";
 import { ref, watch } from "vue";
 import Modal from "@/Components/Modal.vue";
 import toast from "@/Stores/toast";
@@ -40,7 +40,14 @@ const editingSection = ref(null);
 const deletingSection = ref(null);
 
 // Modal Handling
-const showCreateModal = () => { confirmingSectionModal.value = true; form.reset(); editingSection.value = null; };
+const showCreateModal = () => { 
+  confirmingSectionModal.value = true; 
+  form.reset(); 
+  editingSection.value = null; 
+  if (filterLevel.value) {
+    form.level_id = filterLevel.value;
+  }
+};
 const showEditModal = (section) => { editingSection.value = section; form.level_id = section.level_id; form.name = section.name; confirmingSectionModal.value = true; };
 const closeModal = () => { confirmingSectionModal.value = false; form.reset(); editingSection.value = null; };
 
@@ -69,6 +76,26 @@ const deleteSection = () => {
     onSuccess: () => { closeDeleteModal(); toast.add({ message: "Section deleted!" }); },
   });
 };
+
+const toggleStatus = (section) => {
+  router.post(
+    route("section:toggle-status", { section: section.id }),
+    {},
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        // Toggle the status locally
+        section.status = section.status === 'active' ? 'inactive' : 'active';
+        toast.add({ message: `Status updated to ${section.status === 'active' ? 'Active' : 'Inactive'}!` });
+      },
+    }
+  );
+};
+
+const getLevelName = (levelId) => {
+  const level = props.academicLevels.find(l => l.id == levelId);
+  return level ? level.name : '';
+};
 </script>
 
 <template>
@@ -84,6 +111,14 @@ const deleteSection = () => {
     </div>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <!-- Breadcrumb or Filter Info -->
+      <div v-if="filterLevel" class="mb-4">
+        <p class="text-sm text-gray-600">
+          Showing sections for: <span class="font-medium">{{ getLevelName(filterLevel) }}</span>
+          <router-link to="/academic-level" class="text-blue-500 hover:underline ml-2">Back to Academic Levels</router-link>
+        </p>
+      </div>
+
       <!-- Filters -->
       <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
@@ -108,6 +143,7 @@ const deleteSection = () => {
                 <th class="px-3 py-2">#</th>
                 <th class="px-3 py-2">Name</th>
                 <th class="px-3 py-2">Academic Level</th>
+                <th class="px-3 py-2">Status</th>
                 <th class="px-3 py-2">Actions</th>
               </tr>
             </thead>
@@ -116,7 +152,23 @@ const deleteSection = () => {
                 <td class="px-3 py-2">{{ index + 1 + (props.sections.per_page * (props.sections.current_page - 1)) }}</td>
                 <td class="px-3 py-2">{{ section.name }}</td>
                 <td class="px-3 py-2">{{ section.academic_level?.name }}</td>
+                <td class="px-3 py-2">
+                  <span :class="section.status === 'active' ? 'text-green-600 font-medium' : 'text-red-600'">
+                    {{ section.status === 'active' ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
                 <td class="px-3 py-2 space-x-2">
+                  <button
+                    @click.prevent="toggleStatus(section)"
+                    :class="[
+                      'px-3 py-1 rounded-full text-xs font-semibold',
+                      section.status === 'active'
+                        ? 'bg-green-100 text-green-700 border border-green-400'
+                        : 'bg-gray-200 text-gray-600 border border-gray-300'
+                    ]"
+                  >
+                    {{ section.status === 'active' ? 'Active' : 'Inactive' }}
+                  </button>
                   <SecondaryButton @click.prevent="showEditModal(section)">
                     Edit
                   </SecondaryButton>
@@ -126,7 +178,7 @@ const deleteSection = () => {
                 </td>
               </tr>
               <tr v-if="props.sections.data.length === 0">
-                <td colspan="4" class="py-6 text-center text-gray-500">No sections found.</td>
+                <td colspan="5" class="py-6 text-center text-gray-500">No sections found.</td>
               </tr>
             </tbody>
           </table>

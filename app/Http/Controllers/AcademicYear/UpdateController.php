@@ -17,6 +17,17 @@ class UpdateController extends Controller
             'status' => 'required|in:active,inactive,archived',
         ]);
 
+        // Check for overlapping dates with other academic years
+        $overlapping = \App\Models\AcademicYear::where('id', '!=', $academicYear->id)
+            ->where(function ($query) use ($request) {
+                $query->where('start_date', '<=', $request->end_date)
+                      ->where('end_date', '>=', $request->start_date);
+            })->exists();
+
+        if ($overlapping) {
+            return back()->withErrors(['start_date' => 'The selected dates overlap with an existing academic year.']);
+        }
+
         $data = [
             'name' => $request->name,
             'start_date' => $request->start_date,

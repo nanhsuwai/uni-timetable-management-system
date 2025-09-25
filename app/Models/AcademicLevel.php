@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\AcademicProgram;
+use App\Models\Section;
 
 class AcademicLevel extends Model
 {
@@ -21,6 +22,11 @@ class AcademicLevel extends Model
         return $this->belongsTo(AcademicProgram::class, 'program_id');
     }
 
+    public function sections()
+    {
+        return $this->hasMany(Section::class, 'level_id');
+    }
+
     /**
      * Get the validation rules for academic level creation/update
      */
@@ -34,7 +40,7 @@ class AcademicLevel extends Model
 
     /**
      * Validate if the level is allowed for the program's type
-     * Assume: First Year for all programs, higher levels only for CS/CT programs
+     * Assume: First Year for all programs, higher levels only for Computer Science/Technology/Master
      */
     public function validateLevelForProgramType()
     {
@@ -50,8 +56,8 @@ class AcademicLevel extends Model
             return true; // First Year allowed for all
         }
 
-        // Higher levels only for CS or CT programs
-        return in_array($program->program_type, ['CS', 'CT']);
+        // Higher levels only for Computer Science, Computer Technology, or Master programs
+        return in_array($program->program_type, ['CS', 'CT', 'Master']);
     }
 
     /**
@@ -60,11 +66,11 @@ class AcademicLevel extends Model
     public static function getAllowedLevelsForProgramType($programType)
     {
         $allLevels = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Fifth Year', 'Master'];
-        if ($programType === 'general' || empty($programType)) {
-            return ['First Year']; // Only First Year for general/single program
+        if ($programType === 'CST' || empty($programType)) {
+            return ['First Year']; // Only First Year for Computer Foundation/general
         }
-        if (in_array($programType, ['CS', 'CT'])) {
-            return $allLevels; // Full levels for CS/CT
+        if (in_array($programType, ['CS', 'CT', 'Master'])) {
+            return $allLevels; // Full lels for specialized programs
         }
         return ['First Year']; // Default to First Year
     }

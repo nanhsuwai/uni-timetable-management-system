@@ -15,6 +15,7 @@ const props = defineProps({
   levels: { type: Object, default: () => ({ data: [], meta: {} }) },
   filters: { type: Object, default: () => ({}) },
   academicPrograms: { type: Array, default: () => [] },
+  classrooms: { type: Array, default: () => [] },
 });
 
 // Filters
@@ -35,10 +36,23 @@ const form = useForm({
   name: "",
 });
 
+// Section Form
+const sectionForm = useForm({
+  name: "",
+  classroom_id: "",
+});
+
 // State
 const confirmingModal = ref(false);
 const editingLevel = ref(null);
 const deletingLevel = ref(null);
+
+// Section State
+const showingSectionsModal = ref(false);
+const showingSectionFormModal = ref(false);
+const selectedLevel = ref(null);
+const editingSection = ref(null);
+const deletingSection = ref(null);
 
 // Modal Handling
 const openCreateModal = () => {
@@ -94,10 +108,94 @@ const deleteLevel = () => {
     },
   });
 };
+
+// Section Modal Handling
+const openSectionsModal = (level) => {
+  selectedLevel.value = level;
+  showingSectionsModal.value = true;
+};
+
+const closeSectionsModal = () => {
+  showingSectionsModal.value = false;
+  sectionForm.reset();
+  editingSection.value = null;
+  selectedLevel.value = null;
+};
+
+const openEditSectionModal = (section) => {
+  editingSection.value = section;
+  if (section) {
+    sectionForm.name = section.name;
+  } else {
+    sectionForm.reset();
+  }
+  showingSectionFormModal.value = true;
+};
+
+const closeEditSectionModal = () => {
+  showingSectionFormModal.value = false;
+  editingSection.value = null;
+  sectionForm.reset();
+};
+
+// Section CRUD
+const saveSection = () => {
+  const url = editingSection.value
+    ? route("academic_level:sections.update", { academicLevel: selectedLevel.value.id, section: editingSection.value.id })
+    : route("academic_level:sections.create", { academicLevel: selectedLevel.value.id });
+
+  sectionForm.post(url, {
+    preserveScroll: true,
+    onSuccess: () => {
+      closeEditSectionModal();
+      closeSectionsModal();
+
+      router.reload({ only: ['levels'] });
+      toast.add({
+        message: editingSection.value
+          ? "✅ Section updated!"
+          : "✅ Section created!",
+      });
+    },
+    onError: () => sectionForm.reset(),
+  });
+};
+
+const confirmDeleteSection = (section) => {
+  deletingSection.value = section;
+};
+
+const deleteSection = () => {
+  if (!deletingSection.value) return;
+  router.delete(route("academic_level:sections.delete", { academicLevel: selectedLevel.value.id, section: deletingSection.value.id }), {
+    preserveScroll: true,
+    onSuccess: () => {
+      closeSectionsModal()
+
+      deletingSection.value = null;
+      router.reload({ only: ['levels'] });
+      toast.add({ message: "🗑️ Section deleted!" });
+    },
+  });
+};
+
+const toggleSectionStatus = (section, newStatus) => {
+  router.post(route("academic_level:sections.toggle-status", { academicLevel: selectedLevel.value.id, section: section.id }), {
+    status: newStatus,
+  }, {
+    preserveScroll: true,
+    onSuccess: () => {
+      closeSectionsModal()
+      router.reload({ only: ['levels'] });
+      toast.add({ message: "✅ Status updated!" });
+    },
+  });
+};
 </script>
 
 <template>
   <LayoutAuthenticated>
+
     <Head title="Academic Levels" />
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -111,27 +209,14 @@ const deleteLevel = () => {
       <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white p-4 rounded-lg shadow">
         <div>
           <InputLabel for="filterName" value="Filter by Name" />
-          <TextInput
-            id="filterName"
-            v-model="filterName"
-            type="text"
-            placeholder="Search levels..."
-            class="w-full"
-          />
+          <TextInput id="filterName" v-model="filterName" type="text" placeholder="Search levels..." class="w-full" />
         </div>
         <div>
           <InputLabel for="filterProgram" value="Filter by Program" />
-          <select
-            id="filterProgram"
-            v-model="filterProgram"
-            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          >
+          <select id="filterProgram" v-model="filterProgram"
+            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             <option value="">All Programs</option>
-            <option
-              v-for="program in props.academicPrograms"
-              :key="program.id"
-              :value="program.id"
-            >
+            <option v-for="program in props.academicPrograms" :key="program.id" :value="program.id">
               {{ program.name }}
             </option>
           </select>
@@ -150,27 +235,23 @@ const deleteLevel = () => {
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(level, index) in props.levels.data"
-              :key="level.id"
-              class="hover:bg-gray-50 transition"
-            >
+            <tr v-for="(level, index) in props.levels.data" :key="level.id" class="hover:bg-gray-50 transition">
               <td class="px-4 py-2 border-b">
                 {{ index + 1 + (props.levels.per_page * (props.levels.current_page - 1)) }}
               </td>
               <td class="px-4 py-2 border-b">{{ level.name }}</td>
               <td class="px-4 py-2 border-b">{{ level.academic_program.name }}</td>
               <td class="px-4 py-2 border-b space-x-2">
-                <button
-                  @click.prevent="openEditModal(level)"
-                  class="px-3 py-1 rounded-md bg-blue-500 text-white text-xs hover:bg-blue-600"
-                >
+                <button @click.prevent="openSectionsModal(level)"
+                  class="px-3 py-1 rounded-md bg-green-500 text-white text-xs hover:bg-green-600">
+                  Sections ({{ level.sections.length }})
+                </button>
+                <button @click.prevent="openEditModal(level)"
+                  class="px-3 py-1 rounded-md bg-blue-500 text-white text-xs hover:bg-blue-600">
                   Edit
                 </button>
-                <button
-                  @click.prevent="confirmDelete(level)"
-                  class="px-3 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600"
-                >
+                <button @click.prevent="confirmDelete(level)"
+                  class="px-3 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600">
                   Delete
                 </button>
               </td>
@@ -198,17 +279,10 @@ const deleteLevel = () => {
           <div class="space-y-4">
             <div>
               <InputLabel for="program_id" value="Academic Program" />
-              <select
-                id="program_id"
-                v-model="form.program_id"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              >
+              <select id="program_id" v-model="form.program_id"
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <option value="">Select Program</option>
-                <option
-                  v-for="program in props.academicPrograms"
-                  :key="program.id"
-                  :value="program.id"
-                >
+                <option v-for="program in props.academicPrograms" :key="program.id" :value="program.id">
                   {{ program.name }}
                 </option>
               </select>
@@ -222,10 +296,7 @@ const deleteLevel = () => {
           </div>
           <div class="mt-6 flex justify-end space-x-2">
             <SecondaryButton @click.prevent="closeModal">Cancel</SecondaryButton>
-            <PrimaryButton
-              :disabled="form.processing"
-              @click.prevent="saveLevel"
-            >
+            <PrimaryButton :disabled="form.processing" @click.prevent="saveLevel">
               {{ editingLevel ? "Update" : "Add" }}
             </PrimaryButton>
           </div>
@@ -243,11 +314,125 @@ const deleteLevel = () => {
             <SecondaryButton @click.prevent="() => (deletingLevel = null)">
               Cancel
             </SecondaryButton>
-            <PrimaryButton
-              class="bg-red-500 hover:bg-red-600"
-              :disabled="form.processing"
-              @click.prevent="deleteLevel"
-            >
+            <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="form.processing" @click.prevent="deleteLevel">
+              Delete
+            </PrimaryButton>
+          </div>
+        </div>
+      </Modal>
+
+      <!-- Sections List Modal -->
+      <Modal :show="showingSectionsModal" @close="closeSectionsModal" :maxWidth="'2xl'">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold text-gray-900">Sections for {{ selectedLevel?.name }}</h2>
+            <PrimaryButton @click="openEditSectionModal(null)" class="ml-2">+ Add Section</PrimaryButton>
+          </div>
+          <div v-if="selectedLevel?.sections && selectedLevel.sections.length > 0"
+            class="bg-white shadow rounded-lg overflow-hidden">
+            <table class="w-full text-sm text-center">
+              <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+                <tr>
+                  <th class="px-4 py-3">#</th>
+                  <th class="px-4 py-3">Name</th>
+                  <th class="px-4 py-3">Status</th>
+                  <th class="px-4 py-3">Classroom</th>
+                  <th class="px-4 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(section, index) in selectedLevel.sections" :key="section.id"
+                  class="hover:bg-gray-50 transition">
+                  <td class="px-4 py-2 border-b">{{ index + 1 }}</td>
+                  <td class="px-4 py-2 border-b">{{ section.name }}</td>
+                  <td class="px-4 py-2 border-b">
+                    <span :class="{
+                      'bg-green-100 text-green-800': section.status === 'active',
+                      'bg-yellow-100 text-yellow-800': section.status === 'inactive',
+                      'bg-gray-100 text-gray-800': section.status === 'archived'
+                    }" class="px-2 py-1 rounded-full text-xs font-medium capitalize">
+                      {{ section.status }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-2 border-b">
+                    {{ section.classroom ? section.classroom.room_no : '-' }}
+                  </td>
+                  <td class="px-4 py-2 border-b space-x-2">
+                    <button
+                      @click.prevent="toggleSectionStatus(section, section.status === 'active' ? 'inactive' : 'active')"
+                      class="px-2 py-1 rounded-md bg-blue-500 text-white text-xs hover:bg-blue-600">
+                      {{ section.status === 'active' ? 'Inactive' : 'Active' }}
+                    </button>
+                    <button @click.prevent="openEditSectionModal(section)"
+                      class="px-2 py-1 rounded-md bg-indigo-500 text-white text-xs hover:bg-indigo-600">
+                      Edit
+                    </button>
+                    <button @click.prevent="confirmDeleteSection(section)"
+                      class="px-2 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div v-else class="text-center py-8 text-gray-500">
+            No sections found for this level.
+          </div>
+          <div class="mt-6 flex justify-end">
+            <SecondaryButton @click.prevent="closeSectionsModal">Close</SecondaryButton>
+          </div>
+        </div>
+      </Modal>
+
+      <!-- Section Form Modal -->
+      <Modal :show="showingSectionFormModal" @close="closeEditSectionModal">
+        <div class="p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+            {{ editingSection ? "Edit Section" : "Add Section" }} - {{ selectedLevel?.name }}
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <InputLabel for="section_name" value="Section Name" />
+              <TextInput id="section_name" v-model="sectionForm.name" type="text" class="w-full"
+                placeholder="Enter section name" />
+              <InputError :message="sectionForm.errors.name" />
+            </div>
+            <div>
+              <InputLabel for="classroom_id" value="Classroom" />
+              <select id="classroom_id" v-model="sectionForm.classroom_id"
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">Select Classroom</option>
+                <option v-for="classroom in props.classrooms" :key="classroom.id" :value="classroom.id">
+                  {{ classroom.room_no }}
+                </option>
+              </select>
+              <InputError :message="sectionForm.errors.classroom_id" />
+            </div>
+
+          </div>
+          <div class="mt-6 flex justify-end space-x-2">
+            <SecondaryButton @click.prevent="closeEditSectionModal">Cancel</SecondaryButton>
+            <PrimaryButton :disabled="sectionForm.processing" @click.prevent="saveSection">
+              {{ editingSection ? "Update" : "Add" }}
+            </PrimaryButton>
+          </div>
+        </div>
+      </Modal>
+
+      <!-- Delete Section Modal -->
+      <Modal :show="!!deletingSection" @close="() => (deletingSection = null)">
+        <div class="p-6">
+          <h2 class="text-lg font-semibold text-red-600 mb-2">Delete Section</h2>
+          <p class="text-sm text-gray-600">
+            Are you sure you want to delete "{{ deletingSection?.name }}"?
+          </p>
+          <div class="mt-6 flex justify-end space-x-2">
+            <SecondaryButton @click.prevent="() => (deletingSection = null)">
+              Cancel
+            </SecondaryButton>
+            <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="sectionForm.processing"
+              @click.prevent="deleteSection">
               Delete
             </PrimaryButton>
           </div>

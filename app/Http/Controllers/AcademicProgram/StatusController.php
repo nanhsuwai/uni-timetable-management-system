@@ -9,34 +9,23 @@ use Illuminate\Http\JsonResponse;
 
 class StatusController extends Controller
 {
-    public function toggle(Request $request, AcademicProgram $academicProgram): JsonResponse
+    public function toggle(Request $request, AcademicProgram $academicProgram)
     {
         try {
-            $newStatus = $request->input('status');
-            
-            // Validate status
-            if (!in_array($newStatus, ['active', 'inactive', 'archived'])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid status value'
-                ], 400);
-            }
+            // Toggle between active and inactive
+            $newStatus = $academicProgram->status === 'active' ? 'inactive' : 'active';
 
             $academicProgram->update(['status' => $newStatus]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Status updated successfully',
-                'data' => [
-                    'id' => $academicProgram->id,
-                    'status' => $academicProgram->status
-                ]
-            ]);
+            if ($newStatus === 'inactive') {
+                // Cascade inactive status to related academic levels
+                \App\Models\AcademicLevel::where('program_id', $academicProgram->id)->update(['status' => 'inactive']);
+            }
+
+            return to_route('academic_program:all')->with('toast', 'Academic Program status updated successfully!');
+
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update status'
-            ], 500);
+            return back()->withErrors(['message' => 'Failed to update status'])->withInput();
         }
     }
 }

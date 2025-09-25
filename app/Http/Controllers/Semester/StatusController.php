@@ -4,39 +4,31 @@ namespace App\Http\Controllers\Semester;
 
 use App\Http\Controllers\Controller;
 use App\Models\Semester;
+use App\Models\AcademicYear;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 
 class StatusController extends Controller
 {
-    public function toggle(Request $request, Semester $semester): JsonResponse
+    public function toggle(Request $request, AcademicYear $academicYear, Semester $semester)
     {
+        // Ensure the semester belongs to the academic year
+        if ($semester->academic_year_id !== $academicYear->id) {
+            abort(404);
+        }
+
         try {
             $newStatus = $request->input('status');
-            
+
             // Validate status
             if (!in_array($newStatus, ['active', 'inactive', 'archived'])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid status value'
-                ], 400);
+                return back()->withErrors(['status' => 'Invalid status value']);
             }
 
             $semester->update(['status' => $newStatus]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Status updated successfully',
-                'data' => [
-                    'id' => $semester->id,
-                    'status' => $semester->status
-                ]
-            ]);
+            return to_route('academic-year:all')->with('toast', 'Semester status updated successfully!');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update status'
-            ], 500);
+            return back()->withErrors(['error' => 'Failed to update status']);
         }
     }
 }

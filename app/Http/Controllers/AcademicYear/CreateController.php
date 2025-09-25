@@ -16,6 +16,16 @@ class CreateController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
+        // Check for overlapping dates with existing academic years
+        $overlapping = \App\Models\AcademicYear::where(function ($query) use ($request) {
+            $query->where('start_date', '<=', $request->end_date)
+                  ->where('end_date', '>=', $request->start_date);
+        })->exists();
+
+        if ($overlapping) {
+            return back()->withErrors(['start_date' => 'The selected dates overlap with an existing academic year.']);
+        }
+
         AcademicYear::create([
             'name' => $request->name,
             'start_date' => $request->start_date,

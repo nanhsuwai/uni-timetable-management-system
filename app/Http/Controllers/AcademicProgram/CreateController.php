@@ -14,7 +14,7 @@ class CreateController extends Controller
         $request->validate([
             'academic_year_id' => 'required|exists:academic_years,id',
             'names' => 'required|array|min:1',
-            'names.*' => 'in:Computer Foundation,Computer Technology,Computer Science,Master',
+            // 'names.*' => 'in:Computer Foundation,Computer Technology,Computer Science,Master',
             'status' => 'required|in:active,inactive',
         ]);
 

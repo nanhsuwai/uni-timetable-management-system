@@ -13,6 +13,7 @@ class AcademicProgram extends Model
     protected $fillable = [
         'academic_year_id',
         'name',
+        'program_type',
         'status',
     ];
 

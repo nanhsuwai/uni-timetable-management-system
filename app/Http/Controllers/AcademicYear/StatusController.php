@@ -17,6 +17,20 @@ class StatusController extends Controller
 
             $academicYear->update(['status' => $newStatus]);
 
+            if ($newStatus === 'inactive') {
+                // Cascade inactive status to related entities
+                // Update Semesters
+                \App\Models\Semester::where('academic_year_id', $academicYear->id)->update(['status' => 'inactive']);
+
+                // Update Academic Programs
+                \App\Models\AcademicProgram::where('academic_year_id', $academicYear->id)->update(['status' => 'inactive']);
+
+                // Update Academic Levels for those programs
+                \App\Models\AcademicLevel::whereHas('academicProgram', function ($query) use ($academicYear) {
+                    $query->where('academic_year_id', $academicYear->id);
+                })->update(['status' => 'inactive']);
+            }
+
              return to_route('academic-year:all')->with('toast', 'Academic Year status updated successfully!');
 
 

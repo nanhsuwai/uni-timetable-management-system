@@ -17,7 +17,7 @@ class IndexController extends Controller
             $query->where('name', 'like', '%' . $request->filterName . '%');
         }
 
-        $academicYears = $query->orderBy('start_date', 'desc')->paginate(10)->withQueryString();
+        $academicYears = $query->with(['semesters','academicPrograms'])->orderBy('start_date', 'desc')->paginate(10)->withQueryString();
         return Inertia::render('AcademicYear/Index', [
             'academicYears' => $academicYears,
             'filters' => $request->only('filterName'),
