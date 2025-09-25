@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AcademicLevel;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicLevel;
 use App\Models\AcademicProgram;
+use App\Models\AcademicYear;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -22,8 +23,14 @@ class IndexController extends Controller
             $query->where('program_id', $request->filterProgram);
         }
 
-        $levels = $query->orderBy('name')->paginate(10)->withQueryString();
-        $academicPrograms = AcademicProgram::orderBy('name')->get();
+        // Filter academic programs to only those in active academic year
+        $activeAcademicYear = AcademicYear::getActive();
+        $academicPrograms = $activeAcademicYear
+            ? AcademicProgram::where('academic_year_id', $activeAcademicYear->id)->orderBy('name')->get()
+            : AcademicProgram::orderBy('name')->get();
+
+        $levels = $query->whereIn('program_id', $academicPrograms->pluck('id'))->orderBy('name')->paginate(10)->withQueryString();
+
         return Inertia::render('AcademicLevel/Index', [
             'levels' => $levels,
             'academicPrograms' => $academicPrograms,

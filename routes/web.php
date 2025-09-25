@@ -66,30 +66,3 @@ Route::get('send-mail', function() {
         throw $th;
     }
 });
-
-
-
-
-function getNearestDate($dateList) {
-    // Convert dates in the list to Carbon objects
-    $carbonList = array_map(function ($dateStr) {
-        return Carbon::parse($dateStr);
-    }, $dateList);
-
-    // Get the current Carbon object
-    $currentCarbon = Carbon::now();
-
-    // Calculate the difference between the current Carbon object and each Carbon object in the list
-    $timeDiffs = array_map(function ($carbonObj) use ($currentCarbon) {
-        return $currentCarbon->diffInSeconds($carbonObj, false);
-    }, $carbonList);
-
-    // Find the smallest positive time difference, which represents the nearest date
-    $minTimeDiff = min($timeDiffs, function ($timeDiff) {
-        return ($timeDiff >= 0) ? $timeDiff : PHP_INT_MAX;
-    });
-
-    // Return the original date corresponding to the nearest Carbon object
-    $nearestDateIndex = array_search($minTimeDiff, $timeDiffs);
-    return $dateList[$nearestDateIndex];
-}

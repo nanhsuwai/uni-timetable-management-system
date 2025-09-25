@@ -13,7 +13,6 @@ class Semester extends Model
 
     protected $fillable = [
         'academic_year_id',
-        'program_id',
         'name',
         'start_date',
         'end_date',
@@ -25,10 +24,7 @@ class Semester extends Model
         return $this->belongsTo(AcademicYear::class);
     }
 
-    public function academicProgram()
-    {
-        return $this->belongsTo(AcademicProgram::class, 'program_id');
-    }
+
 
     /**
      * Get the validation rules for semester creation/update
@@ -37,21 +33,13 @@ class Semester extends Model
     {
         return [
             'academic_year_id' => 'required|exists:academic_years,id',
-            'program_id' => 'required|exists:academic_programs,id',
-            'name' => 'required|string|max:255',
+            'name' => 'required|in:First Semester,Second Semester',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ];
     }
 
-    /**
-     * Check if the program belongs to the academic year
-     */
-    public function validateProgramBelongsToAcademicYear()
-    {
-        $academicProgram = $this->academicProgram;
-        return $academicProgram && $academicProgram->academic_year_id == $this->academic_year_id;
-    }
+
 
     /**
      * Get the status as numeric value for frontend compatibility

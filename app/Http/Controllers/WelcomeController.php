@@ -82,7 +82,7 @@ class WelcomeController extends Controller
 
         $referenceData = [
             'academicYears' => AcademicYear::select('id','name')->get(),
-            'semesters' => Semester::select('id','name','program_id')->get(),
+            'semesters' => Semester::select('id','name','academic_year_id')->get(),
             'programs' => AcademicProgram::select('id','name','academic_year_id')->get(),
             'levels' => AcademicLevel::select('id','name','program_id')->get(),
             'sections' => Section::select('id','name','level_id')->get(),
@@ -102,7 +102,6 @@ class WelcomeController extends Controller
             $activeProgramIds = $referenceData['programs']->pluck('id')->toArray();
             if (!empty($activeProgramIds)) {
                 $referenceData['levels'] = $referenceData['levels']->whereIn('program_id', $activeProgramIds);
-                $referenceData['semesters'] = $referenceData['semesters']->whereIn('program_id', $activeProgramIds);
 
                 // Filter sections based on levels that belong to active programs
                 $activeLevelIds = $referenceData['levels']->pluck('id')->toArray();
@@ -110,6 +109,8 @@ class WelcomeController extends Controller
                     $referenceData['sections'] = $referenceData['sections']->whereIn('level_id', $activeLevelIds);
                 }
             }
+            // Filter semesters by active academic year
+            $referenceData['semesters'] = $referenceData['semesters']->where('academic_year_id', $activeAcademicYearId);
         }
 
         return Inertia::render('Welcome', array_merge([
