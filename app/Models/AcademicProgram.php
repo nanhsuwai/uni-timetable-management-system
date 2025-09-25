@@ -20,4 +20,9 @@ class AcademicProgram extends Model
     {
         return $this->belongsTo(AcademicYear::class);
     }
+
+    public function semesters()
+    {
+        return $this->hasMany(Semester::class, 'program_id');
+    }
 }

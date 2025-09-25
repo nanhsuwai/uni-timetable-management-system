@@ -14,14 +14,13 @@ class CreateController extends Controller
             'name' => 'required|string|unique:academic_years,name',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'status' => 'required|in:active,inactive,archived',
         ]);
 
         AcademicYear::create([
             'name' => $request->name,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'status' => $request->status,
+            'status' => 'active',
         ]);
 
         return to_route('academic-year:all')->with('toast', 'Academic Year created successfully!');

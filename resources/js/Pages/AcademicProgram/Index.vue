@@ -15,10 +15,12 @@ const props = defineProps({
   programs: { type: Object, default: () => ({ data: [], meta: {} }) },
   filters: { type: Object, default: () => ({}) },
   academicYears: { type: Array, default: () => [] },
+  programOptions: { type: Array, default: () => [] },
+  defaultAcademicYear: { type: Object, default: () => null },
 });
 
 const filterName = ref(props.filters.filterName || "");
-const filterAcademicYear = ref(props.filters.filterAcademicYear || "");
+const filterAcademicYear = ref(props.filters.filterAcademicYear || (props.defaultAcademicYear ? props.defaultAcademicYear.id : ""));
 
 watch([filterName, filterAcademicYear], ([newName, newYear]) => {
   router.get(
@@ -30,7 +32,8 @@ watch([filterName, filterAcademicYear], ([newName, newYear]) => {
 
 const form = useForm({
   academic_year_id: "",
-  name: "",
+  names: [],
+  status: "active",
 });
 
 const confirmingProgramCreation = ref(false);
@@ -41,13 +44,15 @@ const deletingProgram = ref(null);
 const showCreateModal = () => {
   confirmingProgramCreation.value = true;
   form.reset();
+  form.academic_year_id = props.defaultAcademicYear ? props.defaultAcademicYear.id : "";
   editingProgram.value = null;
 };
 
 const showEditModal = (program) => {
   editingProgram.value = program;
   form.academic_year_id = program.academic_year_id;
-  form.name = program.name;
+  form.names = [program.name];
+  form.status = program.status;
   confirmingProgramCreation.value = true;
 };
 
@@ -140,6 +145,7 @@ const deleteProgram = () => {
               :value="year.id"
             >
               {{ year.name }}
+              <span v-if="year.status === 'active'" class="ml-1 text-xs text-green-600">(Active)</span>
             </option>
           </select>
         </div>
@@ -153,6 +159,7 @@ const deleteProgram = () => {
               <th class="px-4 py-3">#</th>
               <th class="px-4 py-3">Program Name</th>
               <th class="px-4 py-3">Academic Year</th>
+              <th class="px-4 py-3">Status</th>
               <th class="px-4 py-3">Actions</th>
             </tr>
           </thead>
@@ -166,7 +173,17 @@ const deleteProgram = () => {
                 {{ index + 1 + (props.programs.per_page * (props.programs.current_page - 1)) }}
               </td>
               <td class="px-4 py-2 border-b">{{ program.name }}</td>
-              <td class="px-4 py-2 border-b">{{ program.academic_year.name }}</td>
+              <td class="px-4 py-2 border-b">
+                <span :class="program.academic_year.status === 'active' ? 'text-green-600 font-medium' : ''">
+                  {{ program.academic_year.name }}
+                  <span v-if="program.academic_year.status === 'active'" class="ml-1 text-xs">(Active)</span>
+                </span>
+              </td>
+              <td class="px-4 py-2 border-b">
+                <span :class="program.status === 'active' ? 'text-green-600 font-medium' : 'text-red-600'">
+                  {{ program.status === 'active' ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
               <td class="px-4 py-2 border-b space-x-2">
                 <button
                   @click.prevent="showEditModal(program)"
@@ -217,20 +234,44 @@ const deleteProgram = () => {
                   :value="year.id"
                 >
                   {{ year.name }}
+                  <span v-if="year.status === 'active'" class="ml-1 text-xs text-green-600">(Active)</span>
                 </option>
               </select>
               <InputError :message="form.errors.academic_year_id" />
             </div>
             <div>
-              <InputLabel for="name" value="Program Name" />
-              <TextInput
-                id="name"
-                v-model="form.name"
-                type="text"
-                class="w-full"
-              />
-              <InputError :message="form.errors.name" />
+              <InputLabel for="names" value="Program Names" />
+              <select
+                id="names"
+                v-model="form.names"
+                multiple
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                style="min-height: 120px;"
+              >
+                <option
+                  v-for="option in props.programOptions"
+                  :key="option"
+                  :value="option"
+                >
+                  {{ option }}
+                </option>
+              </select>
+              <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple programs</p>
+              <InputError :message="form.errors.names" />
             </div>
+            <div>
+              <InputLabel for="status" value="Status" />
+              <select
+                id="status"
+                v-model="form.status"
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+              <InputError :message="form.errors.status" />
+            </div>
+
           </div>
           <div class="mt-6 flex justify-end space-x-2">
             <SecondaryButton @click.prevent="closeModal">Cancel</SecondaryButton>

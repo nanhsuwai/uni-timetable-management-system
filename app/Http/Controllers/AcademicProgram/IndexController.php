@@ -14,6 +14,13 @@ class IndexController extends Controller
     {
         $query = AcademicProgram::with('academicYear');
 
+        // Set default academic year filter to active year if not provided
+        $filters = $request->only('filterName', 'filterAcademicYear');
+        if (empty($filters['filterAcademicYear'])) {
+            $activeAcademicYear = AcademicYear::getActive();
+            $filters['filterAcademicYear'] = $activeAcademicYear ? $activeAcademicYear->id : null;
+        }
+
         if ($request->has('filterName') && $request->filterName != '') {
             $query->where('name', 'like', '%' . $request->filterName . '%');
         }
@@ -24,10 +31,18 @@ class IndexController extends Controller
 
         $programs = $query->orderBy('name')->paginate(10)->withQueryString();
         $academicYears = AcademicYear::orderBy('start_date', 'desc')->get();
+
+        // Get the default academic year for frontend
+        $defaultAcademicYear = $filters['filterAcademicYear'] ? AcademicYear::find($filters['filterAcademicYear']) : $activeAcademicYear;
+
+        $programOptions = ['Computer Foundation', 'Computer Technology', 'Computer Science', 'Master'];
+
         return Inertia::render('AcademicProgram/Index', [
             'programs' => $programs,
             'academicYears' => $academicYears,
-            'filters' => $request->only('filterName', 'filterAcademicYear'),
+            'programOptions' => $programOptions,
+            'filters' => $filters,
+            'defaultAcademicYear' => $defaultAcademicYear,
         ]);
     }
 }

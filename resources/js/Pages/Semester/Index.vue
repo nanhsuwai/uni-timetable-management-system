@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm, router } from "@inertiajs/vue3";
-import { ref, watch } from "vue";
+import { ref, watch,computed } from "vue";
 
 // Components
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
@@ -23,31 +23,79 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  academicYears: {
+    type: Array,
+    default: () => [],
+  },
   academicPrograms: {
     type: Array,
     default: () => [],
+  },
+  defaultAcademicYear: {
+    type: Object,
+    default: () => null,
   },
 });
 
 // Filters
 const filterName = ref(props.filters.filterName || "");
 const filterProgram = ref(props.filters.filterProgram || "");
+const filterAcademicYear = ref(props.filters.filterAcademicYear || (props.defaultAcademicYear ? props.defaultAcademicYear.id : ""));
 
-watch([filterName, filterProgram], ([newName, newProgram]) => {
+watch([filterName, filterProgram, filterAcademicYear], ([newName, newProgram, newAcademicYear]) => {
   router.get(
     route("semester:all"),
-    { filterName: newName, filterProgram: newProgram },
+    { filterName: newName, filterProgram: newProgram, filterAcademicYear: newAcademicYear },
     { preserveState: true, replace: true }
   );
 });
 
+// Watch for changes in filterAcademicYear to reset filterProgram if it's not valid
+watch(filterAcademicYear, (newAcademicYear) => {
+  if (newAcademicYear && filterProgram.value) {
+    const validPrograms = filteredProgramsForFilter.value.map(p => p.id);
+    if (!validPrograms.includes(filterProgram.value)) {
+      filterProgram.value = "";
+    }
+  }
+});
+
 // Form state
 const form = useForm({
+  academic_year_id: "",
   program_id: "",
   name: "",
   start_date: "",
   end_date: "",
 });
+
+// Computed property for filtered programs based on selected academic year
+const filteredPrograms = computed(() => {
+  if (!form.academic_year_id) {
+    return props.academicPrograms;
+  }
+  return props.academicPrograms.filter(program => program.academic_year_id == form.academic_year_id);
+});
+
+// Computed property for filtered programs in filters based on selected academic year
+const filteredProgramsForFilter = computed(() => {
+  if (!filterAcademicYear.value) {
+    return props.academicPrograms;
+  }
+  return props.academicPrograms.filter(program => program.academic_year_id == filterAcademicYear.value);
+});
+
+// Helper function to get academic year name by ID
+const getAcademicYearName = (id) => {
+  const year = props.academicYears.find(y => y.id == id);
+  return year ? year.name : 'N/A';
+};
+
+// Helper function to get academic program name by ID
+const getAcademicProgramName = (id) => {
+  const program = props.academicPrograms.find(p => p.id == id);
+  return program ? program.name : 'N/A';
+};
 
 // Modals
 const confirmingSemesterCreation = ref(false);
@@ -64,6 +112,7 @@ const showCreateModal = () => {
 
 const showEditModal = (semester) => {
   editingSemester.value = semester;
+  form.academic_year_id = semester.academic_year_id;
   form.program_id = semester.program_id;
   form.name = semester.name;
   form.start_date = semester.start_date;
@@ -134,7 +183,7 @@ const deleteSemester = () => {
 
       <!-- Filters -->
       <div class="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <InputLabel for="filterName" value="Search by Name" />
             <TextInput
@@ -154,11 +203,28 @@ const deleteSemester = () => {
             >
               <option value="">All Academic Programs</option>
               <option
-                v-for="program in props.academicPrograms"
+                v-for="program in filteredProgramsForFilter"
                 :key="program.id"
                 :value="program.id"
               >
                 {{ program.name }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <InputLabel for="filterAcademicYear" value="Filter by Academic Year" />
+            <select
+              id="filterAcademicYear"
+              v-model="filterAcademicYear"
+              class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="">All Academic Years</option>
+              <option
+                v-for="year in props.academicYears"
+                :key="year.id"
+                :value="year.id"
+              >
+                {{ year.name }}
               </option>
             </select>
           </div>
@@ -173,6 +239,7 @@ const deleteSemester = () => {
               <th class="px-6 py-3 text-left font-medium">#</th>
               <th class="px-6 py-3 text-left font-medium">Name</th>
               <th class="px-6 py-3 text-left font-medium">Academic Program</th>
+              <th class="px-6 py-3 text-left font-medium">Academic Year</th>
               <th class="px-6 py-3 text-left font-medium">Start Date</th>
               <th class="px-6 py-3 text-left font-medium">End Date</th>
               <th class="px-6 py-3 text-center font-medium">Actions</th>
@@ -193,9 +260,18 @@ const deleteSemester = () => {
               </td>
               <td class="px-6 py-4 text-gray-900 font-medium">
                 {{ semester.name }}
+                <span v-if="semester.status === 'active'" class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                  Active
+                </span>
               </td>
               <td class="px-6 py-4 text-gray-600">
-                {{ semester.academic_program?.name || 'N/A' }}
+                {{ getAcademicProgramName(semester.program_id) }}
+              </td>
+              <td class="px-6 py-4 text-gray-600">
+                <span :class="semester.academic_year?.status === 'active' ? 'text-green-600 font-medium' : ''">
+                  {{ getAcademicYearName(semester.academic_year_id) }}
+                  <span v-if="semester.academic_year?.status === 'active'" class="ml-1 text-xs">(Active)</span>
+                </span>
               </td>
               <td class="px-6 py-4 text-gray-600">
                 {{ semester.start_date }}
@@ -221,7 +297,7 @@ const deleteSemester = () => {
               </td>
             </tr>
             <tr v-if="props.semesters.data.length === 0">
-              <td colspan="6" class="py-8 text-center text-gray-500">
+              <td colspan="7" class="py-8 text-center text-gray-500">
                 <div class="flex flex-col items-center">
                   <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -248,6 +324,24 @@ const deleteSemester = () => {
           </h2>
           <div class="space-y-4">
             <div>
+              <InputLabel for="academic_year_id" value="Academic Year" />
+              <select
+                id="academic_year_id"
+                v-model="form.academic_year_id"
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="">Select Academic Year</option>
+                <option
+                  v-for="year in props.academicYears"
+                  :key="year.id"
+                  :value="year.id"
+                >
+                  {{ year.name }}
+                </option>
+              </select>
+              <InputError :message="form.errors.academic_year_id" />
+            </div>
+            <div>
               <InputLabel for="program_id" value="Academic Program" />
               <select
                 id="program_id"
@@ -256,7 +350,7 @@ const deleteSemester = () => {
               >
                 <option value="">Select Academic Program</option>
                 <option
-                  v-for="program in props.academicPrograms"
+                  v-for="program in filteredPrograms"
                   :key="program.id"
                   :value="program.id"
                 >
