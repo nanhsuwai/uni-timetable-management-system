@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\AcademicYear;
 
+use App\Enums\ProgramOption;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use Illuminate\Database\QueryException;
@@ -14,7 +15,7 @@ class ProgramController extends Controller
     {
         $programs = $academicYear->academicPrograms()->orderBy('name')->paginate(10);
         $academic_year = AcademicYear::find($academicYear->id);
-        $programOptions = ['Computer Foundation', 'Computer Technology', 'Computer Science', 'Master'];
+        $programOptions = ProgramOption::cases();
 
         return Inertia::render('AcademicYear/Programs', [
             'academicYear' => $academic_year,

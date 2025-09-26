@@ -536,8 +536,7 @@ const getDayName = (day) => {
                 <option value="wednesday">Wednesday</option>
                 <option value="thursday">Thursday</option>
                 <option value="friday">Friday</option>
-                <option value="saturday">Saturday</option>
-                <option value="sunday">Sunday</option>
+               
               </select>
             </div>
 
@@ -553,14 +552,7 @@ const getDayName = (day) => {
             </div>
 
             <!-- Breaks -->
-            <div>
-              <InputLabel value="Break Start" />
-              <TextInput type="time" v-model="form.break_start" class="w-full" />
-            </div>
-            <div>
-              <InputLabel value="Break End" />
-              <TextInput type="time" v-model="form.break_end" class="w-full" />
-            </div>
+            
           </div>
 
           <!-- Selection Status Message -->

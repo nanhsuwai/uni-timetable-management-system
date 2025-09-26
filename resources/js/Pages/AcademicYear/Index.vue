@@ -26,6 +26,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  semsesterOptions: {
+    type: Array,
+    default: () => [],
+  },
 });
 
 // Semester Form
@@ -444,11 +448,9 @@ const toggleSemesterStatus = (semester) => {
           <div class="space-y-4">
             <div>
               <InputLabel for="semester_name" value="Semester Name" />
-              <select id="semester_name" v-model="semesterForm.name"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                <option value="">Select Semester</option>
-                <option value="First Semester">First Semester</option>
-                <option value="Second Semester">Second Semester</option>
+              <select id="semester_name" v-model="semesterForm.name" class="w-full border-gray-300 rounded-md shadow-sm">
+                <option value="" disabled>Select Semester</option>
+                <option v-for="option in props.semsesterOptions" :key="option" :value="option">{{ option }}</option>
               </select>
               <InputError :message="semesterForm.errors.name" />
             </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\AcademicYear;
 
+use App\Enums\SemesterName;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use Illuminate\Http\Request;
@@ -16,11 +17,13 @@ class IndexController extends Controller
         if ($request->has('filterName') && $request->filterName != '') {
             $query->where('name', 'like', '%' . $request->filterName . '%');
         }
-
+        $semsesterOptions = SemesterName::cases();
+        
         $academicYears = $query->with(['semesters','academicPrograms'])->orderBy('start_date', 'desc')->paginate(10)->withQueryString();
         return Inertia::render('AcademicYear/Index', [
             'academicYears' => $academicYears,
             'filters' => $request->only('filterName'),
+            'semsesterOptions' => $semsesterOptions,
         ]);
     }
 }

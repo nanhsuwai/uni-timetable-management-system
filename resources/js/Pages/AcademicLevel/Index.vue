@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm, router } from "@inertiajs/vue3";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import PaginationLinks from "@/Components/PaginationLinks.vue";
 import Modal from "@/Components/Modal.vue";
 import toast from "@/Stores/toast";
@@ -16,6 +16,8 @@ const props = defineProps({
   filters: { type: Object, default: () => ({}) },
   academicPrograms: { type: Array, default: () => [] },
   classrooms: { type: Array, default: () => [] },
+  fixedLevels: { type: Array, default: () => [] },
+  academicYears: { type: Array, default: () => [] },
 });
 
 // Filters
@@ -32,6 +34,7 @@ watch([filterName, filterProgram], ([newName, newProgram]) => {
 
 // Form
 const form = useForm({
+  academic_year_id: "",
   program_id: "",
   name: "",
 });
@@ -54,6 +57,24 @@ const selectedLevel = ref(null);
 const editingSection = ref(null);
 const deletingSection = ref(null);
 
+// Dependent Programs
+const filteredPrograms = computed(() => {
+  if (!form.academic_year_id) return [];
+  return props.academicPrograms.filter(
+    (p) => p.academic_year_id === form.academic_year_id
+  );
+});
+
+// Watch year change to reset program if invalid
+watch(
+  () => form.academic_year_id,
+  (newYear) => {
+    if (!filteredPrograms.value.find((p) => p.id === form.program_id)) {
+      form.program_id = "";
+    }
+  }
+);
+
 // Modal Handling
 const openCreateModal = () => {
   confirmingModal.value = true;
@@ -63,6 +84,7 @@ const openCreateModal = () => {
 
 const openEditModal = (level) => {
   editingLevel.value = level;
+  form.academic_year_id = level.academic_year_id;
   form.program_id = level.program_id;
   form.name = level.name;
   confirmingModal.value = true;
@@ -109,7 +131,7 @@ const deleteLevel = () => {
   });
 };
 
-// Section Modal Handling
+// Sections
 const openSectionsModal = (level) => {
   selectedLevel.value = level;
   showingSectionsModal.value = true;
@@ -124,11 +146,8 @@ const closeSectionsModal = () => {
 
 const openEditSectionModal = (section) => {
   editingSection.value = section;
-  if (section) {
-    sectionForm.name = section.name;
-  } else {
-    sectionForm.reset();
-  }
+  if (section) sectionForm.name = section.name;
+  else sectionForm.reset();
   showingSectionFormModal.value = true;
 };
 
@@ -138,23 +157,24 @@ const closeEditSectionModal = () => {
   sectionForm.reset();
 };
 
-// Section CRUD
 const saveSection = () => {
   const url = editingSection.value
-    ? route("academic_level:sections.update", { academicLevel: selectedLevel.value.id, section: editingSection.value.id })
-    : route("academic_level:sections.create", { academicLevel: selectedLevel.value.id });
+    ? route("academic_level:sections.update", {
+      academicLevel: selectedLevel.value.id,
+      section: editingSection.value.id,
+    })
+    : route("academic_level:sections.create", {
+      academicLevel: selectedLevel.value.id,
+    });
 
   sectionForm.post(url, {
     preserveScroll: true,
     onSuccess: () => {
       closeEditSectionModal();
       closeSectionsModal();
-
-      router.reload({ only: ['levels'] });
+      router.reload({ only: ["levels"] });
       toast.add({
-        message: editingSection.value
-          ? "✅ Section updated!"
-          : "✅ Section created!",
+        message: editingSection.value ? "✅ Section updated!" : "✅ Section created!",
       });
     },
     onError: () => sectionForm.reset(),
@@ -167,31 +187,42 @@ const confirmDeleteSection = (section) => {
 
 const deleteSection = () => {
   if (!deletingSection.value) return;
-  router.delete(route("academic_level:sections.delete", { academicLevel: selectedLevel.value.id, section: deletingSection.value.id }), {
-    preserveScroll: true,
-    onSuccess: () => {
-      closeSectionsModal()
-
-      deletingSection.value = null;
-      router.reload({ only: ['levels'] });
-      toast.add({ message: "🗑️ Section deleted!" });
-    },
-  });
+  router.delete(
+    route("academic_level:sections.delete", {
+      academicLevel: selectedLevel.value.id,
+      section: deletingSection.value.id,
+    }),
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        closeSectionsModal();
+        deletingSection.value = null;
+        router.reload({ only: ["levels"] });
+        toast.add({ message: "🗑️ Section deleted!" });
+      },
+    }
+  );
 };
 
 const toggleSectionStatus = (section, newStatus) => {
-  router.post(route("academic_level:sections.toggle-status", { academicLevel: selectedLevel.value.id, section: section.id }), {
-    status: newStatus,
-  }, {
-    preserveScroll: true,
-    onSuccess: () => {
-      closeSectionsModal()
-      router.reload({ only: ['levels'] });
-      toast.add({ message: "✅ Status updated!" });
-    },
-  });
+  router.post(
+    route("academic_level:sections.toggle-status", {
+      academicLevel: selectedLevel.value.id,
+      section: section.id,
+    }),
+    { status: newStatus },
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        closeSectionsModal();
+        router.reload({ only: ["levels"] });
+        toast.add({ message: "✅ Status updated!" });
+      },
+    }
+  );
 };
 </script>
+
 
 <template>
   <LayoutAuthenticated>
@@ -216,7 +247,7 @@ const toggleSectionStatus = (section, newStatus) => {
           <select id="filterProgram" v-model="filterProgram"
             class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             <option value="">All Programs</option>
-            <option v-for="program in props.academicPrograms" :key="program.id" :value="program.id">
+            <option v-for="program in props.academicPrograms" :key="program" :value="program">
               {{ program.name }}
             </option>
           </select>
@@ -277,22 +308,43 @@ const toggleSectionStatus = (section, newStatus) => {
             {{ editingLevel ? "Edit Academic Level" : "Add Academic Level" }}
           </h2>
           <div class="space-y-4">
+            <!-- academic_year selection option -->
+            <div>
+              <InputLabel for="academic_year_id" value="Academic Year" />
+              <select id="academic_year_id" v-model="form.academic_year_id"
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">Select Academic Year</option>
+                <option v-for="year in props.academicYears" :key="year.id" :value="year.id">
+                  {{ year.name }}
+                </option>
+              </select>
+              <InputError :message="form.errors.academic_year_id" />
+            </div>
+
             <div>
               <InputLabel for="program_id" value="Academic Program" />
               <select id="program_id" v-model="form.program_id"
                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <option value="">Select Program</option>
-                <option v-for="program in props.academicPrograms" :key="program.id" :value="program.id">
+                <option v-for="program in filteredPrograms" :key="program.id" :value="program.id">
                   {{ program.name }}
                 </option>
               </select>
               <InputError :message="form.errors.program_id" />
             </div>
+
             <div>
               <InputLabel for="name" value="Level Name" />
-              <TextInput id="name" v-model="form.name" type="text" class="w-full" />
+              <select id="name" v-model="form.name"
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">Select Level</option>
+                <option v-for="level in props.fixedLevels" :key="level" :value="level">
+                  {{ level }}
+                </option>
+              </select>
               <InputError :message="form.errors.name" />
             </div>
+
           </div>
           <div class="mt-6 flex justify-end space-x-2">
             <SecondaryButton @click.prevent="closeModal">Cancel</SecondaryButton>
