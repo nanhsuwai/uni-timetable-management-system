@@ -20,6 +20,7 @@ class GridViewController extends Controller
 {
     public function __invoke(Request $request)
     {
+        // dd($request->all());
         $query = TimetableEntry::with([
             'academicYear:id,name',
             'semester:id,name',
@@ -27,7 +28,7 @@ class GridViewController extends Controller
             'academicLevel:id,name',
             'section:id,name',
             'classroom:id,room_no',
-            'subject:id,name',
+            'subject:id,name,code',
             'teachers:id,name',
             'timeSlot:id,name,start_time,end_time,day_of_week,academic_year_id,is_lunch_period',
         ]);
@@ -38,6 +39,7 @@ class GridViewController extends Controller
             'filterProgram' => 'program_id',
             'filterLevel' => 'level_id',
             'filterSection' => 'section_id',
+            'filterClassroom' => 'classroom_id',
         ];
 
         foreach ($filters as $requestKey => $column) {
@@ -55,14 +57,14 @@ class GridViewController extends Controller
 
         // Get all entries without pagination for grid view
         $entries = $query->orderBy('day_of_week')->orderBy('start_time')->get();
-
+// dd($entries->first());
         $referenceData = [
             'academicYears' => AcademicYear::select('id','name')->get(),
             'semesters' => Semester::select('id','name','academic_year_id')->get(),
             'programs' => AcademicProgram::select('id','name','academic_year_id')->get(),
             'levels' => AcademicLevel::select('id','name','program_id')->get(),
             'sections' => Section::select('id','name','level_id')->get(),
-            'subjects' => Subject::select('id','name')->get(),
+            'subjects' => Subject::select('id','name','code')->get(),
             'teachers' => Teacher::select('id','name')->get(),
             'classrooms' => Classroom::select('id','room_no','section_id')->get(),
             'timeSlots' => TimeSlot::select('id','name','start_time','end_time','day_of_week','academic_year_id','is_lunch_period')->get(),

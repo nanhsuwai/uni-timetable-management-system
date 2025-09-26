@@ -90,15 +90,15 @@ class TimetableTemplate
             $html .= '<tr>';
             $html .= '<td style="border: 1px solid #d1d5db; padding: 12px; background-color: #f9fafb; font-weight: 600; text-align: center;">' . $day . '</td>';
             foreach ($timeSlots as $time) {
-                $entry = $this->entries->first(function($e) use ($dayIndex, $time) {
-                    return $e->timeSlot->day_of_week == ($dayIndex + 1) && $e->timeSlot->start_time == $time;
+                $entry = $this->entries->first(function($e) use ($day, $time) {
+                    return $e->timeSlot->day_of_week == strtolower($day) && $e->timeSlot->start_time == $time;
                 });
                 $slot = $this->timeSlots->firstWhere('start_time', $time);
                 $isLunch = $slot?->is_lunch_period ?? false;
                 $bgColor = $isLunch ? '#fff7ed' : '#ffffff';
                 $html .= '<td style="border: 1px solid #d1d5db; padding: 8px; text-align: center; min-height: 80px; vertical-align: top; background-color: ' . $bgColor . ';">';
                 if ($entry) {
-                    $subjectName = $entry->subject ? $entry->subject->name : 'Unknown Subject';
+                    $subjectName = $entry->subject ? $entry->subject->code : 'Unknown Subject';
                     $teachers = $entry->teachers ?? collect();
                     $teacherCount = $teachers->count();
                     $teacherDisplay = '';
@@ -113,7 +113,6 @@ class TimetableTemplate
                     $html .= '<div style="font-size: 12px;">';
                     $html .= '<div style="font-weight: 600; color: #1e40af; margin-bottom: 4px;">' . $subjectName . '</div>';
                     $html .= '<div style="color: #4b5563; margin-bottom: 4px; font-size: ' . ($teacherCount > 1 ? '12px' : '14px') . ';">' . $teacherDisplay . '</div>';
-                    $html .= '<div style="color: #6b7280;">Room: ' . $roomNo . '</div>';
                     $html .= '</div>';
                 } elseif (!$isLunch) {
                     $html .= '<div style="color: #9ca3af; font-size: 12px; font-style: italic;">No class</div>';

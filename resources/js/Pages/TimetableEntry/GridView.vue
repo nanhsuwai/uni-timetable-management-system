@@ -91,11 +91,12 @@ const timeSlots = computed(() => {
   if (filterYear.value) {
     slots = slots.filter(slot => slot.academic_year_id == filterYear.value);
   }
-
+console.log("Filtered Time Slots:", slots);
   return slots.map(slot => ({
     start: slot.start_time,
     end: slot.end_time,
     label: `${slot.start_time} - ${slot.end_time}`,
+    code:slot.code,
     name: slot.name,
     day_of_week: slot.day_of_week,
     academic_year_id: slot.academic_year_id,
@@ -143,7 +144,7 @@ const uniqueTimeSlots = computed(() => {
       unique.push(slot);
     }
   });
-
+console.log("Unique Time Slots:", unique);
   return unique.sort((a, b) => a.start.localeCompare(b.start));
 });
 
@@ -205,10 +206,10 @@ const getEntry = (day, timeSlot) => {
   return organizedEntries.value[day]?.[timeSlot.start] || null;
 };
 
-// Get subject name with code
+// Get subject code
 const getSubjectDisplay = (entry) => {
   if (!entry || !entry.subject) return "";
-  return `${entry.subject.name}`;
+  return `${entry.subject.code}`;
 };
 
 // Get teacher names (multiple teachers)
@@ -391,9 +392,11 @@ const downloadPDF = () => {
                       </span>
                       <span v-else class="text-gray-400">No teacher</span>
                     </div>
-                    <div class="text-gray-500">
+                    <!-- <div class="text-gray-500">
+                      Room: <div class="text-gray-500">
                       Room: {{ getClassroomDisplay(getEntry(day.key, slot)) }}
-                    </div>
+                    </div>{{ getClassroomDisplay(getEntry(day.key, slot)) }}
+                    </div> -->
                   </div>
                   <div v-else-if="!isLunch(slot)" class="text-gray-400 text-xs italic">
                     No class
