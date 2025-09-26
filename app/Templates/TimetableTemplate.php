@@ -55,7 +55,6 @@ class TimetableTemplate
         $timeSlots = $this->timeSlots->pluck('start_time')->unique()->sort();
 
         $html = '<h1 style="text-align: center;">University of Computer Studies, Hinthada</h1>';
-        $html .= '<h2 style="text-align: center;">Timetable</h2>';
         if ($this->academicYear) {
             $html .= '<p style="text-align: center;">Academic Year: ' . $this->academicYear->name . '</p>';
         }
@@ -122,6 +121,24 @@ class TimetableTemplate
             $html .= '</tr>';
         }
         $html .= '</tbody></table></div>';
+
+        // Subject Codes List
+        $uniqueSubjects = collect($this->entries)->pluck('subject')->unique('id')->sortBy('code');
+        if ($uniqueSubjects->isNotEmpty()) {
+            $html .= '<h4 style="margin-top: 20px;">Subject Codes</h4>';
+            $html .= '<table style="width: 50%; border-collapse: collapse; margin-top: 10px;">';
+            $html .= '<thead><tr>';
+            $html .= '<th style="border: 1px solid #d1d5db; padding: 8px; background-color: #f9fafb; font-weight: 600; font-size: 12px;">Code</th>';
+            $html .= '<th style="border: 1px solid #d1d5db; padding: 8px; background-color: #f9fafb; font-weight: 600; font-size: 12px;">Name</th>';
+            $html .= '</tr></thead><tbody>';
+            foreach ($uniqueSubjects as $subject) {
+                $html .= '<tr>';
+                $html .= '<td style="border: 1px solid #d1d5db; padding: 8px; font-size: 12px;">' . $subject->code . '</td>';
+                $html .= '<td style="border: 1px solid #d1d5db; padding: 8px; font-size: 12px;">' . $subject->name . '</td>';
+                $html .= '</tr>';
+            }
+            $html .= '</tbody></table>';
+        }
 
         $this->template = str_replace('###TIMETABLE###', $html, $this->template);
     }

@@ -83,6 +83,12 @@ const allSelectionsComplete = computed(() => {
          filterSection.value;
 });
 
+// Computed for selected items to display in header
+const selectedSemester = computed(() => props.semesters.find(s => s.id == filterSemester.value));
+const selectedProgram = computed(() => props.programs.find(p => p.id == filterProgram.value));
+const selectedLevel = computed(() => props.levels.find(l => l.id == filterLevel.value));
+const selectedSection = computed(() => props.sections.find(s => s.id == filterSection.value));
+
 // Time slots for the grid - using dynamic data from backend and filtering by academic year
 const timeSlots = computed(() => {
   let slots = props.timeSlots;
@@ -193,6 +199,17 @@ const debugInfo = computed(() => {
       entry.time_slot && entry.time_slot.day_of_week === 'friday'
     ).length,
   };
+});
+
+// Get unique subjects from entries
+const uniqueSubjects = computed(() => {
+  const subjects = new Map();
+  props.entries.forEach(entry => {
+    if (entry.subject) {
+      subjects.set(entry.subject.id, entry.subject);
+    }
+  });
+  return Array.from(subjects.values()).sort((a, b) => a.code.localeCompare(b.code));
 });
 
 
@@ -345,6 +362,22 @@ const downloadPDF = () => {
             <!-- Header with time slots -->
             <thead>
               <tr>
+                <th :colspan="1 + uniqueTimeSlots.length" class="text-center font-bold text-lg bg-gray-100 p-4 border border-gray-300">
+                  University of Computer Studies, Hinthada
+                </th>
+              </tr>
+              <tr>
+                <th :colspan="1 + uniqueTimeSlots.length" class="text-center text-sm bg-gray-50 p-2 border border-gray-300">
+                  <span v-if="selectedSemester">Semester: {{ selectedSemester.name }} | </span>
+                  <span v-if="selectedProgram">Program: {{ selectedProgram.name }} | </span>
+                  <span v-if="selectedLevel">Level: {{ selectedLevel.name }} | </span>
+                  <span v-if="selectedSection">Section: {{ selectedSection.name }} | </span>
+                  <span v-if="selectedSection && selectedSection?.classroom">Classroom: {{ selectedSection.classroom.room_no }} |</span>
+                  <span v-if="selectedSection && selectedSection?.section_head_teacher">Head Of Classroom: {{ selectedSection.section_head_teacher.name }}</span>
+
+                </th>
+              </tr>
+              <tr>
                 <th class="border border-gray-300 p-3 bg-gray-50 font-semibold text-sm w-24">Day</th>
                 <th
                   v-for="slot in uniqueTimeSlots"
@@ -402,6 +435,29 @@ const downloadPDF = () => {
                     No class
                   </div>
                 </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- show subject code and subject name like this M-001 = Myanmar-->
+        </div>
+      </CardBox>
+
+      <!-- Subject Codes List -->
+      <CardBox v-if="allSelectionsComplete && uniqueSubjects.length > 0" class="mt-4">
+        <h4 class="font-semibold mb-2">Subject Codes</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr>
+                <th class="border border-gray-300 p-2 bg-gray-50 font-semibold">Code</th>
+                <th class="border border-gray-300 p-2 bg-gray-50 font-semibold">Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="subject in uniqueSubjects" :key="subject.id">
+                <td class="border border-gray-300 p-2">{{ subject.code }}</td>
+                <td class="border border-gray-300 p-2">{{ subject.name }}</td>
               </tr>
             </tbody>
           </table>
