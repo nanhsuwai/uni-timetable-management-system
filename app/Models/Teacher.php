@@ -19,6 +19,10 @@ class Teacher extends Model
         'head_of_department',
     ];
 
+    protected $casts = [
+        'head_of_department' => 'boolean',
+    ];
+
     /**
      * Get the subjects assigned to this teacher.
      */

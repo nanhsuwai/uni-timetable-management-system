@@ -223,6 +223,18 @@ const getClassroomDisplay = (entry) => {
   if (!entry || !entry.classroom) return "";
   return entry.classroom.room_no;
 };
+
+// Download PDF
+const downloadPDF = () => {
+  const url = route('timetable_entry:generate', {
+    filterYear: filterYear.value,
+    filterSemester: filterSemester.value,
+    filterProgram: filterProgram.value,
+    filterLevel: filterLevel.value,
+    filterSection: filterSection.value,
+  });
+  window.open(url, '_blank');
+};
 </script>
 
 <template>
@@ -230,7 +242,7 @@ const getClassroomDisplay = (entry) => {
 
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <SectionTitleLineWithButton
+      <SectionTitleLineWithButton
       :icon="mdiGrid"
       title="Timetable Grid View"
     >
@@ -239,6 +251,13 @@ const getClassroomDisplay = (entry) => {
         color="info"
         :icon="mdiTable"
         label="Table View"
+      />
+      <BaseButton
+        v-if="allSelectionsComplete"
+        @click="downloadPDF"
+        color="success"
+        icon="mdi-download"
+        label="Download PDF"
       />
     </SectionTitleLineWithButton>
       <!-- Debug Information (only show if there are issues) -->

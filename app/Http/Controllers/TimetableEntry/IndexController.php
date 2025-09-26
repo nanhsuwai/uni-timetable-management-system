@@ -52,12 +52,12 @@ class IndexController extends Controller
 
         $referenceData = [
             'academicYears' => AcademicYear::select('id','name')->get(),
-            'semesters' => Semester::select('id','name')->get(),
+            'semesters' => Semester::select('id','name','academic_year_id')->get(),
             'programs' => AcademicProgram::select('id','name','academic_year_id')->get(),
             'levels' => AcademicLevel::select('id','name','program_id')->get(),
             'sections' => Section::select('id','name','level_id')->get(),
             'classrooms' => Classroom::select('id','room_no','section_id')->get(),
-            'subjects' => Subject::with('teachers:id,name')->select('id','name')->get(),
+            'subjects' => Subject::with('teachers:id,name')->select('id','name','semester')->get(),
             'teachers' => Teacher::with('subjects:id,name')->select('id','name')->get(),
             'timeSlots' => TimeSlot::get(),
         ];

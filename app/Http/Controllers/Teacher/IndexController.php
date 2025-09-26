@@ -25,11 +25,15 @@ class IndexController extends Controller
             $query->where('email', 'like', '%' . $request->filterEmail . '%');
         }
 
+        if ($request->has('filterDepartment') && $request->filterDepartment != '') {
+            $query->where('department', 'like', '%' . $request->filterDepartment . '%');
+        }
+
         $teachers = $query->orderBy('name')->paginate(10)->withQueryString();
 
         return Inertia::render('Teacher/Index', [
             'teachers' => $teachers,
-            'filters' => $request->only('filterCode', 'filterName', 'filterEmail'),
+            'filters' => $request->only('filterCode', 'filterName', 'filterEmail', 'filterDepartment'),
         ]);
     }
 }

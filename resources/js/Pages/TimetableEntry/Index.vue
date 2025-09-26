@@ -37,6 +37,8 @@ const filterLevel = ref(props.filters.filterLevel || "");
 const filterSection = ref(props.filters.filterSection || "");
 const filterClassroom = ref(props.filters.filterClassroom || "");
 const filterDay = ref(props.filters.filterDay || "");
+const semesterName = ref("");
+
 
 // Update when filters change
 watch(
@@ -139,16 +141,15 @@ const filteredClassrooms = computed(() => {
 });
 
 const filteredSemesters = computed(() => {
-  if (!selectedProgram.value) return props.semesters;
-  return props.semesters.filter(s => s.program_id == selectedProgram.value);
+  semesterName.value = props.semesters.find(s => s.id == form.semester_id)?.name || "";
+
+  return props.semesters.filter(s => s.academic_year_id == selectedYear.value);
 });
 
 const filteredSubjects = computed(() => {
-  if (!selectedYear.value || !form.semester_id) {
-    return [];
-  }
+const semesterName = props.semesters.find(s => s.id == form.semester_id)?.name || "";
   return props.subjects.filter(s =>
-    s.academic_year_id == selectedYear.value && s.semester_id == form.semester_id
+    s.semester == semesterName
   );
 });
 

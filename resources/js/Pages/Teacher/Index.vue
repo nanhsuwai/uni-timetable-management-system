@@ -25,11 +25,12 @@ const props = defineProps({
 const filterCode = ref(props.filters.filterCode || "");
 const filterName = ref(props.filters.filterName || "");
 const filterEmail = ref(props.filters.filterEmail || "");
+const filterDepartment = ref(props.filters.filterDepartment || "");
 
-watch([filterCode, filterName, filterEmail], ([newCode, newName, newEmail]) => {
+watch([filterCode, filterName, filterEmail, filterDepartment], ([newCode, newName, newEmail, newDepartment]) => {
   router.get(
     route("teacher:all"),
-    { filterCode: newCode, filterName: newName, filterEmail: newEmail },
+    { filterCode: newCode, filterName: newName, filterEmail: newEmail, filterDepartment: newDepartment },
     { preserveState: true, replace: true }
   );
 });
@@ -164,56 +165,58 @@ const deleteTeacher = () => {
       </div>
       <!-- Table -->
       <div class="bg-white shadow rounded-lg overflow-hidden">
-        <table class="w-full text-sm text-center">
-          <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
-            <tr>
-              <th class="px-4 py-3">#</th>
-              <th class="px-4 py-3">Code</th>
-              <th class="px-4 py-3">Name</th>
-              <th class="px-4 py-3">Email</th>
-              <th class="px-4 py-3">Phone</th>
-              <th class="px-4 py-3">Department</th>
-              <th class="px-4 py-3">Head of Department</th>
-              <th class="px-4 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(teacher, index) in props.teachers.data"
-              :key="teacher.id"
-              class="hover:bg-gray-50 transition"
-            >
-              <td class="px-4 py-2 border-b">
-                {{ index + 1 + (props.teachers.per_page * (props.teachers.current_page - 1)) }}
-              </td>
-              <td class="px-4 py-2 border-b">{{ teacher.code }}</td>
-              <td class="px-4 py-2 border-b">{{ teacher.name }}</td>
-              <td class="px-4 py-2 border-b">{{ teacher.email }}</td>
-              <td class="px-4 py-2 border-b">{{ teacher.phone }}</td>
-              <td class="px-4 py-2 border-b">{{ teacher.department }}</td>
-              <td class="px-4 py-2 border-b">{{ teacher.head_of_department ? 'Yes' : 'No' }}</td>
-              <td class="px-4 py-2 border-b space-x-2">
-                <button
-                  @click.prevent="showEditModal(teacher)"
-                  class="px-3 py-1 rounded-md bg-blue-500 text-white text-xs hover:bg-blue-600"
-                >
-                  Edit
-                </button>
-                <button
-                  @click.prevent="showDeleteTeacherModal(teacher)"
-                  class="px-3 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-            <tr v-if="props.teachers.data.length === 0">
-              <td colspan="8" class="py-6 text-gray-500 text-sm">
-                No teachers found.
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-center min-w-max">
+            <thead class="bg-gray-100 text-gray-700 uppercase text-xs sticky top-0">
+              <tr>
+                <th class="px-4 py-3">#</th>
+                <th class="px-4 py-3">Code</th>
+                <th class="px-4 py-3">Name</th>
+                <th class="px-4 py-3">Email</th>
+                <th class="px-4 py-3">Phone</th>
+                <th class="px-4 py-3">Department</th>
+                <th class="px-4 py-3">Head of Department</th>
+                <th class="px-4 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="max-h-96 overflow-y-auto">
+              <tr
+                v-for="(teacher, index) in props.teachers.data"
+                :key="teacher.id"
+                class="hover:bg-gray-50 transition"
+              >
+                <td class="px-4 py-2 border-b">
+                  {{ index + 1 + (props.teachers.per_page * (props.teachers.current_page - 1)) }}
+                </td>
+                <td class="px-4 py-2 border-b">{{ teacher.code }}</td>
+                <td class="px-4 py-2 border-b">{{ teacher.name }}</td>
+                <td class="px-4 py-2 border-b">{{ teacher.email }}</td>
+                <td class="px-4 py-2 border-b">{{ teacher.phone }}</td>
+                <td class="px-4 py-2 border-b">{{ teacher.department }}</td>
+                <td class="px-4 py-2 border-b">{{ teacher.head_of_department ? 'Yes' : 'No' }}</td>
+                <td class="px-4 py-2 border-b space-x-2">
+                  <button
+                    @click.prevent="showEditModal(teacher)"
+                    class="px-3 py-1 rounded-md bg-blue-500 text-white text-xs hover:bg-blue-600"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    @click.prevent="showDeleteTeacherModal(teacher)"
+                    class="px-3 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+              <tr v-if="props.teachers.data.length === 0">
+                <td colspan="8" class="py-6 text-gray-500 text-sm">
+                  No teachers found.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       <!-- Pagination -->
       <div class="p-4 border-t bg-gray-50">
@@ -282,6 +285,7 @@ const deleteTeacher = () => {
                 <input
                   type="checkbox"
                   v-model="form.head_of_department"
+                  :checked="form.head_of_department"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
                 />
                 <span class="ml-2 text-sm text-gray-600">Head of Department</span>
