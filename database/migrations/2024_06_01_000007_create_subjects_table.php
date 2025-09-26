@@ -10,13 +10,14 @@ return new class extends Migration
     {
         Schema::create('subjects', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignId('academic_year_id')->constrained('academic_years')->onDelete('cascade');
-            $table->foreignId('semester_id')->constrained('semesters')->onDelete('cascade');
             $table->string('code');
             $table->string('name');
+            $table->string('level')->nullable();
+            $table->string('program')->nullable();
+            $table->string('semester')->nullable();
             $table->timestamps();
 
-            $table->unique(['academic_year_id', 'semester_id', 'code']);
+            $table->unique(['code']);
         });
     }
 

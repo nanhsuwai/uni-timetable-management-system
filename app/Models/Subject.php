@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Models;
-
+use App\Enums\LevelName;
+use App\Enums\ProgramOption;
+use App\Enums\SemesterName;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,28 +12,18 @@ class Subject extends Model
     use HasFactory;
 
     protected $fillable = [
-        'academic_year_id',
-        'semester_id',
         'code',
         'name',
         'status',
+        'level',
+        'program',
+        'semester',
     ];
-
-    /**
-     * Get the academic year that owns the subject.
-     */
-    public function academicYear()
-    {
-        return $this->belongsTo(AcademicYear::class);
-    }
-
-    /**
-     * Get the semester that owns the subject.
-     */
-    public function semester()
-    {
-        return $this->belongsTo(Semester::class);
-    }
+    protected $casts = [
+        'level' => LevelName::class,
+        'program' => ProgramOption::class,
+        'semester' => SemesterName::class,
+    ];
 
     /**
      * Get the teachers assigned to this subject.

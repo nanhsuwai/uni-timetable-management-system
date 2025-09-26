@@ -234,14 +234,15 @@ const toggleSemesterStatus = (semester) => {
 <template>
   <LayoutAuthenticated>
     <!-- Header -->
-    <SectionTitleLineWithButton :icon="mdiShapePlus" title="Academic Years">
+    
+
+    <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <!-- Filter -->
+       <SectionTitleLineWithButton :icon="mdiShapePlus" title="Academic Years" class="mx-auto">
       <PrimaryButton @click.prevent="showCreateModal">
         + Add Academic Year
       </PrimaryButton>
     </SectionTitleLineWithButton>
-
-    <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <!-- Filter -->
       <div class="mb-6">
         <InputLabel for="filterName" value="Search Academic Year" />
         <TextInput id="filterName" v-model="filterName" type="text" placeholder="e.g., 2024-2025" class="w-full" />

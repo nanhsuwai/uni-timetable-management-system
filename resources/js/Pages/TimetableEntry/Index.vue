@@ -286,9 +286,7 @@ const getDayName = (day) => {
     tuesday: "Tuesday",
     wednesday: "Wednesday",
     thursday: "Thursday",
-    friday: "Friday",
-    saturday: "Saturday",
-    sunday: "Sunday",
+    friday: "Friday"
   };
   return days[day] || day;
 };
@@ -337,8 +335,8 @@ const getDayName = (day) => {
             <option value="wednesday">Wednesday</option>
             <option value="thursday">Thursday</option>
             <option value="friday">Friday</option>
-            <option value="saturday">Saturday</option>
-            <option value="sunday">Sunday</option>
+          
+        
           </select>
         </div>
       </div>

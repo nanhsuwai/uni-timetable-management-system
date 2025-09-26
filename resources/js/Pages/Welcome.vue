@@ -11,7 +11,7 @@ import BaseButton from '@/Components/BaseButton.vue';
 import { mdiTable, mdiGrid } from '@mdi/js';
 
 // Tab state management
-const activeTab = ref('timetable');
+const activeTab = ref('welcome');
 
 // Animation states
 const isLoading = ref(true);
@@ -84,6 +84,7 @@ const filterLevel = ref(props.filters.filterLevel || "");
 const filterSection = ref(props.filters.filterSection || "");
 
 // Update when filters change
+
 watch(
     [filterYear, filterSemester, filterProgram, filterLevel, filterSection],
     ([newYear, newSemester, newProgram, newLevel, newSection]) => {
@@ -96,15 +97,17 @@ watch(
                 filterLevel: newLevel,
                 filterSection: newSection,
             },
-            { preserveState: true, replace: true, preserveScroll: true }
+            { preserveState: true, replace: true, preserveScroll: true, replace: false, }
         );
     }
 );
 
 // Computed for dependent selects
 const filteredPrograms = computed(() => {
-    if (!filterYear.value) return props.programs;
-    return props.programs.filter(p => p.academic_year_id == filterYear.value);
+   const programs = Array.isArray(props.programs) ? props.programs : [];
+   console.log("All Programs:", programs);
+    if (!filterYear.value) return programs;
+  return programs.filter(p => p.academic_year_id == filterYear.value);
 });
 
 const filteredLevels = computed(() => {
@@ -119,13 +122,12 @@ const filteredSections = computed(() => {
 
 // Time slots for the grid - using dynamic data from backend and filtering by academic year
 const timeSlots = computed(() => {
-    let slots = props.timeSlots;
-
+     let slots = Array.isArray(props.timeSlots) ? props.timeSlots : [];
     // Filter by academic year if selected
     if (filterYear.value) {
         slots = slots.filter(slot => slot.academic_year_id == filterYear.value);
     }
-
+console.log("Filtered Time Slots:", props.timeSlots);
     return slots.map(slot => ({
         start: slot.start_time,
         end: slot.end_time,

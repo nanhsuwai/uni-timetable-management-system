@@ -30,7 +30,7 @@ class IndexController extends Controller
             ;
 
         $levels = $query->whereIn('program_id', $academicPrograms->pluck('id'))->orderBy('name')->paginate(10)->withQueryString();
-        $classrooms = Classroom::where('status', 'active')->orderBy('room_no')->get();
+        $classrooms = Classroom::where('is_available', true)->orderBy('room_no')->get();
         return Inertia::render('AcademicLevel/Index', [
             'levels' => $levels,
             'academicPrograms' => $academicPrograms,

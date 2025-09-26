@@ -57,7 +57,7 @@ class IndexController extends Controller
             'levels' => AcademicLevel::select('id','name','program_id')->get(),
             'sections' => Section::select('id','name','level_id')->get(),
             'classrooms' => Classroom::select('id','room_no','section_id')->get(),
-            'subjects' => Subject::with('teachers:id,name')->select('id','name', 'academic_year_id', 'semester_id')->get(),
+            'subjects' => Subject::with('teachers:id,name')->select('id','name')->get(),
             'teachers' => Teacher::with('subjects:id,name')->select('id','name')->get(),
             'timeSlots' => TimeSlot::get(),
         ];

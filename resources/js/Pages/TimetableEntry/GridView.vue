@@ -227,7 +227,10 @@ const getClassroomDisplay = (entry) => {
 
 <template>
   <LayoutAuthenticated>
-    <SectionTitleLineWithButton
+
+
+    <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <SectionTitleLineWithButton
       :icon="mdiGrid"
       title="Timetable Grid View"
     >
@@ -238,8 +241,6 @@ const getClassroomDisplay = (entry) => {
         label="Table View"
       />
     </SectionTitleLineWithButton>
-
-    <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <!-- Debug Information (only show if there are issues) -->
       <div v-if="debugInfo.fridayEntries === 0 && filterYear" class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
         <h4 class="font-semibold text-yellow-800 mb-2">Debug Information:</h4>

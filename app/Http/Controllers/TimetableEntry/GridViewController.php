@@ -62,7 +62,7 @@ class GridViewController extends Controller
             'programs' => AcademicProgram::select('id','name','academic_year_id')->get(),
             'levels' => AcademicLevel::select('id','name','program_id')->get(),
             'sections' => Section::select('id','name','level_id')->get(),
-            'subjects' => Subject::select('id','name', 'academic_year_id', 'semester_id')->get(),
+            'subjects' => Subject::select('id','name')->get(),
             'teachers' => Teacher::select('id','name')->get(),
             'classrooms' => Classroom::select('id','room_no','section_id')->get(),
             'timeSlots' => TimeSlot::select('id','name','start_time','end_time','day_of_week','academic_year_id','is_lunch_period')->get(),

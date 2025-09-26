@@ -17,8 +17,6 @@ class AssignTeacherController extends Controller
     public function show(Subject $subject)
     {
         $subject->load([
-            'academicYear:id,name',
-            'semester:id,name',
             'teachers:id,name,code'
         ]);
 

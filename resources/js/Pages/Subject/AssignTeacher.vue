@@ -170,8 +170,16 @@ const goBack = () => {
             <div class="mt-1 text-lg font-semibold">{{ subject.name }}</div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Academic Year</label>
-            <div class="mt-1">{{ subject.academic_year?.name || 'N/A' }}</div>
+            <label class="block text-sm font-medium text-gray-700">Program</label>
+            <div class="mt-1">{{ subject.program || 'N/A' }}</div>
+          </div>
+           <div>
+            <label class="block text-sm font-medium text-gray-700">Semester</label>
+            <div class="mt-1">{{ subject.semester || 'N/A' }}</div>
+          </div>
+           <div>
+            <label class="block text-sm font-medium text-gray-700">Level</label>
+            <div class="mt-1">{{ subject.level || 'N/A' }}</div>
           </div>
         </div>
       </CardBox>

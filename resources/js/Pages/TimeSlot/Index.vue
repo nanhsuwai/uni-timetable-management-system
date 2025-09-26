@@ -276,10 +276,11 @@ const getTemplateDisplayName = (template) => {
 
 <template>
     <LayoutAuthenticated>
-        <SectionTitleLineWithButton :icon="mdiClockOutline" title="Time Slot Management" />
 
         <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Quick Actions -->
+        <SectionTitleLineWithButton :icon="mdiClockOutline" title="Time Slot Management" />
+
             <div class="mb-6 flex flex-wrap gap-4">
                 <PrimaryButton @click.prevent="showCreateModal" class="ml-0">
                     <span class="flex items-center gap-2">
