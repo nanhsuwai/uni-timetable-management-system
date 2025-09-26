@@ -15,6 +15,8 @@ class Teacher extends Model
         'email',
         'phone',
         'status',
+        'department',
+        'head_of_department',
     ];
 
     /**
@@ -23,5 +25,10 @@ class Teacher extends Model
     public function subjects()
     {
         return $this->belongsToMany(Subject::class, 'subject_teacher');
+    }
+
+    public function sections()
+    {
+        return $this->hasMany(Section::class, 'section_head_teacher_id');
     }
 }

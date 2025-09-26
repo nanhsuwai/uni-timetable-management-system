@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\AcademicYear;
+use App\Models\Semester;
 
 class TimeSlot extends Model
 {
@@ -13,6 +14,7 @@ class TimeSlot extends Model
     protected $fillable = [
         'name',
         'academic_year_id',
+        'semester',
         'time_slot_template_id',
         'day_of_week',
         'start_time',
@@ -27,6 +29,7 @@ class TimeSlot extends Model
     protected $casts = [
         'start_time' => 'datetime:H:i',
         'end_time' => 'datetime:H:i',
+        'semester' => \App\Enums\SemesterName::class,
     ];
 
     /**
@@ -60,4 +63,6 @@ class TimeSlot extends Model
     {
         return $this->hasMany(TimetableEntry::class);
     }
+
+
 }

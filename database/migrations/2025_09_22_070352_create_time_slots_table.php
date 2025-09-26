@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('academic_year_id');
+            $table->string('semester')->nullable();
             $table->string('day_of_week');
             $table->time('start_time');
             $table->time('end_time');
@@ -24,7 +25,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
-            $table->index(['academic_year_id', 'day_of_week']);
+            $table->index(['academic_year_id', 'semester', 'day_of_week']);
         });
     }
 

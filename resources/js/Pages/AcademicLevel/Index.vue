@@ -18,8 +18,10 @@ const props = defineProps({
   classrooms: { type: Array, default: () => [] },
   fixedLevels: { type: Array, default: () => [] },
   academicYears: { type: Array, default: () => [] },
+  teachers: { type: Array, default: () => [] },
+  assignTeachers: { type: Array, default: () => []},
+  assignClassrooms: { type: Array, default: () => [] }
 });
-
 // Filters
 const filterName = ref(props.filters.filterName || "");
 const filterProgram = ref(props.filters.filterProgram || "");
@@ -43,7 +45,22 @@ const form = useForm({
 const sectionForm = useForm({
   name: "",
   classroom_id: "",
+  section_head_teacher_id: "",
+  academic_level_id: "",
 });
+
+//teacher list not include assignteacher id in sections table
+const propsAvailableTeachers = computed(() => {
+  return props.teachers.filter(t1 => !props.assignTeachers.some(t2 => t2.id === t1.id && t2.id !== Number(sectionForm.section_head_teacher_id)) );
+});
+//classroom list not include assignclassroom id in sections table
+const propsAvailableClassrooms = computed(() => { 
+  return props.classrooms.filter(c1 => !props.assignClassrooms.some(c2 => c2.id === c1.id && c2.id !== Number(sectionForm.classroom_id)) );d
+});
+
+
+
+
 
 // State
 const confirmingModal = ref(false);
@@ -146,8 +163,15 @@ const closeSectionsModal = () => {
 
 const openEditSectionModal = (section) => {
   editingSection.value = section;
-  if (section) sectionForm.name = section.name;
-  else sectionForm.reset();
+  if (section) {
+    sectionForm.name = section.name;
+    sectionForm.classroom_id = section.classroom?.id?.toString() || "";
+    sectionForm.section_head_teacher_id = section.section_head_teacher_id?.toString() || "";
+    sectionForm.academic_level_id = section.academic_level_id;
+  } else {
+    sectionForm.academic_level_id = selectedLevel.value.id;
+    sectionForm.classroom_id = "";
+  }
   showingSectionFormModal.value = true;
 };
 
@@ -158,14 +182,10 @@ const closeEditSectionModal = () => {
 };
 
 const saveSection = () => {
+  sectionForm.academic_level_id = selectedLevel.value.id;
   const url = editingSection.value
-    ? route("academic_level:sections.update", {
-      academicLevel: selectedLevel.value.id,
-      section: editingSection.value.id,
-    })
-    : route("academic_level:sections.create", {
-      academicLevel: selectedLevel.value.id,
-    });
+    ? route("academic_level:section.update", { section: editingSection.value.id })
+    : route("academic_level:section.create");
 
   sectionForm.post(url, {
     preserveScroll: true,
@@ -177,7 +197,12 @@ const saveSection = () => {
         message: editingSection.value ? "✅ Section updated!" : "✅ Section created!",
       });
     },
-    onError: () => sectionForm.reset(),
+    onError: (error) =>{
+      toast.add({
+        message: error.general || "Please check the form for errors.",
+        type: "error",
+      });
+    },
   });
 };
 
@@ -187,29 +212,20 @@ const confirmDeleteSection = (section) => {
 
 const deleteSection = () => {
   if (!deletingSection.value) return;
-  router.delete(
-    route("academic_level:sections.delete", {
-      academicLevel: selectedLevel.value.id,
-      section: deletingSection.value.id,
-    }),
-    {
-      preserveScroll: true,
-      onSuccess: () => {
-        closeSectionsModal();
-        deletingSection.value = null;
-        router.reload({ only: ["levels"] });
-        toast.add({ message: "🗑️ Section deleted!" });
-      },
-    }
-  );
+  router.delete(route("academic_level:section.delete", { section: deletingSection.value.id }), {
+    preserveScroll: true,
+    onSuccess: () => {
+      closeSectionsModal();
+      deletingSection.value = null;
+      router.reload({ only: ["levels"] });
+      toast.add({ message: "🗑️ Section deleted!" });
+    },
+  });
 };
 
 const toggleSectionStatus = (section, newStatus) => {
   router.post(
-    route("academic_level:sections.toggle-status", {
-      academicLevel: selectedLevel.value.id,
-      section: section.id,
-    }),
+    route("academic_level:section.toggle-status", { section: section.id }),
     { status: newStatus },
     {
       preserveScroll: true,
@@ -389,6 +405,7 @@ const toggleSectionStatus = (section, newStatus) => {
                   <th class="px-4 py-3">Name</th>
                   <th class="px-4 py-3">Status</th>
                   <th class="px-4 py-3">Classroom</th>
+                  <th class="px-4 py-3">Section Head Teacher</th>
                   <th class="px-4 py-3">Actions</th>
                 </tr>
               </thead>
@@ -408,6 +425,9 @@ const toggleSectionStatus = (section, newStatus) => {
                   </td>
                   <td class="px-4 py-2 border-b">
                     {{ section.classroom ? section.classroom.room_no : '-' }}
+                  </td>
+                  <td class="px-4 py-2 border-b">
+                    {{ section.section_head_teacher ? section.section_head_teacher.name : '-' }}
                   </td>
                   <td class="px-4 py-2 border-b space-x-2">
                     <button
@@ -438,7 +458,7 @@ const toggleSectionStatus = (section, newStatus) => {
       </Modal>
 
       <!-- Section Form Modal -->
-      <Modal :show="showingSectionFormModal" @close="closeEditSectionModal">
+      <Modal :show="showingSectionFormModal" @close="closeEditSectionModal" class="z-10">
         <div class="p-6">
           <h2 class="text-lg font-semibold text-gray-900 mb-4">
             {{ editingSection ? "Edit Section" : "Add Section" }} - {{ selectedLevel?.name }}
@@ -455,12 +475,25 @@ const toggleSectionStatus = (section, newStatus) => {
               <select id="classroom_id" v-model="sectionForm.classroom_id"
                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <option value="">Select Classroom</option>
-                <option v-for="classroom in props.classrooms" :key="classroom.id" :value="classroom.id">
+                <option v-for="classroom in propsAvailableClassrooms" :key="classroom.id" :value="classroom.id">
                   {{ classroom.room_no }}
                 </option>
               </select>
               <InputError :message="sectionForm.errors.classroom_id" />
             </div>
+
+            <div>
+              <InputLabel for="section_head_teacher_id" value="Section Head Teacher" />
+              <select id="section_head_teacher_id" v-model="sectionForm.section_head_teacher_id"
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">Select Teacher</option>
+                <option v-for="teacher in propsAvailableTeachers" :key="teacher.id" :value="String(teacher.id)">
+                  {{ teacher.name }}
+                </option>
+              </select>
+              <InputError :message="sectionForm.errors.section_head_teacher_id" />
+            </div>
+           
 
           </div>
           <div class="mt-6 flex justify-end space-x-2">

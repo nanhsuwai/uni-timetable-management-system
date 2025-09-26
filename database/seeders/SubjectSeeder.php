@@ -1,0 +1,150 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use App\Enums\ProgramOption;
+use App\Enums\LevelName;
+use App\Enums\SemesterName;
+
+class SubjectSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $subjects = [
+            ProgramOption::ComputerFoundation->value => [
+                LevelName::FirstYear->value => [
+                    SemesterName::FirstSemester->value => [
+                        ['code' => 'CST101', 'name' => 'Computer Fundamentals'],
+                        ['code' => 'CST102', 'name' => 'Programming Basics'],
+                    ],
+                    SemesterName::SecondSemester->value => [
+                        ['code' => 'CST201', 'name' => 'Data Structures'],
+                        ['code' => 'CST202', 'name' => 'Web Development'],
+                    ],
+                ],
+            ],
+            ProgramOption::ComputerTechnology->value => [
+                LevelName::SecondYear->value => [
+                    SemesterName::FirstSemester->value => [
+                        ['code' => 'CT301', 'name' => 'Data Structures'],
+                        ['code' => 'CT302', 'name' => 'Database Systems'],
+                    ],
+                    SemesterName::SecondSemester->value => [
+                        ['code' => 'CT401', 'name' => 'Algorithms'],
+                        ['code' => 'CT402', 'name' => 'Operating Systems'],
+                    ],
+                ],
+                LevelName::ThirdYear->value => [
+                    SemesterName::FirstSemester->value => [
+                        ['code' => 'CT501', 'name' => 'Software Engineering'],
+                        ['code' => 'CT502', 'name' => 'Computer Networks'],
+                    ],
+                    SemesterName::SecondSemester->value => [
+                        ['code' => 'CT601', 'name' => 'Artificial Intelligence'],
+                        ['code' => 'CT602', 'name' => 'Cyber Security'],
+                    ],
+                ],
+                LevelName::FourthYear->value => [
+                    SemesterName::FirstSemester->value => [
+                        ['code' => 'CT701', 'name' => 'Project Management'],
+                        ['code' => 'CT702', 'name' => 'Cloud Computing'],
+                    ],
+                    SemesterName::SecondSemester->value => [
+                        ['code' => 'CT801', 'name' => 'Capstone Project'],
+                        ['code' => 'CT802', 'name' => 'Internship'],
+                    ],
+                ],
+            ],
+            ProgramOption::ComputerScience->value => [
+                LevelName::FirstYear->value => [
+                    SemesterName::FirstSemester->value => [
+                        ['code' => 'CS101', 'name' => 'Introduction to Computer Science'],
+                        ['code' => 'CS102', 'name' => 'Calculus I'],
+                    ],
+                    SemesterName::SecondSemester->value => [
+                        ['code' => 'CS201', 'name' => 'Object Oriented Programming'],
+                        ['code' => 'CS202', 'name' => 'Linear Algebra'],
+                    ],
+                ],
+                LevelName::SecondYear->value => [
+                    SemesterName::FirstSemester->value => [
+                        ['code' => 'CS301', 'name' => 'Data Structures and Algorithms'],
+                        ['code' => 'CS302', 'name' => 'Database Management'],
+                    ],
+                    SemesterName::SecondSemester->value => [
+                        ['code' => 'CS401', 'name' => 'Computer Organization'],
+                        ['code' => 'CS402', 'name' => 'Statistics'],
+                    ],
+                ],
+                LevelName::ThirdYear->value => [
+                    SemesterName::FirstSemester->value => [
+                        ['code' => 'CS501', 'name' => 'Software Engineering'],
+                        ['code' => 'CS502', 'name' => 'Computer Networks'],
+                    ],
+                    SemesterName::SecondSemester->value => [
+                        ['code' => 'CS601', 'name' => 'Machine Learning'],
+                        ['code' => 'CS602', 'name' => 'Web Technologies'],
+                    ],
+                ],
+                LevelName::FourthYear->value => [
+                    SemesterName::FirstSemester->value => [
+                        ['code' => 'CS701', 'name' => 'Big Data Analytics'],
+                        ['code' => 'CS702', 'name' => 'Mobile Computing'],
+                    ],
+                    SemesterName::SecondSemester->value => [
+                        ['code' => 'CS801', 'name' => 'Thesis'],
+                        ['code' => 'CS802', 'name' => 'Internship'],
+                    ],
+                ],
+            ],
+            ProgramOption::Master->value => [
+                LevelName::Master->value => [
+                    SemesterName::FirstSemester->value => [
+                        ['code' => 'MS101', 'name' => 'Advanced Algorithms'],
+                        ['code' => 'MS102', 'name' => 'Research Methodology'],
+                    ],
+                    SemesterName::SecondSemester->value => [
+                        ['code' => 'MS201', 'name' => 'Thesis Work'],
+                        ['code' => 'MS202', 'name' => 'Seminar'],
+                    ],
+                ],
+            ],
+        ];
+
+        $createdSubjects = [];
+
+        foreach ($subjects as $program => $levels) {
+            foreach ($levels as $level => $semesters) {
+                foreach ($semesters as $semester => $subjectList) {
+                    foreach ($subjectList as $subject) {
+                        $createdSubject = \App\Models\Subject::firstOrCreate([
+                            'code' => $subject['code'],
+                        ], [
+                            'name' => $subject['name'],
+                            'status' => 'active',
+                            'level' => $level,
+                            'program' => $program,
+                            'semester' => $semester,
+                        ]);
+                        $createdSubjects[] = $createdSubject;
+                    }
+                }
+            }
+        }
+
+        // Assign teachers to subjects
+        $teachers = \App\Models\Teacher::all();
+        foreach ($createdSubjects as $subject) {
+            // Assign random teachers to each subject (1-3 teachers per subject)
+            $assignedTeachers = $teachers->random(rand(1, 3));
+            $subject->teachers()->syncWithoutDetaching($assignedTeachers->pluck('id')->toArray());
+        }
+    }
+}

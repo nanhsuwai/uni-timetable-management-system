@@ -19,6 +19,7 @@ const props = defineProps({
   sections: { type: Object, default: () => ({ data: [], meta: {}, links: [] }) },
   filters: { type: Object, default: () => ({}) },
   academicLevels: { type: Array, default: () => [] },
+  teachers: { type: Array, default: () => [] },
 });
 
 // Filters
@@ -34,7 +35,7 @@ watch([filterName, filterLevel], ([newName, newLevel]) => {
 });
 
 // Form
-const form = useForm({ level_id: "", name: "" });
+const form = useForm({ level_id: "", name: "", section_head_teacher_id: "" });
 const confirmingSectionModal = ref(false);
 const editingSection = ref(null);
 const deletingSection = ref(null);
@@ -47,8 +48,15 @@ const showCreateModal = () => {
   if (filterLevel.value) {
     form.level_id = filterLevel.value;
   }
+  form.section_head_teacher_id = "";
 };
-const showEditModal = (section) => { editingSection.value = section; form.level_id = section.level_id; form.name = section.name; confirmingSectionModal.value = true; };
+const showEditModal = (section) => { 
+  editingSection.value = section; 
+  form.level_id = section.level_id; 
+  form.name = section.name; 
+  form.section_head_teacher_id = section.section_head_teacher_id || "";
+  confirmingSectionModal.value = true; 
+};
 const closeModal = () => { confirmingSectionModal.value = false; form.reset(); editingSection.value = null; };
 
 // CRUD
@@ -60,10 +68,10 @@ const createOrUpdateSection = () => {
   form.post(url, {
     preserveScroll: true,
     onSuccess: () => {
-      closeModal();
+      // closeModal();
       toast.add({ message: editingSection.value ? "Section updated!" : "Section created!" });
     },
-    onError: () => form.reset(),
+    onError: () => { toast.add({ message: "Please check the form for errors.", type: "error" }); },
   });
 };
 
@@ -143,6 +151,7 @@ const getLevelName = (levelId) => {
                 <th class="px-3 py-2">#</th>
                 <th class="px-3 py-2">Name</th>
                 <th class="px-3 py-2">Academic Level</th>
+                <th class="px-3 py-2">Section Head Teacher</th>
                 <th class="px-3 py-2">Status</th>
                 <th class="px-3 py-2">Actions</th>
               </tr>
@@ -152,6 +161,7 @@ const getLevelName = (levelId) => {
                 <td class="px-3 py-2">{{ index + 1 + (props.sections.per_page * (props.sections.current_page - 1)) }}</td>
                 <td class="px-3 py-2">{{ section.name }}</td>
                 <td class="px-3 py-2">{{ section.academic_level?.name }}</td>
+                <td class="px-3 py-2">{{ section.section_head_teacher ? section.section_head_teacher.name : 'Not Assigned' }}</td>
                 <td class="px-3 py-2">
                   <span :class="section.status === 'active' ? 'text-green-600 font-medium' : 'text-red-600'">
                     {{ section.status === 'active' ? 'Active' : 'Inactive' }}
@@ -178,7 +188,7 @@ const getLevelName = (levelId) => {
                 </td>
               </tr>
               <tr v-if="props.sections.data.length === 0">
-                <td colspan="5" class="py-6 text-center text-gray-500">No sections found.</td>
+                <td colspan="6" class="py-6 text-center text-gray-500">No sections found.</td>
               </tr>
             </tbody>
           </table>
@@ -207,10 +217,18 @@ const getLevelName = (levelId) => {
             <TextInput id="name" v-model="form.name" type="text" />
             <InputError :message="form.errors.name" />
           </div>
+          <div class="mt-4">
+            <InputLabel for="section_head_teacher_id" value="Section Head Teacher" />
+            <select id="section_head_teacher_id" v-model="form.section_head_teacher_id" class="w-full border-gray-300 rounded">
+              <option value="">No Teacher Assigned</option>
+              <option v-for="teacher in props.teachers" :key="teacher.id" :value="teacher.id">{{ teacher.name }}</option>
+            </select>
+            <InputError :message="form.errors.section_head_teacher_id" />
+          </div>
           <div class="mt-6 flex justify-end space-x-2">
             <SecondaryButton @click.prevent="closeModal">Cancel</SecondaryButton>
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing" @click.prevent="createOrUpdateSection">
-              {{ editingSection ? 'Update' : 'Add' }}
+              {{ editingSection ? 'Updatet' : 'Add' }}
             </PrimaryButton>
           </div>
         </div>

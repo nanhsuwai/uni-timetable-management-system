@@ -24,6 +24,17 @@ const props = defineProps({
   },
 });
 
+// Search functionality
+const searchQuery = ref('');
+const filteredAvailableTeachers = computed(() => {
+  if (!searchQuery.value) return props.availableTeachers;
+  const query = searchQuery.value.toLowerCase();
+  return props.availableTeachers.filter(teacher =>
+    teacher.name.toLowerCase().includes(query) ||
+    (teacher.code && teacher.code.toLowerCase().includes(query))
+  );
+});
+
 // Form for assigning teachers
 const form = useForm({
   teacher_ids: props.assignedTeachers.map(teacher => teacher.id),
@@ -88,12 +99,20 @@ const goBack = () => {
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Available Teachers -->
         <CardBox title="Available Teachers" icon="mdiAccountPlus">
-          <div v-if="availableTeachers.length === 0" class="text-gray-500 text-center py-4">
-            No teachers available for assignment.
+          <div class="mb-4">
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search teachers by name or code..."
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
-          <div v-else class="space-y-2">
+          <div v-if="filteredAvailableTeachers.length === 0" class="text-gray-500 text-center py-4">
+            {{ searchQuery ? 'No matching teachers found.' : 'No teachers available for assignment.' }}
+          </div>
+          <div v-else class="space-y-2 max-h-96 overflow-y-auto">
             <div
-              v-for="teacher in availableTeachers"
+              v-for="teacher in filteredAvailableTeachers"
               :key="teacher.id"
               class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
             >
@@ -118,7 +137,7 @@ const goBack = () => {
           <div v-if="assignedTeachers.length === 0" class="text-gray-500 text-center py-4">
             No teachers assigned to this subject yet.
           </div>
-          <div v-else class="space-y-2">
+          <div v-else class="space-y-2 max-h-96 overflow-y-auto">
             <div
               v-for="teacher in assignedTeachers"
               :key="teacher.id"

@@ -1,14 +1,23 @@
 <script setup>
+import { usePage } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
+import toast from '../Stores/toast';
 
     const props = defineProps({
-        message: String,
+        type: {
+          type: String,
+          default: toast.type ?? ''
+        },
+        message: {
+          type: String,
+          default: toast.message ?? ''
+        },
         duration: {
             type: Number,
             default: 3000
         }
     })
-    
+
     onMounted( () => {
         setTimeout(() => emit('remove'), props.duration);
     })
@@ -19,14 +28,24 @@ import { onMounted } from 'vue';
 <template>
     <div
         class="bg-white border border-slate-300  shadow-lg rounded-md gap-4 p-4 flex flex-row items-center justify-center">
-        <section class="w-6 h-full flex flex-col items-center justify-start text-green-600 font-extrabold">
-            <font-awesome-icon icon="fa-regular fa-circle-check" bounce />
-        </section>
-        <section class="h-full flex flex-col items-start justify-end gap-1">
-            <span class="text-base font-semibold text-zinc-800 antialiased">{{ props.message }}</span>
-            <!-- <h1 class="text-base font-semibold text-zinc-800 antialiased">{{ props.message }}</h1> -->
-            <!-- <p class="text-sm font-medium text-white antialiased">Anyone with a link can now view this file</p> -->
-        </section>
+        <template v-if="props.type == 'error'">
+          <section class="w-6 h-full flex flex-col items-center justify-start text-red-600 font-extrabold">
+              <font-awesome-icon icon="fa-regular fa-circle-check" bounce />
+          </section>
+          <section class="h-full flex flex-col items-start justify-end gap-1">
+              <span class="text-base font-semibold text-red-600 antialiased">{{ props.message }}</span>
+          </section>
+        </template>
+
+        <template v-else>
+          <section class="w-6 h-full flex flex-col items-center justify-start text-green-600 font-extrabold">
+              <font-awesome-icon icon="fa-regular fa-circle-check" bounce />
+          </section>
+          <section class="h-full flex flex-col items-start justify-end gap-1">
+              <span class="text-base font-semibold text-green-600 antialiased">{{ props.message }}</span>
+          </section>
+        </template>
+
         <section class="w-5 h-full flex flex-col items-center justify-start">
             <svg @click="emit('remove')" width="100%" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="cursor-pointer">
                 <path

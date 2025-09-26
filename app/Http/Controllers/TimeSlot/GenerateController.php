@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\TimeSlot;
 use App\Models\AcademicYear;
 use App\Models\TimeSlotTemplate;
+use App\Enums\SemesterName;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,26 +16,34 @@ class GenerateController extends Controller
     {
         $request->validate([
             'academic_year_id' => 'required|exists:academic_years,id',
+            'semester' => 'required|in:' . implode(',', array_column(SemesterName::cases(), 'value')),
             'clear_existing' => 'boolean',
         ]);
 
         $academicYearId = $request->academic_year_id;
 
-        // Check if time slots already exist for this academic year
-        $existingSlots = TimeSlot::where('academic_year_id', $academicYearId)->count();
+        // Check if time slots already exist for this academic year and semester
+        $existingSlotsQuery = TimeSlot::where('academic_year_id', $academicYearId);
+        if ($request->semester) {
+            $existingSlotsQuery->where('semester', $request->semester);
+        }
+        $existingSlots = $existingSlotsQuery->count();
 
         if ($existingSlots > 0 && !$request->clear_existing) {
             return back()->withErrors([
                 'generation' => 'Time slots already exist for this academic year. Check "Clear existing slots" to replace them.'
             ]);
         }
-
         try {
             DB::beginTransaction();
 
             // Clear existing slots if requested
             if ($request->clear_existing && $existingSlots > 0) {
-                TimeSlot::where('academic_year_id', $academicYearId)->delete();
+                $deleteQuery = TimeSlot::where('academic_year_id', $academicYearId);
+                if ($request->semester) {
+                    $deleteQuery->where('semester', $request->semester);
+                }
+                $deleteQuery->delete();
             }
 
             // Get time slot templates from database
@@ -57,6 +66,7 @@ class GenerateController extends Controller
                     TimeSlot::create([
                         'name' => $template->name,
                         'academic_year_id' => $academicYearId,
+                        'semester' => $request->semester,
                         'day_of_week' => $day,
                         'start_time' => $template->start_time,
                         'end_time' => $template->end_time,

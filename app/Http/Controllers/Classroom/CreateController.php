@@ -10,6 +10,7 @@ class CreateController extends Controller
 {
     public function __invoke(Request $request)
     {
+        dd($request->room_no);
         $request->validate([
             'room_no' => 'required|string|max:255',
             // section_id is optional now

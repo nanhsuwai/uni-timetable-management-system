@@ -31,6 +31,12 @@ Route::prefix('academic-level')->name('academic_level:')->group(function () {
         Route::delete('/delete/{section}', SectionDeleteController::class)->name('delete');
     });
 
+    // General section routes (for UI in academic level page)
+    Route::post('/sections/create', SectionCreateController::class)->name('section.create');
+    Route::post('/sections/update/{section}', SectionUpdateController::class)->name('section.update');
+    Route::post('/sections/toggle-status/{section}', [SectionStatusController::class, 'toggle'])->name('section.toggle-status');
+    Route::delete('/sections/delete/{section}', SectionDeleteController::class)->name('section.delete');
+
     // Classroom management for each academic level
     Route::prefix('{academicLevel}/classrooms')->name('classrooms.')->group(function () {
         Route::get('/', ClassroomIndexController::class)->name('all');

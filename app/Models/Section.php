@@ -14,6 +14,7 @@ class Section extends Model
         'level_id',
         'name',
         'status',
+        'section_head_teacher_id',
     ];
 
     public function academicLevel()
@@ -28,5 +29,10 @@ class Section extends Model
     public function classroom()
     {
         return $this->hasOne(Classroom::class, 'section_id');
+    }
+
+    public function sectionHeadTeacher()
+    {
+        return $this->belongsTo(Teacher::class, 'section_head_teacher_id');
     }
 }

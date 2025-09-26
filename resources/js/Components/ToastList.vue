@@ -5,6 +5,7 @@
     import toast from "@/Stores/toast"
 
     const props = defineProps({
+        type: String,
         message: String
     })
 
@@ -16,6 +17,7 @@
         router.on('finish', () => {
             if(usePage().props.value?.toast) {
                 toast.add({
+                    type: page.props.value.toast,
                     message: page.props.value.toast
                 })
             }
@@ -25,20 +27,21 @@
     const remove = (index) => {
         toast.remove(index)
     }
-    
+
 
 </script>
 <template>
-   <TransitionGroup 
+   <TransitionGroup
    tag="div"
    enter-from-class="translate-x-full opacity-0"
    enter-active-class="duration-500"
    leave-active-class="duration-500"
    leave-to-class="translate-x-full opacity-0"
-    class="fixed top-4 right-4 z-50 w-max h-auto space-y-5">
+    class="fixed top-4 right-4 z-[100] w-max h-auto space-y-5">
         <ToastItem v-for="(item,index) in items"
             :key="item.key"
-            :message="item.message" 
+            :type="item.type"
+            :message="item.message"
             :duration="3000"
             @remove="remove(index)"
         />

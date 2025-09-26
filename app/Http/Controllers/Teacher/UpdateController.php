@@ -15,6 +15,8 @@ class UpdateController extends Controller
             'name' => 'required|string',
             'email' => 'nullable|email|unique:teachers,email,' . $teacher->id,
             'phone' => 'nullable|string',
+            'department' => 'nullable|string',
+            'head_of_department' => 'boolean',
         ]);
 
         $teacher->update([
@@ -22,6 +24,8 @@ class UpdateController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
+            'department' => $request->department,
+            'head_of_department' => $request->head_of_department ?? false,
         ]);
 
         return to_route('teacher:all')->with('toast', 'Teacher updated successfully!');

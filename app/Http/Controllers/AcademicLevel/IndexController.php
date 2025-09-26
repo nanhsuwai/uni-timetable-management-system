@@ -8,6 +8,7 @@ use App\Models\AcademicLevel;
 use App\Models\AcademicProgram;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,7 +16,7 @@ class IndexController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $query = AcademicLevel::with('academicProgram', 'sections', 'sections.classroom');
+        $query = AcademicLevel::with('academicProgram', 'sections', 'sections.classroom', 'sections.sectionHeadTeacher');
 
         if ($request->has('filterName') && $request->filterName != '') {
             $query->where('name', 'like', '%' . $request->filterName . '%');
@@ -31,12 +32,22 @@ class IndexController extends Controller
 ;
 
         $levels = $query->whereIn('program_id', $academicPrograms->pluck('id'))->orderBy('name')->paginate(10)->withQueryString();
-        $classrooms = Classroom::where('is_available', true)->orderBy('room_no')->get();
+        $classrooms = Classroom::orderBy('room_no')->get();
+        $assignClassrooms = Classroom::where('is_available', false)->orderBy('room_no')->get();
+        $teachers = Teacher::where('status', 'active')->orderBy('name')->get();
+        $assignTeachers = Teacher::whereIn('id', function ($query) {
+            $query->select('section_head_teacher_id')
+                ->from('sections')
+                ->whereNotNull('section_head_teacher_id');
+        })->orderBy('name')->get();
         return Inertia::render('AcademicLevel/Index', [
             'levels' => $levels,
+            'assignClassrooms' => $assignClassrooms,
+            'assignTeachers' => $assignTeachers,
             'academicYears' => AcademicYear::select('id','name')->get(),
             'academicPrograms' => $academicPrograms,
             'classrooms' => $classrooms,
+            'teachers' => $teachers,
             'filters' => $request->only('filterName', 'filterProgram'),
             'fixedLevels' => LevelName::cases(),
         ]);

@@ -39,6 +39,8 @@ const form = useForm({
   name: "",
   email: "",
   phone: "",
+  department: "",
+  head_of_department: false,
 });
 
 const confirmingTeacherCreation = ref(false);
@@ -58,6 +60,8 @@ const showEditModal = (teacher) => {
   form.name = teacher.name;
   form.email = teacher.email;
   form.phone = teacher.phone;
+  form.department = teacher.department;
+  form.head_of_department = teacher.head_of_department;
   confirmingTeacherCreation.value = true;
 };
 
@@ -168,6 +172,8 @@ const deleteTeacher = () => {
               <th class="px-4 py-3">Name</th>
               <th class="px-4 py-3">Email</th>
               <th class="px-4 py-3">Phone</th>
+              <th class="px-4 py-3">Department</th>
+              <th class="px-4 py-3">Head of Department</th>
               <th class="px-4 py-3">Actions</th>
             </tr>
           </thead>
@@ -184,6 +190,8 @@ const deleteTeacher = () => {
               <td class="px-4 py-2 border-b">{{ teacher.name }}</td>
               <td class="px-4 py-2 border-b">{{ teacher.email }}</td>
               <td class="px-4 py-2 border-b">{{ teacher.phone }}</td>
+              <td class="px-4 py-2 border-b">{{ teacher.department }}</td>
+              <td class="px-4 py-2 border-b">{{ teacher.head_of_department ? 'Yes' : 'No' }}</td>
               <td class="px-4 py-2 border-b space-x-2">
                 <button
                   @click.prevent="showEditModal(teacher)"
@@ -200,7 +208,7 @@ const deleteTeacher = () => {
               </td>
             </tr>
             <tr v-if="props.teachers.data.length === 0">
-              <td colspan="6" class="py-6 text-gray-500 text-sm">
+              <td colspan="8" class="py-6 text-gray-500 text-sm">
                 No teachers found.
               </td>
             </tr>
@@ -258,6 +266,27 @@ const deleteTeacher = () => {
                 class="w-full"
               />
               <InputError :message="form.errors.phone" />
+            </div>
+            <div>
+              <InputLabel for="department" value="Department" />
+              <TextInput
+                id="department"
+                v-model="form.department"
+                type="text"
+                class="w-full"
+              />
+              <InputError :message="form.errors.department" />
+            </div>
+            <div>
+              <label class="flex items-center">
+                <input
+                  type="checkbox"
+                  v-model="form.head_of_department"
+                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                />
+                <span class="ml-2 text-sm text-gray-600">Head of Department</span>
+              </label>
+              <InputError :message="form.errors.head_of_department" />
             </div>
           </div>
           <div class="mt-6 flex justify-end space-x-2">

@@ -30,6 +30,10 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    semesters: {
+        type: Array,
+        default: () => [],
+    },
     filters: {
         type: Object,
         default: () => ({}),
@@ -40,11 +44,12 @@ const props = defineProps({
 const filterName = ref(props.filters.filterName || "");
 const filterDay = ref(props.filters.filterDay || "");
 const filterAcademicYear = ref(props.filters.filterAcademicYear || "");
+const filterSemester = ref(props.filters.filterSemester || "");
 
-watch([filterName, filterDay, filterAcademicYear], ([newName, newDay, newAcademicYear]) => {
+watch([filterName, filterDay, filterAcademicYear, filterSemester], ([newName, newDay, newAcademicYear, newSemester]) => {
     router.get(
         route("time-slot:all"),
-        { filterName: newName, filterDay: newDay, filterAcademicYear: newAcademicYear },
+        { filterName: newName, filterDay: newDay, filterAcademicYear: newAcademicYear, filterSemester: newSemester },
         { preserveState: true, replace: true }
     );
 });
@@ -53,6 +58,7 @@ watch([filterName, filterDay, filterAcademicYear], ([newName, newDay, newAcademi
 const form = useForm({
     name: "",
     academic_year_id: "",
+    semester_id: "",
     day_of_week: "",
     start_time: "",
     end_time: "",
@@ -70,6 +76,7 @@ const templateForm = useForm({
 const generateForm = useForm({
     academic_year_id: "",
     clear_existing: false,
+    semester: "",
 });
 
 // Modals & States
@@ -94,6 +101,7 @@ const showEditModal = (timeSlot) => {
     editingTimeSlot.value = timeSlot;
     form.name = timeSlot.name;
     form.academic_year_id = timeSlot.academic_year_id;
+    form.semester_id = timeSlot.semester_id || "";
     form.day_of_week = timeSlot.day_of_week;
     form.start_time = timeSlot.start_time;
     form.end_time = timeSlot.end_time;
@@ -314,7 +322,7 @@ const getTemplateDisplayName = (template) => {
             </div>
 
             <!-- Filters -->
-            <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <InputLabel for="filterName" value="Filter by Name" />
                     <TextInput id="filterName" v-model="filterName" type="text" placeholder="Search time slots"
@@ -336,6 +344,14 @@ const getTemplateDisplayName = (template) => {
                     <InputLabel for="filterAcademicYear" value="Filter by Academic Year" />
                     <TextInput id="filterAcademicYear" v-model="filterAcademicYear" type="text"
                         placeholder="Search by academic year" class="w-full" />
+                </div>
+                <div>
+                    <InputLabel for="filterSemester" value="Filter by Semester" />
+                    <select id="filterSemester" v-model="filterSemester"
+                        class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                        <option value="">All Semesters</option>
+                        <option v-for="s in semesters" :key="s" :value="s">{{ s }}</option>
+                    </select>
                 </div>
             </div>
 
@@ -384,6 +400,7 @@ const getTemplateDisplayName = (template) => {
                             <th>ID</th>
                             <th>Name</th>
                             <th>Academic Year</th>
+                            <th>Semester</th>
                             <th>Day</th>
                             <th>Start Time</th>
                             <th>End Time</th>
@@ -397,6 +414,7 @@ const getTemplateDisplayName = (template) => {
                             <td>{{ index + 1 + (props.timeSlots.per_page * (props.timeSlots.current_page - 1)) }}</td>
                             <td>{{ timeSlot.name }}</td>
                             <td>{{ timeSlot.academic_year?.name || 'N/A' }}</td>
+                            <td>{{ timeSlot.semester || 'N/A' }}</td>
                             <td>{{ getDayName(timeSlot.day_of_week) }}</td>
                             <td>{{ formatTime(timeSlot.start_time) }}</td>
                             <td>{{ formatTime(timeSlot.end_time) }}</td>
@@ -460,6 +478,18 @@ const getTemplateDisplayName = (template) => {
                                 <option v-for="y in academicYears" :key="y.id" :value="y.id">{{ y.name }}</option>
                             </select>
                             <InputError :message="form.errors.academic_year_id" />
+                        </div>
+
+
+                        <!-- Semester -->
+                        <div class="col-span-2">
+                            <InputLabel for="semester_id" value="Semester (Optional)" />
+                            <select id="semester_id" v-model="form.semester_id"
+                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400">
+                                <option value="">Select Semester</option>
+                                <option v-for="s in semesters" :key="s" :value="s">{{ s }}</option>
+                            </select>
+                            <InputError :message="form.errors.semester" />
                         </div>
 
                         <!-- Day of Week -->
@@ -642,7 +672,16 @@ const getTemplateDisplayName = (template) => {
                             </select>
                             <InputError :message="generateForm.errors.academic_year_id" />
                         </div>
-
+                        <!-- semester selection -->
+                        <div>
+                            <InputLabel for="generate_semester_id" value="Semester (Optional)" />
+                            <select id="generate_semester_id" v-model="generateForm.semester"
+                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400">
+                                <option value="">Select Semester</option>
+                                <option v-for="s in semesters" :key="s" :value="s">{{ s }}</option>
+                            </select>
+                            <InputError :message="generateForm.errors.semester" />
+                        </div>
                         <!-- Clear Existing Checkbox -->
                         <div class="flex items-center">
                             <input id="clear_existing" type="checkbox" v-model="generateForm.clear_existing"
