@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Models\Type;
 use App\Models\User;
+use App\Models\Permission;
 use Inertia\Inertia;
 
 use Illuminate\Http\Request;
@@ -27,11 +28,14 @@ class IndexController extends Controller
                 ->paginate(10);
         $users = UserResource::collection($data);
 
+        $permissions = Permission::select('id', 'name', 'module_name')->get()->groupBy('module_name');
+
         return Inertia::render('User/Index',[
             'users' => $users,
             'types' => $types,
             'userTypes' => Type::select('code', 'name')->get(),
             'filters' => $request->only('filterUsername', 'filterType'),
+            'permissions' => $permissions,
         ]);
     }
 }

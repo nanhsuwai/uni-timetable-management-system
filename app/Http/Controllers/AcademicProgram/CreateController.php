@@ -25,6 +25,12 @@ class CreateController extends Controller
                     'academic_year_id' => $request->academic_year_id,
                     'name' => $name,
                     'status' => $request->status,
+                    'program_type' => match ($name) {
+                        'Computer Foundation' => 'CST',
+                        'Computer Technology' => 'CT',
+                        'Computer Science' => 'CS',
+                        'Master' => 'Master'
+                    },
                 ]);
                 $createdCount++;
             }

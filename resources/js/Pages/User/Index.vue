@@ -29,39 +29,19 @@ const props = defineProps({
     type: Object,
     default: {},
   },
-  granted_systems: {
-    type: Object,
-    default: {},
-  },
+
   filters: {
     type: Object,
     default: {},
   },
-  nrc_regions: {
-    type: Object,
-    default: {},
-  },
-  nrc_citizens: {
-    type: Object,
-    default: {},
-  },
-  nrc_townships: {
-    type: Object,
-    default: {},
-  },
-  positions: {
-    type: Object,
-    default: {},
-  },
-  ministries: {
-    type: Object,
-    default: {},
-  },
-  departments: {
-    type: Object,
-    default: {},
-  },
+
+
+
   userTypes: {
+    type: Object,
+    default: {}
+  },
+  permissions: {
     type: Object,
     default: {}
   }
@@ -339,10 +319,12 @@ watch(selectedMinistry, (newValue) => {
 
 const allChecked = computed({
   get() {
-    permissionForm.checkedPermission.length == props.granted_systems.length
+    const allPermissionIds = Object.values(props.permissions).flat().map(p => p.id);
+    return permissionForm.checkedPermission.length === allPermissionIds.length;
   },
   set(value) {
-     permissionForm.checkedPermission = value ? props.granted_systems.map(granted_system => granted_system.id) : [];
+    const allPermissionIds = Object.values(props.permissions).flat().map(p => p.id);
+    permissionForm.checkedPermission = value ? allPermissionIds : [];
   }
 })
 
@@ -471,45 +453,38 @@ const clear = () => {
           </div>
 
           <Modal :show="showPermissionModal" @close="closePermissionUpdateModal">
-            <div class="p-6">
+            <div class="p-6 max-h-96 overflow-y-auto">
               <h2 class="w-full text-lg font-medium text-gray-900 text-center">
                 Update Permission
               </h2>
               <hr />
 
-              <div class="mt-6 flex items-center">
+              <div class="mt-6 flex items-center justify-between">
                 <h3 class="pr-4">
                   Username:
                   <span class="font-extrabold">{{ selectedPermissionUser.name }}</span>
                 </h3>
-                <!-- <input type="checkbox" v-model="allChecked" /> &nbsp; Check All -->
+                <label class="flex items-center">
+                  <input type="checkbox" v-model="allChecked" class="mr-2" />
+                  Check All
+                </label>
               </div>
-              <div class="">
-                <ul>
-                  <li
-                    v-for="granted_system in props.granted_systems"
-                    :key="granted_system.id"
-                    class="grid grid-cols-2 gap-2"
-                  >
-                    Granted System : {{ granted_system.name }} <br />
-                    <ul
-                      v-for="granted_permission in granted_system.permissions"
-                      :key="granted_permission.id"
-                    >
-                      <li>
-                        <input
-                          v-model="permissionForm.checkedPermission"
-                          :value="granted_permission.id"
-                          type="checkbox"
-                          :name="granted_permission.name"
-                        />
-                        &nbsp;
-                        <span>{{ granted_permission.name }}</span>
-                      </li>
-                    </ul>
-                    <div class="my-4"></div>
-                  </li>
-                </ul>
+              <div class="mt-4">
+                <div v-for="(permissions, module) in props.permissions" :key="module" class="mb-4">
+                  <h4 class="font-semibold text-md mb-2">{{ module }}</h4>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <label v-for="permission in permissions" :key="permission.id" class="flex items-center">
+                      <input
+                        v-model="permissionForm.checkedPermission"
+                        :value="permission.id"
+                        type="checkbox"
+                        :name="permission.name"
+                        class="mr-2"
+                      />
+                      <span class="text-sm">{{ permission.name }}</span>
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <div class="mt-6 flex justify-end">
