@@ -1,3 +1,4 @@
+
 <script setup>
 import { ref, watch } from "vue";
 import { useForm, router } from "@inertiajs/vue3";
@@ -268,10 +269,14 @@ const getDayName = (day) => {
     };
     return days[day] || day;
 };
-
 const formatTime = (time) => {
-    return time.substring(0, 5); // Remove seconds if present
+    const [hour, minute] = time.split(':').map(Number);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
 };
+
+
 
 const isLunchPeriod = (timeSlot) => {
     return timeSlot.is_lunch_period === 1;
@@ -381,7 +386,7 @@ const getTemplateDisplayName = (template) => {
                             <div>{{ formatTime(template.start_time) }} - {{ formatTime(template.end_time) }}</div>
                             <div class="mt-1">
                                 <span :class="[
-                                    'px-2 py-1 rounded text-xs font-medium',
+                                    'px-2 py-1 rounded text-xs font-medium capitalize',
                                     template.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                                 ]">
                                     {{ template.status }}

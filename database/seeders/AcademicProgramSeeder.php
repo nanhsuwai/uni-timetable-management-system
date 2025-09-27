@@ -43,9 +43,22 @@ class AcademicProgramSeeder extends Seeder
                     ]
                 ],
                 [
+                    'name' => 'Diploma',
+                    'program_type' => 'Diploma',
+                    'levels' => [
+                        \App\Enums\LevelName::FirstYear->value,
+                        \App\Enums\LevelName::SecondYear->value,
+                        \App\Enums\LevelName::ThirdYear->value,
+                        \App\Enums\LevelName::FourthYear->value,
+                    ]
+                ],
+                [
                     'name' => 'Master',
                     'program_type' => 'Master',
-                    'levels' => [\App\Enums\LevelName::Master->value]
+                    'levels' => [
+                        \App\Enums\LevelName::Coursework->value,
+                        \App\Enums\LevelName::Thesis->value
+                    ]
                 ],
             ];
 
