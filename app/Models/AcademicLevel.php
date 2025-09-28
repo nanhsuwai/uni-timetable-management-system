@@ -34,7 +34,7 @@ class AcademicLevel extends Model
     {
         return [
             'program_id' => 'required|exists:academic_programs,id',
-            'name' => 'required|in:First Year,Second Year,Third Year,Fourth Year,Fifth Year,Master',
+            'name' => 'required|in:First Year,Second Year,Third Year,Fourth Year,Fifth Year,Coursework,Thesis'
         ];
     }
 
@@ -49,7 +49,7 @@ class AcademicLevel extends Model
             return false;
         }
 
-        $levelNames = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Fifth Year', 'Master'];
+        $levelNames = ['First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Fifth Year', 'Coursework', 'Thesis'];
         $levelIndex = array_search($this->name, $levelNames);
 
         if ($this->name === 'First Year') {

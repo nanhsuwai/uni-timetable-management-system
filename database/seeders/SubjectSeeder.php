@@ -104,18 +104,7 @@ class SubjectSeeder extends Seeder
                     ],
                 ],
             ],
-            ProgramOption::Master->value => [
-                LevelName::Master->value => [
-                    SemesterName::FirstSemester->value => [
-                        ['code' => 'MS101', 'name' => 'Advanced Algorithms'],
-                        ['code' => 'MS102', 'name' => 'Research Methodology'],
-                    ],
-                    SemesterName::SecondSemester->value => [
-                        ['code' => 'MS201', 'name' => 'Thesis Work'],
-                        ['code' => 'MS202', 'name' => 'Seminar'],
-                    ],
-                ],
-            ],
+           
         ];
 
         $createdSubjects = [];

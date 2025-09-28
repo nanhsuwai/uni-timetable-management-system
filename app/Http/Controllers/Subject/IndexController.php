@@ -43,7 +43,6 @@ class IndexController extends Controller
         $semesters = SemesterName::cases();
         $levels = LevelName::cases();
         $programs = ProgramOption::cases();
-
         return Inertia::render('Subject/Index', [
             'subjects' => $subjects,
             'semesters' => $semesters,

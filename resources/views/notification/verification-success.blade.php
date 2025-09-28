@@ -27,7 +27,6 @@ background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0
       <div class="px-6 pt-4 pb-2 mb-4">
         <button class="bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
           <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
-          <span> <a href="http://porta.itcstc.edu.mm/login.php" class="underline">Go to login page !</a></span>
         </button>
        
       </div>

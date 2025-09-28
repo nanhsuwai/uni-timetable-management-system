@@ -1,7 +1,0 @@
-- [x] Add university name "University of Computer Studies, Hinthada" to the timetable header in GridView.vue, spanning all columns.
-- [x] Add selected filter display row in the header (Semester, Program, Level, Section, Classroom).
-- [x] Add computed properties for selected items.
-- [x] Change subject display in grid to show code = name.
-- [x] Add subject codes list under the table in GridView.vue.
-- [x] Add subject codes list under the table in PDF (TimetableTemplate.php).
-- [x] Verify the grid displays data based on selected filters (already implemented).
