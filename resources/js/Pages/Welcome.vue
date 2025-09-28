@@ -103,20 +103,24 @@ watch(
 );
 
 // Computed for dependent selects
+const filteredSemesters = computed(() => {
+    if (!filterYear.value) return [];
+    return props.semesters.filter(s => s.academic_year_id == filterYear.value);
+});
+
 const filteredPrograms = computed(() => {
    const programs = Array.isArray(props.programs) ? props.programs : [];
-   console.log("All Programs:", programs);
     if (!filterYear.value) return programs;
   return programs.filter(p => p.academic_year_id == filterYear.value);
 });
 
 const filteredLevels = computed(() => {
-    if (!filterProgram.value) return props.levels;
+    if (!filterProgram.value) return [];
     return props.levels.filter(l => l.program_id == filterProgram.value);
 });
 
 const filteredSections = computed(() => {
-    if (!filterLevel.value) return props.sections;
+    if (!filterLevel.value) return [];
     return props.sections.filter(s => s.level_id == filterLevel.value);
 });
 
@@ -462,6 +466,16 @@ const getClassroomDisplay = (entry) => {
                                         </option>
                                     </select>
                                 </div>
+                                <!-- Semester -->
+                                <div class="sm:col-span-1">
+                                    <InputLabel value="Semester" class="text-sm font-medium text-gray-700 mb-1" />
+                                    <select v-model="filterSemester"
+                                        class="w-full h-10 sm:h-11 px-3 text-sm border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors">
+                                        <option value="">All Semesters</option>
+                                        <option v-for="s in filteredSemesters" :key="s.id" :value="s.id">{{ s.name }}
+                                        </option>
+                                    </select>
+                                </div>
                                 <!-- Program -->
                                 <div class="sm:col-span-1">
                                     <InputLabel value="Program" class="text-sm font-medium text-gray-700 mb-1" />
@@ -494,16 +508,7 @@ const getClassroomDisplay = (entry) => {
                                         </option>
                                     </select>
                                 </div>
-                                <!-- Semester -->
-                                <div class="sm:col-span-1">
-                                    <InputLabel value="Semester" class="text-sm font-medium text-gray-700 mb-1" />
-                                    <select v-model="filterSemester"
-                                        class="w-full h-10 sm:h-11 px-3 text-sm border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors">
-                                        <option value="">All Semesters</option>
-                                        <option v-for="s in props.semesters" :key="s.id" :value="s.id">{{ s.name }}
-                                        </option>
-                                    </select>
-                                </div>
+                                
                             </div>
 
                             <!-- Timetable Grid -->
@@ -587,7 +592,6 @@ const getClassroomDisplay = (entry) => {
 
                             <!-- Legend -->
                             <div class="mt-4 p-3 sm:p-4 bg-white/80 dark:bg-gray-800/70 backdrop-blur-md rounded-lg">
-                                <h4 class="font-semibold mb-2 text-sm sm:text-base">Legend:</h4>
                                 <div class="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm">
                                     <div class="flex items-center">
                                         <div

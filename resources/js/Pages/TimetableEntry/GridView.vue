@@ -466,12 +466,7 @@ const downloadPDF = () => {
 
       <!-- Legend -->
       <div class="mt-4 p-4 bg-gray-50 rounded-lg">
-        <h4 class="font-semibold mb-2">Legend:</h4>
         <div class="flex flex-wrap gap-4 text-sm">
-          <div class="flex items-center">
-            <div class="w-4 h-4 bg-yellow-100 border border-gray-300 mr-2"></div>
-            <span>Break Period</span>
-          </div>
           <div class="flex items-center">
             <div class="w-4 h-4 bg-orange-100 border border-gray-300 mr-2"></div>
             <span>Lunch Period</span>

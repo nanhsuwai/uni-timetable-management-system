@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('academic_programs', function (Blueprint $table) {
-            $table->enum('program_type', ['CST', 'CS', 'CT', 'Master'])->after('name');
+            $table->enum('program_type', ['CST', 'CS', 'CT', 'Master','Diploma'])->after('name');
         });
     }
 
