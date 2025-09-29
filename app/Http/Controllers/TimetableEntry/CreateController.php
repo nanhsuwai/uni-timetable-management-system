@@ -40,6 +40,13 @@ class CreateController extends Controller
         if ($conflicts) {
             return back()->withErrors(['time_slot_id' => 'There is a conflict with an existing timetable entry for the same section or classroom at the specified time.'])->withInput();
         }
+
+        // Check for subject frequency constraints
+        $frequencyConflict = $this->checkSubjectFrequency($request);
+        if ($frequencyConflict) {
+            return back()->withErrors(['subject_id' => 'The subject can only be scheduled up to 2 times per day and 4 times per week for this section.'])->withInput();
+        }
+
 // dd($request->all());
         $data = $request->except('teacher_ids');
 
@@ -97,5 +104,46 @@ class CreateController extends Controller
         })->exists();
 
         return $conflicts;
+    }
+
+    private function checkSubjectFrequency(Request $request)
+    {
+        // Derive day_of_week if time_slot_id is provided
+        $dayOfWeek = $request->day_of_week;
+        if ($request->filled('time_slot_id')) {
+            $timeSlot = TimeSlot::find($request->time_slot_id);
+            if ($timeSlot) {
+                $dayOfWeek = $timeSlot->day_of_week;
+            }
+        }
+
+        if (!$dayOfWeek) {
+            return true; // Conflict if day cannot be determined
+        }
+
+        // Check daily frequency: max 2 times per day
+        $dailyCount = TimetableEntry::where('academic_year_id', $request->academic_year_id)
+                                    ->where('semester_id', $request->semester_id)
+                                    ->where('section_id', $request->section_id)
+                                    ->where('subject_id', $request->subject_id)
+                                    ->where('day_of_week', $dayOfWeek)
+                                    ->count();
+
+        if ($dailyCount >= 2) {
+            return true;
+        }
+
+        // Check weekly frequency: max 4 times per week
+        $weeklyCount = TimetableEntry::where('academic_year_id', $request->academic_year_id)
+                                     ->where('semester_id', $request->semester_id)
+                                     ->where('section_id', $request->section_id)
+                                     ->where('subject_id', $request->subject_id)
+                                     ->count();
+
+        if ($weeklyCount >= 4) {
+            return true;
+        }
+
+        return false;
     }
 }
