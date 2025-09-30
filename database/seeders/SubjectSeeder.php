@@ -53,8 +53,16 @@ class SubjectSeeder extends Seeder
                 ],
                 LevelName::FourthYear->value => [
                     SemesterName::FirstSemester->value => [
-                        ['code' => 'CT701', 'name' => 'Project Management'],
-                        ['code' => 'CT702', 'name' => 'Cloud Computing'],
+                        ['code' => 'E-4101', 'name' => 'Business English I'],
+                        ['code' => 'CST-4111', 'name' => 'Analysis of Algorithms'],
+                        ['code' => 'CS-4142', 'name' => 'Operation Research'],
+
+                        ['code' => 'CS-4113', 'name' => 'Computer Vision'],
+                        ['code' => 'CS-4124', 'name' => 'Introduction Assurance and Security'],
+                        ['code' => 'CS-4125', 'name' => 'Software Project Management'],
+                        ['code' => 'CS-4134', 'name' => 'Cloud Computing'],
+
+                        ['code' => 'CS-4135', 'name' => 'Data Mining'],
                     ],
                     SemesterName::SecondSemester->value => [
                         ['code' => 'CT801', 'name' => 'Capstone Project'],

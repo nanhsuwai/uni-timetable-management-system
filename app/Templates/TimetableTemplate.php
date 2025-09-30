@@ -4,6 +4,9 @@ namespace App\Templates;
 
 use App\Traits\MPDFTrait;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Collection;
+// Don't forget to use Collection if you use the namespace
+// use Illuminate\Support\Collection; 
 
 class TimetableTemplate
 {
@@ -17,6 +20,9 @@ class TimetableTemplate
     protected $classroom;
     protected $template;
     protected $mpdf;
+    
+    // New property to hold the Excel data array
+    protected $excelData; 
 
     use MPDFTrait;
 
@@ -30,6 +36,10 @@ class TimetableTemplate
         $this->level = $level;
         $this->section = $section;
 
+        // Initialize the Excel data array with headers
+        $this->excelData = $this->getTimetableDataForExport();
+
+        // PDF setup (kept for existing PDF functionality)
         $this->template = File::get(storage_path('templates/GenerateTimetable.html'));
         $configs = [
             'margin_left' => 10,
@@ -49,8 +59,57 @@ class TimetableTemplate
         $this->mpdf->AddPage('', '', 1);
     }
 
+    protected function getTimetableDataForExport(): Collection
+    {
+        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        $timeSlots = $this->timeSlots->pluck('start_time')->unique()->sort();
+
+        // Prepare Header row
+        $headers = ['Day'];
+        foreach ($timeSlots as $time) {
+            $slot = $this->timeSlots->firstWhere('start_time', $time);
+            $end = $slot?->end_time ?? '';
+            $formattedStart = date('H:i', strtotime($time)); // Use 24h for easier reading in data
+            $formattedEnd = date('H:i', strtotime($end));
+            $headers[] = $formattedStart . ' - ' . $formattedEnd;
+        }
+        $data = [$headers]; // Start with headers
+
+        // Prepare Data rows
+        foreach ($days as $day) {
+            $row = ['Day' => $day];
+            foreach ($timeSlots as $time) {
+                $entry = $this->entries->first(function($e) use ($day, $time) {
+                    return $e->timeSlot->day_of_week == strtolower($day) && $e->timeSlot->start_time == $time;
+                });
+                
+                $slot = $this->timeSlots->firstWhere('start_time', $time);
+                $isLunch = $slot?->is_lunch_period ?? false;
+                
+                if ($isLunch) {
+                    $content = 'LUNCH BREAK';
+                } elseif ($entry) {
+                    $subjectName = $entry->subject ? $entry->subject->code : 'Unknown Subject';
+                    $teachers = $entry->teachers ?? collect();
+                    $teacherNames = $teachers->pluck('name')->implode(', ');
+                    $content = $subjectName . ' (' . ($teacherNames ?: 'No teacher') . ')';
+                } else {
+                    $content = ' ';
+                }
+
+                $row[] = $content;
+            }
+            // Push the data row to the main array
+            $data[] = $row;
+        }
+
+        return collect($data); // Return as a Laravel Collection
+    }
+
+    // Existing prepareTimetable for PDF (no change needed as it uses this->entries)
     protected function prepareTimetable()
     {
+        // ... (existing code for PDF generation)
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
         $timeSlots = $this->timeSlots->pluck('start_time')->unique()->sort();
 
@@ -143,9 +202,21 @@ class TimetableTemplate
         $this->template = str_replace('###TIMETABLE###', $html, $this->template);
     }
 
+
     public function generate()
     {
         $this->mpdf->WriteHTML($this->template);
         return $this->mpdf->Output('timetable.pdf', 'S');
+    }
+
+    /**
+     * Get the formatted timetable data as a collection for use in Laravel Excel.
+     * The first row of the collection is the header row.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function generateExcelData(): Collection
+    {
+        return $this->excelData;
     }
 }

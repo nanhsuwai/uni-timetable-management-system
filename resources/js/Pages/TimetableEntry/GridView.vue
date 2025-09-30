@@ -77,13 +77,14 @@ const filteredSections = computed(() => {
 // Check if all required selections are complete
 const allSelectionsComplete = computed(() => {
   return filterYear.value &&
-         filterSemester.value &&
-         filterProgram.value &&
-         filterLevel.value &&
-         filterSection.value;
+    filterSemester.value &&
+    filterProgram.value &&
+    filterLevel.value &&
+    filterSection.value;
 });
 
 // Computed for selected items to display in header
+const selectedYear = computed(() => props.academicYears.find(y => y.id == filterYear.value)); // ADDED: Selected Academic Year
 const selectedSemester = computed(() => props.semesters.find(s => s.id == filterSemester.value));
 const selectedProgram = computed(() => props.programs.find(p => p.id == filterProgram.value));
 const selectedLevel = computed(() => props.levels.find(l => l.id == filterLevel.value));
@@ -97,12 +98,12 @@ const timeSlots = computed(() => {
   if (filterYear.value) {
     slots = slots.filter(slot => slot.academic_year_id == filterYear.value);
   }
-console.log("Filtered Time Slots:", slots);
+  // console.log("Filtered Time Slots:", slots); // Removed console.log for clean code
   return slots.map(slot => ({
     start: slot.start_time,
     end: slot.end_time,
     label: `${slot.start_time} - ${slot.end_time}`,
-    code:slot.code,
+    code: slot.code,
     name: slot.name,
     day_of_week: slot.day_of_week,
     academic_year_id: slot.academic_year_id,
@@ -119,7 +120,7 @@ const days = [
   { key: "friday", label: "Friday" },
 ];
 
-// Time slots grouped by day for the grid
+// Time slots grouped by day for the grid - Kept for potential future use, though not used in current template
 const timeSlotsByDay = computed(() => {
   const slotsByDay = {};
 
@@ -150,7 +151,7 @@ const uniqueTimeSlots = computed(() => {
       unique.push(slot);
     }
   });
-console.log("Unique Time Slots:", unique);
+  // console.log("Unique Time Slots:", unique); // Removed console.log for clean code
   return unique.sort((a, b) => a.start.localeCompare(b.start));
 });
 
@@ -181,7 +182,7 @@ const organizedEntries = computed(() => {
   return grid;
 });
 
-// Debug information
+// Debug information - Kept as is
 const debugInfo = computed(() => {
   return {
     totalEntries: props.entries.length,
@@ -201,8 +202,8 @@ const debugInfo = computed(() => {
   };
 });
 
-// Get unique subjects from entries
-const uniqueSubjects = computed(() => {
+// Get unique subjects from entries - Kept as is
+/* const uniqueSubjects = computed(() => {
   const subjects = new Map();
   props.entries.forEach(entry => {
     if (entry.subject) {
@@ -210,39 +211,74 @@ const uniqueSubjects = computed(() => {
     }
   });
   return Array.from(subjects.values()).sort((a, b) => a.code.localeCompare(b.code));
+}); */
+// Get unique subjects from entries and include a list of teachers
+const uniqueSubjects = computed(() => {
+  const subjectsMap = new Map();
+
+  props.entries.forEach(entry => {
+    if (entry.subject) {
+      const subjectId = entry.subject.id;
+
+      // Initialize subject entry in map if it doesn't exist
+      if (!subjectsMap.has(subjectId)) {
+        subjectsMap.set(subjectId, {
+          id: subjectId,
+          code: entry.subject.code,
+          name: entry.subject.name,
+          teachers: new Set(), // Use a Set to store unique teacher names
+        });
+      }
+
+      // Add teachers from the current entry to the subject's teacher list
+      if (entry.teachers && entry.teachers.length > 0) {
+        const subjectEntry = subjectsMap.get(subjectId);
+        entry.teachers.forEach(teacher => {
+          subjectEntry.teachers.add(teacher.name);
+        });
+      }
+    }
+  });
+
+  // Convert map values to an array, and convert teacher sets to comma-separated strings
+  return Array.from(subjectsMap.values())
+    .map(subject => ({
+      ...subject,
+      teacherNames: Array.from(subject.teachers).join(', ') || 'N/A',
+    }))
+    .sort((a, b) => a.code.localeCompare(b.code));
 });
 
-
-// Check if a time slot is lunch
+// Check if a time slot is lunch - Kept as is
 const isLunch = (timeSlot) => {
   return timeSlot.is_lunch_period === 1;
 };
 
-// Get entry for specific day and time
+// Get entry for specific day and time - Kept as is
 const getEntry = (day, timeSlot) => {
   return organizedEntries.value[day]?.[timeSlot.start] || null;
 };
 
-// Get subject code
+// Get subject code - Kept as is
 const getSubjectDisplay = (entry) => {
   if (!entry || !entry.subject) return "";
   return `${entry.subject.code}`;
 };
 
-// Get teacher names (multiple teachers)
+// Get teacher names (multiple teachers) - Kept as is
 const getTeacherDisplay = (entry) => {
   if (!entry || !entry.teachers || entry.teachers.length === 0) return "";
   if (entry.teachers.length === 1) return entry.teachers[0].name;
   return entry.teachers.map(t => t.name).join(", ");
 };
 
-// Get classroom
+// Get classroom - Kept as is
 const getClassroomDisplay = (entry) => {
   if (!entry || !entry.classroom) return "";
   return entry.classroom.room_no;
 };
 
-// Download PDF
+// Download PDF - Kept as is
 const downloadPDF = () => {
   const url = route('timetable_entry:generate', {
     filterYear: filterYear.value,
@@ -253,33 +289,40 @@ const downloadPDF = () => {
   });
   window.open(url, '_blank');
 };
+const downloadExcel = () => {
+  // 1. Construct the base URL using the same parameters as PDF
+  const url = route('timetable_entry:generate', {
+    filterYear: filterYear.value,
+    filterSemester: filterSemester.value,
+    filterProgram: filterProgram.value,
+    filterLevel: filterLevel.value,
+    filterSection: filterSection.value,
+    // 2. IMPORTANT: Add the 'format' query parameter to signal Excel export
+    format: 'xlsx',
+  });
+
+  // 3. Open the URL in the current window or a new tab. 
+  // The browser will handle the download because the backend sends 
+  // the correct content-disposition header.
+  window.open(url, '_blank');
+  // Alternatively, to open in the current window (which may be better for downloads):
+  // window.location.href = url;
+};
 </script>
 
 <template>
   <LayoutAuthenticated>
-
-
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <SectionTitleLineWithButton
-      :icon="mdiGrid"
-      title="Timetable Grid View"
-    >
-      <BaseButton
-        @click="router.get(route('timetable_entry:all'))"
-        color="info"
-        :icon="mdiTable"
-        label="Table View"
-      />
-      <BaseButton
-        v-if="allSelectionsComplete"
-        @click="downloadPDF"
-        color="success"
-        icon="mdi-download"
-        label="Download PDF"
-      />
-    </SectionTitleLineWithButton>
-      <!-- Debug Information (only show if there are issues) -->
-      <div v-if="debugInfo.fridayEntries === 0 && filterYear" class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+      <SectionTitleLineWithButton :icon="mdiGrid" title="Timetable Grid View">
+        <BaseButton @click="router.get(route('timetable_entry:all'))" color="info" :icon="mdiTable"
+          label="Table View" />
+        <BaseButton v-if="allSelectionsComplete" @click="downloadPDF" color="success" icon="mdi-download"
+          label="Download PDF" />
+        <BaseButton v-if="allSelectionsComplete" @click="downloadExcel" color="info" icon="mdi-download"
+          label="Download Excel" />
+      </SectionTitleLineWithButton>
+      <div v-if="debugInfo.fridayEntries === 0 && filterYear"
+        class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
         <h4 class="font-semibold text-yellow-800 mb-2">Debug Information:</h4>
         <div class="text-sm text-yellow-700">
           <p>Total Entries: {{ debugInfo.totalEntries }}</p>
@@ -290,7 +333,6 @@ const downloadPDF = () => {
         </div>
       </div>
 
-      <!-- Filters -->
       <div class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div>
           <InputLabel value="Academic Year" />
@@ -329,12 +371,13 @@ const downloadPDF = () => {
         </div>
       </div>
 
-      <!-- Selection Status Message -->
       <div v-if="!allSelectionsComplete" class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <div class="flex items-center">
           <div class="flex-shrink-0">
             <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clip-rule="evenodd" />
             </svg>
           </div>
           <div class="ml-3">
@@ -355,58 +398,59 @@ const downloadPDF = () => {
         </div>
       </div>
 
-      <!-- Timetable Grid -->
       <CardBox v-if="allSelectionsComplete">
         <div class="overflow-x-auto">
           <table class="w-full border-collapse">
-            <!-- Header with time slots -->
             <thead>
               <tr>
-                <th :colspan="1 + uniqueTimeSlots.length" class="text-center font-bold text-lg bg-gray-100 p-4 border border-gray-300">
+                <th :colspan="1 + uniqueTimeSlots.length"
+                  class="text-center font-bold text-lg bg-gray-100 p-4 border border-gray-300">
                   University of Computer Studies, Hinthada
                 </th>
               </tr>
               <tr>
-                <th :colspan="1 + uniqueTimeSlots.length" class="text-center text-sm bg-gray-50 p-2 border border-gray-300">
-                  <span v-if="selectedSemester">Semester: {{ selectedSemester.name }} | </span>
-                  <span v-if="selectedProgram">Program: {{ selectedProgram.name }} | </span>
-                  <span v-if="selectedLevel">Level: {{ selectedLevel.name }} | </span>
-                  <span v-if="selectedSection">Section: {{ selectedSection.name }} | </span>
-                  <span v-if="selectedSection && selectedSection?.classroom">Classroom: {{ selectedSection.classroom.room_no }} |</span>
-                  <span v-if="selectedSection && selectedSection?.section_head_teacher">Head Of Classroom: {{ selectedSection.section_head_teacher.name }}</span>
-
+                <th :colspan="1 + uniqueTimeSlots.length"
+                  class="text-center text-sm bg-gray-50 p-2 border border-gray-300">
+                  <span v-if="selectedYear" class="font-bold text-base">
+                    Academic Year: {{ selectedYear.name }}
+                  </span>
+                  <span v-if="selectedSemester" class="ml-4">
+                    ( {{ selectedSemester.name }})
+                  </span>
+                </th>
+              </tr>
+              <tr>
+                <th :colspan="1 + uniqueTimeSlots.length"
+                  class="text-center text-sm bg-gray-50 p-2 border border-gray-300">
+                  Timetable For -
+                  <span v-if="selectedLevel"> **{{ selectedLevel.name }}** </span>
+                  (<span v-if="selectedProgram">{{ selectedProgram.name }} </span>)
+                  (<span v-if="selectedSection">Section: {{ selectedSection.name }} </span>)
+                  <span class="block text-right" v-if="selectedSection && selectedSection?.classroom">Classroom:
+                    {{ selectedSection.classroom.room_no }} </span>
                 </th>
               </tr>
               <tr>
                 <th class="border border-gray-300 p-3 bg-gray-50 font-semibold text-sm w-24">Day</th>
-                <th
-                  v-for="slot in uniqueTimeSlots"
-                  :key="slot.start"
-                  class="border border-gray-300 p-3 bg-gray-50 font-semibold text-sm text-center min-w-32"
-                  :class="{
+                <th v-for="slot in uniqueTimeSlots" :key="slot.start"
+                  class="border border-gray-300 p-3 bg-gray-50 font-semibold text-sm text-center min-w-32" :class="{
                     'bg-orange-100': isLunch(slot)
-                  }"
-                >
+                  }">
                   {{ slot.label }}
                   <div v-if="isLunch(slot)" class="text-xs text-orange-700 font-normal">Lunch</div>
                 </th>
               </tr>
             </thead>
 
-            <!-- Body with days and entries -->
             <tbody>
               <tr v-for="day in days" :key="day.key">
                 <td class="border border-gray-300 p-3 bg-gray-50 font-semibold text-center">
                   {{ day.label }}
                 </td>
-                <td
-                  v-for="slot in uniqueTimeSlots"
-                  :key="`${day.key}-${slot.start}`"
-                  class="border border-gray-300 p-2 text-center min-h-20 align-top"
-                  :class="{
+                <td v-for="slot in uniqueTimeSlots" :key="`${day.key}-${slot.start}`"
+                  class="border border-gray-300 p-2 text-center min-h-20 align-top" :class="{
                     'bg-orange-50': isLunch(slot)
-                  }"
-                >
+                  }">
                   <div v-if="getEntry(day.key, slot)" class="text-xs">
                     <div class="font-semibold text-blue-800 mb-1">
                       {{ getSubjectDisplay(getEntry(day.key, slot)) }}
@@ -425,11 +469,6 @@ const downloadPDF = () => {
                       </span>
                       <span v-else class="text-gray-400">No teacher</span>
                     </div>
-                    <!-- <div class="text-gray-500">
-                      Room: <div class="text-gray-500">
-                      Room: {{ getClassroomDisplay(getEntry(day.key, slot)) }}
-                    </div>{{ getClassroomDisplay(getEntry(day.key, slot)) }}
-                    </div> -->
                   </div>
                   <div v-else-if="!isLunch(slot)" class="text-gray-400 text-xs italic">
                     No class
@@ -438,33 +477,37 @@ const downloadPDF = () => {
               </tr>
             </tbody>
           </table>
-
-          <!-- show subject code and subject name like this M-001 = Myanmar-->
         </div>
       </CardBox>
 
-      <!-- Subject Codes List -->
       <CardBox v-if="allSelectionsComplete && uniqueSubjects.length > 0" class="mt-4">
-        <h4 class="font-semibold mb-2">Subject Codes</h4>
+        <h4 class="font-semibold mb-2"> <span
+            v-if="selectedSection && selectedSection?.section_head_teacher">သင်တန်းမှူး - {{
+              selectedSection.section_head_teacher.name }}</span>
+        </h4>
+        
         <div class="overflow-x-auto">
           <table class="w-full border-collapse border border-gray-300">
             <thead>
               <tr>
-                <th class="border border-gray-300 p-2 bg-gray-50 font-semibold">Code</th>
-                <th class="border border-gray-300 p-2 bg-gray-50 font-semibold">Name</th>
+                <th class="border border-gray-300 p-2 bg-gray-50 font-semibold w-24">Code</th>
+                <th class="border border-x border-gray-300 p-2 bg-gray-50 font-semibold w-auto">Subject Name</th>
+                <th class="border border-gray-300 p-2 bg-gray-50 font-semibold w-64">Teacher Name</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="subject in uniqueSubjects" :key="subject.id">
-                <td class="border border-gray-300 p-2">{{ subject.code }}</td>
-                <td class="border border-gray-300 p-2">{{ subject.name }}</td>
+                <td class="border border-gray-300 p-2 text-sm">{{ subject.code }}</td>
+                <td class="border border-x border-gray-300 p-2 text-sm">{{ subject.name }}</td>
+                <td class="border border-gray-300 p-2 text-sm text-gray-700 font-medium">
+                  {{ subject.teacherNames }}
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </CardBox>
 
-      <!-- Legend -->
       <div class="mt-4 p-4 bg-gray-50 rounded-lg">
         <div class="flex flex-wrap gap-4 text-sm">
           <div class="flex items-center">

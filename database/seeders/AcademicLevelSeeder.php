@@ -32,7 +32,7 @@ class AcademicLevelSeeder extends Seeder
                     'program_id' => $program->id,
                     'name' => LevelName::FourthYear->value,
                 ]);
-            } elseif ($program->program_type === 'Master') {
+            } /* elseif ($program->program_type === 'Master') {
                 AcademicLevel::create([
                     'program_id' => $program->id,
                     'name' => LevelName::Coursework->value,
@@ -40,8 +40,8 @@ class AcademicLevelSeeder extends Seeder
                 AcademicLevel::create([
                     'program_id' => $program->id,
                     'name' => LevelName::Thesis->value,
-                ]);
-            } elseif ($program->program_type === 'Diploma') {
+                ]); 
+            }*/ elseif ($program->program_type === 'Diploma') {
                 AcademicLevel::create([
                     'program_id' => $program->id,
                     'name' => LevelName::Diploma->value,

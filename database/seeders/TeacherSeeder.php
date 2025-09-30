@@ -15,12 +15,12 @@ class TeacherSeeder extends Seeder
     public function run()
     {
         $teachers = [
-            ['code' => 'T001', 'name' => 'Dr. Alice Johnson', 'email' => 'alice.johnson@ucsh.edu.mm', 'phone' => '+959123456789', 'status' => 'active', 'department' => 'Faculty of Computer Science', 'head_of_department' => true],
-            ['code' => 'T002', 'name' => 'Prof. Bob Smith', 'email' => 'bob.smith@ucsh.edu.mm', 'phone' => '+959123456790', 'status' => 'active', 'department' => 'Faculty of Computer Science', 'head_of_department' => false],
-            ['code' => 'T003', 'name' => 'Ms. Carol Davis', 'email' => 'carol.davis@ucsh.edu.mm', 'phone' => '+959123456791', 'status' => 'active', 'department' => 'Faculty of Computer Science', 'head_of_department' => false],
-            ['code' => 'T004', 'name' => 'Dr. David Wilson', 'email' => 'david.wilson@ucsh.edu.mm', 'phone' => '+959123456792', 'status' => 'active', 'department' => 'Faculty of Computer Systems and Technologies', 'head_of_department' => true],
-            ['code' => 'T005', 'name' => 'Prof. Eve Brown', 'email' => 'eve.brown@ucsh.edu.mm', 'phone' => '+959123456793', 'status' => 'active', 'department' => 'Faculty of Computer Systems and Technologies', 'head_of_department' => false],
-            ['code' => 'T006', 'name' => 'Mr. Frank Miller', 'email' => 'frank.miller@ucsh.edu.mm', 'phone' => '+959123456794', 'status' => 'active', 'department' => 'Faculty of Computer Systems and Technologies', 'head_of_department' => false],
+            ['code' => 'T001', 'name' => 'Daw Win Theigi Myint', 'email' => 'wintheigimyint@ucsh.edu.mm', 'phone' => '+959123456789', 'status' => 'active', 'department' => 'Faculty of Computer Science', 'head_of_department' => true],
+            ['code' => 'T002', 'name' => 'Dr. Khin Theint Theint Soe', 'email' => 'khintheinttheintsoe@ucsh.edu.mm', 'phone' => '+959123456790', 'status' => 'active', 'department' => 'Faculty of Computer Science', 'head_of_department' => false],
+            ['code' => 'T003', 'name' => 'Daw Khaing Kyizar Swe', 'email' => 'khaingkyizarswe@ucsh.edu.mm', 'phone' => '+959123456791', 'status' => 'active', 'department' => 'Faculty of Computer Science', 'head_of_department' => false],
+            ['code' => 'T004', 'name' => 'Dr. Thidar Win', 'email' => 'thidarwin@ucsh.edu.mm', 'phone' => '+959123456792', 'status' => 'active', 'department' => 'Faculty of Computer Systems and Technologies', 'head_of_department' => true],
+            ['code' => 'T005', 'name' => 'Dr. Thae Thae Soe', 'email' => 'thaethaesoe@ucsh.edu.mm', 'phone' => '+959123456793', 'status' => 'active', 'department' => 'Faculty of Computer Systems and Technologies', 'head_of_department' => false],
+            ['code' => 'T006', 'name' => 'Daw Khaing Thazin Nwe', 'email' => 'khaingthazinnwe@ucsh.edu.mm', 'phone' => '+959123456794', 'status' => 'active', 'department' => 'Faculty of Computer Systems and Technologies', 'head_of_department' => false],
             ['code' => 'T007', 'name' => 'Dr. Grace Lee', 'email' => 'grace.lee@ucsh.edu.mm', 'phone' => '+959123456795', 'status' => 'active', 'department' => 'Faculty of Information Science', 'head_of_department' => false],
             ['code' => 'T008', 'name' => 'Prof. Henry Garcia', 'email' => 'henry.garcia@ucsh.edu.mm', 'phone' => '+959123456796', 'status' => 'active', 'department' => 'Faculty of Information Science', 'head_of_department' => false],
             ['code' => 'T009', 'name' => 'Ms. Iris Taylor', 'email' => 'iris.taylor@ucsh.edu.mm', 'phone' => '+959123456797', 'status' => 'active', 'department' => 'Faculty of Information Science', 'head_of_department' => false],
