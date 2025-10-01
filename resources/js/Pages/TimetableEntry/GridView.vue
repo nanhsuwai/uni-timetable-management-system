@@ -289,25 +289,7 @@ const downloadPDF = () => {
   });
   window.open(url, '_blank');
 };
-const downloadExcel = () => {
-  // 1. Construct the base URL using the same parameters as PDF
-  const url = route('timetable_entry:generate', {
-    filterYear: filterYear.value,
-    filterSemester: filterSemester.value,
-    filterProgram: filterProgram.value,
-    filterLevel: filterLevel.value,
-    filterSection: filterSection.value,
-    // 2. IMPORTANT: Add the 'format' query parameter to signal Excel export
-    format: 'xlsx',
-  });
 
-  // 3. Open the URL in the current window or a new tab. 
-  // The browser will handle the download because the backend sends 
-  // the correct content-disposition header.
-  window.open(url, '_blank');
-  // Alternatively, to open in the current window (which may be better for downloads):
-  // window.location.href = url;
-};
 </script>
 
 <template>
@@ -423,7 +405,7 @@ const downloadExcel = () => {
                 <th :colspan="1 + uniqueTimeSlots.length"
                   class="text-center text-sm bg-gray-50 p-2 border border-gray-300">
                   Timetable For -
-                  <span v-if="selectedLevel"> **{{ selectedLevel.name }}** </span>
+                  <span v-if="selectedLevel"> {{ selectedLevel.name }} </span>
                   (<span v-if="selectedProgram">{{ selectedProgram.name }} </span>)
                   (<span v-if="selectedSection">Section: {{ selectedSection.name }} </span>)
                   <span class="block text-right" v-if="selectedSection && selectedSection?.classroom">Classroom:

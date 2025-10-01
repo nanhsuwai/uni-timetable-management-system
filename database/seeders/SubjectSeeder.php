@@ -25,20 +25,27 @@ class SubjectSeeder extends Seeder
                         ['code' => 'CST102', 'name' => 'Programming Basics'],
                     ],
                     SemesterName::SecondSemester->value => [
-                        ['code' => 'CST201', 'name' => 'Data Structures'],
-                        ['code' => 'CST202', 'name' => 'Web Development'],
+                        ['code' => 'M-1201', 'name' => 'Myanmar Language'],
+                        ['code' => 'E-1201', 'name' => 'English Proficiency II'],
+                        ['code' => 'P-1201', 'name' => 'College Physics'],
+                        ['code' => 'CST-1241', 'name' => 'Discrete Mathematics'],
+                        ['code' => 'CST-1212', 'name' => 'Programming Logic & Design (Programming in C++)'],
+                        ['code' => 'CST-1223', 'name' => 'Database Fundamentals'],
+                        ['code' => 'CST-1234', 'name' => 'Digital and Logic Design'],
+
                     ],
                 ],
             ],
             ProgramOption::ComputerTechnology->value => [
                 LevelName::SecondYear->value => [
-                    SemesterName::FirstSemester->value => [
-                        ['code' => 'CT301', 'name' => 'Data Structures'],
-                        ['code' => 'CT302', 'name' => 'Database Systems'],
-                    ],
+                    
                     SemesterName::SecondSemester->value => [
-                        ['code' => 'CT401', 'name' => 'Algorithms'],
-                        ['code' => 'CT402', 'name' => 'Operating Systems'],
+                        ['code' => 'E-2201', 'name' => 'English Proficiency IV'],
+                        ['code' => 'CST-2211', 'name' => 'Data Structure and Algorithms'],
+                        ['code' => 'CST-2242', 'name' => 'Linear Algebra'],
+                        ['code' => 'CST-2223', 'name' => 'Introduction to Software Engineering'],
+                        ['code' => 'CS-2254', 'name' => 'Web Development (Java Script)'],
+                        ['code' => 'CST-2205', 'name' => 'Advanced Java Programming (J2EE)'],
                     ],
                 ],
                 LevelName::ThirdYear->value => [
@@ -56,31 +63,16 @@ class SubjectSeeder extends Seeder
                         ['code' => 'E-4101', 'name' => 'Business English I'],
                         ['code' => 'CST-4111', 'name' => 'Analysis of Algorithms'],
                         ['code' => 'CS-4142', 'name' => 'Operation Research'],
-
                         ['code' => 'CS-4113', 'name' => 'Computer Vision'],
                         ['code' => 'CS-4124', 'name' => 'Introduction Assurance and Security'],
                         ['code' => 'CS-4125', 'name' => 'Software Project Management'],
                         ['code' => 'CS-4134', 'name' => 'Cloud Computing'],
-
                         ['code' => 'CS-4135', 'name' => 'Data Mining'],
                     ],
-                    SemesterName::SecondSemester->value => [
-                        ['code' => 'CT801', 'name' => 'Capstone Project'],
-                        ['code' => 'CT802', 'name' => 'Internship'],
-                    ],
+                   
                 ],
             ],
             ProgramOption::ComputerScience->value => [
-                LevelName::FirstYear->value => [
-                    SemesterName::FirstSemester->value => [
-                        ['code' => 'CS101', 'name' => 'Introduction to Computer Science'],
-                        ['code' => 'CS102', 'name' => 'Calculus I'],
-                    ],
-                    SemesterName::SecondSemester->value => [
-                        ['code' => 'CS201', 'name' => 'Object Oriented Programming'],
-                        ['code' => 'CS202', 'name' => 'Linear Algebra'],
-                    ],
-                ],
                 LevelName::SecondYear->value => [
                     SemesterName::FirstSemester->value => [
                         ['code' => 'CS301', 'name' => 'Data Structures and Algorithms'],
@@ -112,7 +104,7 @@ class SubjectSeeder extends Seeder
                     ],
                 ],
             ],
-           
+
         ];
 
         $createdSubjects = [];
