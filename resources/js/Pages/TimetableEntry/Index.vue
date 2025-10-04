@@ -248,6 +248,9 @@ const createOrUpdateEntry = () => {
         // closeModal();
         toast.add({ message: "✅ Timetable entry updated!" });
       },
+      onError: (err) => {
+        toast.add({ message: err.errors.error, type: "error" });
+      },
     });
   } else {
     form.post(route("timetable_entry:create"), {
@@ -255,6 +258,9 @@ const createOrUpdateEntry = () => {
       onSuccess: () => {
         // closeModal();
         toast.add({ message: "Timetable entry created!" });
+      },
+      onError: (err) => {
+        toast.add({ message: err.error, type: "error" });
       },
     });
   }

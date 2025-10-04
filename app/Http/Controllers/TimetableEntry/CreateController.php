@@ -38,13 +38,19 @@ class CreateController extends Controller
         // Check for time slot conflicts
         $conflicts = $this->checkTimeSlotConflicts($request);
         if ($conflicts) {
-            return back()->withErrors(['time_slot_id' => 'There is a conflict with an existing timetable entry for the same section or classroom at the specified time.'])->withInput();
+            return back()->withErrors(['error' => 'There is a conflict with an existing timetable entry for the same section or classroom at the specified time.'])->withInput();
         }
 
         // Check for subject frequency constraints
         $frequencyConflict = $this->checkSubjectFrequency($request);
         if ($frequencyConflict) {
-            return back()->withErrors(['subject_id' => 'The subject can only be scheduled up to 2 times per day and 4 times per week for this section.'])->withInput();
+            return back()->withErrors(['error' => 'The subject can only be scheduled up to 2 times per day and 4 times per week for this section.'])->withInput();
+        }
+
+        // Check for teacher period frequency constraints
+        $teacherFrequencyConflict = $this->checkTeacherFrequency($request);
+        if ($teacherFrequencyConflict) {
+            return back()->withErrors(['teacher_ids' => 'One or more teachers exceed the allowed number of periods per day (max 2).'])->withInput();
         }
 
         // dd($request->all());
@@ -142,6 +148,39 @@ class CreateController extends Controller
 
         if ($weeklyCount >= 4) {
             return true;
+        }
+
+        return false;
+    }
+
+    private function checkTeacherFrequency(Request $request)
+    {
+        // Derive day_of_week if time_slot_id is provided
+        $dayOfWeek = $request->day_of_week;
+        if ($request->filled('time_slot_id')) {
+            $timeSlot = TimeSlot::find($request->time_slot_id);
+            if ($timeSlot) {
+                $dayOfWeek = $timeSlot->day_of_week;
+            }
+        }
+
+        if (!$dayOfWeek) {
+            return true; // Conflict if day cannot be determined
+        }
+
+        // For each teacher, check max 2 periods per day
+        foreach ($request->teacher_ids as $teacherId) {
+            $dailyCount = \App\Models\TimetableEntry::whereHas('teachers', function ($q) use ($teacherId) {
+                $q->where('teacher_id', $teacherId);
+            })
+            ->where('academic_year_id', $request->academic_year_id)
+            ->where('semester_id', $request->semester_id)
+            ->where('day_of_week', $dayOfWeek)
+            ->count();
+
+            if ($dailyCount >= 2) {
+                return true;
+            }
         }
 
         return false;
