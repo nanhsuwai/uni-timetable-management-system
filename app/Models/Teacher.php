@@ -35,4 +35,12 @@ class Teacher extends Model
     {
         return $this->hasMany(Section::class, 'section_head_teacher_id');
     }
+
+    /**
+     * Get the timetable entries assigned to this teacher.
+     */
+    public function timetableEntries()
+    {
+        return $this->belongsToMany(TimetableEntry::class, 'timetable_entry_teacher');
+    }
 }
