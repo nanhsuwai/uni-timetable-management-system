@@ -10,13 +10,15 @@ class UpdateController extends Controller
 {
     public function __invoke(Request $request, Classroom $classroom)
     {
+        // Validation
         $request->validate([
-            'section_id' => 'required|exists:sections,id',
-            'room_no' => 'required|string',
+            /* 'section_id' => 'required|exists:sections,id', */
+            'room_no' => 'required|string|max:50',
         ]);
 
+        // Update classroom
         $classroom->update([
-            'section_id' => $request->section_id,
+            /* 'section_id' => $request->section_id, */
             'room_no' => $request->room_no,
         ]);
 

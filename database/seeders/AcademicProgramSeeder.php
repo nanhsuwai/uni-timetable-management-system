@@ -31,6 +31,8 @@ class AcademicProgramSeeder extends Seeder
                         \App\Enums\LevelName::SecondYear->value,
                         \App\Enums\LevelName::ThirdYear->value,
                         \App\Enums\LevelName::FourthYear->value,
+                        \App\Enums\LevelName::FifthYear->value,
+
                     ]
                 ],
                 [
@@ -40,6 +42,8 @@ class AcademicProgramSeeder extends Seeder
                         \App\Enums\LevelName::SecondYear->value,
                         \App\Enums\LevelName::ThirdYear->value,
                         \App\Enums\LevelName::FourthYear->value,
+                        \App\Enums\LevelName::FifthYear->value,
+
                     ]
                 ],
                 [
@@ -49,14 +53,7 @@ class AcademicProgramSeeder extends Seeder
                         \App\Enums\LevelName::Diploma->value, 
                     ]
                 ],
-                [
-                    'name' => 'Master',
-                    'program_type' => 'Master',
-                    'levels' => [
-                        \App\Enums\LevelName::Coursework->value,
-                        \App\Enums\LevelName::Thesis->value
-                    ]
-                ],
+               
             ];
 
             foreach ($programs as $programData) {

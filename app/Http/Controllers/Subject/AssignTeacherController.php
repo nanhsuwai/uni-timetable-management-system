@@ -17,12 +17,12 @@ class AssignTeacherController extends Controller
     public function show(Subject $subject)
     {
         $subject->load([
-            'teachers:id,name,code'
+            'teachers:id,name'
         ]);
 
         $availableTeachers = Teacher::whereDoesntHave('subjects', function($query) use ($subject) {
             $query->where('subject_id', $subject->id);
-        })->select('id', 'name', 'code')->get();
+        })->select('id', 'name')->get();
 
         $assignedTeachers = $subject->teachers;
 
@@ -88,7 +88,7 @@ class AssignTeacherController extends Controller
      */
     public function getAssignedTeachers(Subject $subject)
     {
-        $teachers = $subject->teachers()->select('id', 'name', 'code')->get();
+        $teachers = $subject->teachers()->select('id', 'name')->get();
 
         return response()->json([
             'teachers' => $teachers

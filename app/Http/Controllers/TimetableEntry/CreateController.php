@@ -19,8 +19,8 @@ class CreateController extends Controller
             'section_id' => 'required|exists:sections,id',
             'classroom_id' => 'required|exists:classrooms,id',
             'subject_id' => 'required|exists:subjects,id',
-            // 'teacher_ids' => 'required|array|min:1',
-            // 'teacher_ids.*' => 'exists:teachers,id',
+            'teacher_ids' => 'required|array|min:1',
+            'teacher_ids.*' => 'exists:teachers,id',
             'time_slot_id' => 'required|exists:time_slots,id',
             'day_of_week' => 'nullable|string',
             'start_time' => 'nullable|date_format:H:i',
@@ -47,7 +47,7 @@ class CreateController extends Controller
             return back()->withErrors(['subject_id' => 'The subject can only be scheduled up to 2 times per day and 4 times per week for this section.'])->withInput();
         }
 
-// dd($request->all());
+        // dd($request->all());
         $data = $request->except('teacher_ids');
 
         // If time_slot_id is provided, populate start_time, end_time, and day_of_week from the time slot
@@ -73,8 +73,8 @@ class CreateController extends Controller
     private function checkTimeSlotConflicts(Request $request)
     {
         $query = TimetableEntry::where('academic_year_id', $request->academic_year_id)
-                                ->where('semester_id', $request->semester_id)
-                                ->where('day_of_week', $request->day_of_week);
+            ->where('semester_id', $request->semester_id)
+            ->where('day_of_week', $request->day_of_week);
 
         // If time_slot_id is provided, get the time details
         if ($request->filled('time_slot_id')) {
@@ -92,7 +92,7 @@ class CreateController extends Controller
             $query->where(function ($q) use ($startTime, $endTime) {
                 $q->where(function ($q2) use ($startTime, $endTime) {
                     $q2->where('start_time', '<', $endTime)
-                       ->where('end_time', '>', $startTime);
+                        ->where('end_time', '>', $startTime);
                 });
             });
         }
@@ -100,7 +100,7 @@ class CreateController extends Controller
         // Check for conflicts with the same section or classroom
         $conflicts = $query->where(function ($q) use ($request) {
             $q->where('section_id', $request->section_id)
-              ->orWhere('classroom_id', $request->classroom_id);
+                ->orWhere('classroom_id', $request->classroom_id);
         })->exists();
 
         return $conflicts;
@@ -123,11 +123,11 @@ class CreateController extends Controller
 
         // Check daily frequency: max 2 times per day
         $dailyCount = TimetableEntry::where('academic_year_id', $request->academic_year_id)
-                                    ->where('semester_id', $request->semester_id)
-                                    ->where('section_id', $request->section_id)
-                                    ->where('subject_id', $request->subject_id)
-                                    ->where('day_of_week', $dayOfWeek)
-                                    ->count();
+            ->where('semester_id', $request->semester_id)
+            ->where('section_id', $request->section_id)
+            ->where('subject_id', $request->subject_id)
+            ->where('day_of_week', $dayOfWeek)
+            ->count();
 
         if ($dailyCount >= 2) {
             return true;
@@ -135,10 +135,10 @@ class CreateController extends Controller
 
         // Check weekly frequency: max 4 times per week
         $weeklyCount = TimetableEntry::where('academic_year_id', $request->academic_year_id)
-                                     ->where('semester_id', $request->semester_id)
-                                     ->where('section_id', $request->section_id)
-                                     ->where('subject_id', $request->subject_id)
-                                     ->count();
+            ->where('semester_id', $request->semester_id)
+            ->where('section_id', $request->section_id)
+            ->where('subject_id', $request->subject_id)
+            ->count();
 
         if ($weeklyCount >= 4) {
             return true;

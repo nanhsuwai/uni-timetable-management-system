@@ -69,10 +69,10 @@ class TimetableEntry extends Model
         return $this->belongsTo(Subject::class);
     }
 
-    public function teacher()
+   /*  public function teacher()
     {
         return $this->belongsToMany(Teacher::class, 'timetable_entry_teacher');
-    }
+    } */
 
     public function teachers()
     {

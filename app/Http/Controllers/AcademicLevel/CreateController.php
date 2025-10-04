@@ -17,9 +17,9 @@ class CreateController extends Controller
 
         // Validate that the program belongs to the active academic year
         $program = \App\Models\AcademicProgram::find($request->program_id);
-        if (!$program || ($activeAcademicYear && $program->academic_year_id != $activeAcademicYear->id)) {
+        /* if (!$program || ($activeAcademicYear && $program->academic_year_id != $activeAcademicYear->id)) {
             return back()->withErrors(['program_id' => 'The selected program does not belong to the active academic year.']);
-        }
+        } */
 
         // Create level instance to validate
         $level = new AcademicLevel([
@@ -27,9 +27,9 @@ class CreateController extends Controller
             'name' => $request->name,
         ]);
 
-        if (!$level->validateLevelForProgramType()) {
+        /* if (!$level->validateLevelForProgramType()) {
             return back()->withErrors(['name' => 'This level is not allowed for the selected program type.']);
-        }
+        } */
 
         try {
             $level->save();

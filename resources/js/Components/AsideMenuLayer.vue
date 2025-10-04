@@ -34,49 +34,30 @@ const asideLgCloseClick = (event) => {
 </script>
 
 <template>
-  <aside
-    id="aside"
-    class="md:pl-2 lg:py-2 lg:pl-2 w-60 fixed flex z-40 top-0 h-screen transition-position overflow-hidden"
-  >
-    <div
-      :class="styleStore.asideStyle"
-      class="lg:rounded-2xl flex-1 flex flex-col overflow-hidden dark:bg-slate-900"
-    >
-      <div
-        :class="styleStore.asideBrandStyle"
-        class="flex flex-row h-14 items-center justify-between dark:bg-slate-900"
-      >
+  <aside id="aside"
+    class="md:pl-2 lg:py-2 lg:pl-2 w-60 fixed flex z-40 top-0 h-screen transition-position overflow-hidden">
+    <div :class="styleStore.asideStyle" class="lg:rounded-2xl flex-1 flex flex-col overflow-hidden dark:bg-slate-900">
+      <div :class="styleStore.asideBrandStyle"
+        class="flex flex-row h-14 items-center justify-between dark:bg-slate-900">
         <div
-          class="text-center flex-1 lg:text-left lg:pl-6 xl:text-center xl:pl-0 flex items-center justify-center lg:justify-start"
-        >
+          class="text-center flex-1 lg:text-left lg:pl-6 xl:text-center xl:pl-0 flex items-center justify-center lg:justify-start">
           <div class="flex items-center space-x-3">
-            <img
-              src="/images/logo.png"
-              alt="University of Computer Studies, Hinthada Logo"
-              class="w-30 h-16 object-contain"
-            />
-            <div class="hidden sm:block">
-              <div class="font-bold text-sm text-gray-800 dark:text-white">University of</div>
-              <div class="font-bold text-sm text-gray-800 dark:text-white">Computer Studies</div>
-              <div class="font-bold text-sm text-gray-800 dark:text-white">Hinthada</div>
+            <img src="/images/logo.png" alt="University of Computer Studies, Hinthada Logo"
+              class="w-20 h-10 object-contain" />
+            <div class="">
+              Timetable App
             </div>
           </div>
         </div>
-        <button
-          class="hidden lg:inline-block xl:hidden p-3"
-          @click.prevent="asideLgCloseClick"
-        >
+        <button class="hidden lg:inline-block xl:hidden p-3" @click.prevent="asideLgCloseClick">
           <BaseIcon :path="mdiClose" />
         </button>
       </div>
-      <div
-        :class="
-          styleStore.darkMode
-            ? 'aside-scrollbars-[slate]'
-            : styleStore.asideScrollbarsStyle
-        "
-        class="flex-1 overflow-y-auto overflow-x-hidden"
-      >
+     
+      <div :class="styleStore.darkMode
+          ? 'aside-scrollbars-[slate]'
+          : styleStore.asideScrollbarsStyle
+        " class="flex-1 overflow-y-auto overflow-x-hidden">
         <AsideMenuList :menu="menu" @menu-click="menuClick" />
       </div>
 

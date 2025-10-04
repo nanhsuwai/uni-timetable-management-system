@@ -22,21 +22,21 @@ const props = defineProps({
   },
 });
 
-const filterCode = ref(props.filters.filterCode || "");
+/* const filterCode = ref(props.filters.filterCode || ""); */
 const filterName = ref(props.filters.filterName || "");
 const filterEmail = ref(props.filters.filterEmail || "");
 const filterDepartment = ref(props.filters.filterDepartment || "");
 
-watch([filterCode, filterName, filterEmail, filterDepartment], ([newCode, newName, newEmail, newDepartment]) => {
+watch([ filterName, filterEmail, filterDepartment], ([ newName, newEmail, newDepartment]) => {
   router.get(
     route("teacher:all"),
-    { filterCode: newCode, filterName: newName, filterEmail: newEmail, filterDepartment: newDepartment },
+    {  filterName: newName, filterEmail: newEmail, filterDepartment: newDepartment },
     { preserveState: true, replace: true }
   );
 });
 
 const form = useForm({
-  code: "",
+  
   name: "",
   email: "",
   phone: "",
@@ -57,7 +57,7 @@ const showCreateModal = () => {
 
 const showEditModal = (teacher) => {
   editingTeacher.value = teacher;
-  form.code = teacher.code;
+  
   form.name = teacher.name;
   form.email = teacher.email;
   form.phone = teacher.phone;
@@ -132,7 +132,7 @@ const deleteTeacher = () => {
       <div
         class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded-lg shadow"
       >
-        <div>
+        <!-- <div>
           <InputLabel for="filterCode" value="Search by Code" />
           <TextInput
             id="filterCode"
@@ -141,7 +141,7 @@ const deleteTeacher = () => {
             placeholder="Search teachers by code..."
             class="w-full"
           />
-        </div>
+        </div> -->
         <div>
           <InputLabel for="filterName" value="Search by Name" />
           <TextInput
@@ -170,7 +170,7 @@ const deleteTeacher = () => {
             <thead class="bg-gray-100 text-gray-700 uppercase text-xs sticky top-0">
               <tr>
                 <th class="px-4 py-3">#</th>
-                <th class="px-4 py-3">Code</th>
+                <!-- <th class="px-4 py-3">Code</th> -->
                 <th class="px-4 py-3">Name</th>
                 <th class="px-4 py-3">Email</th>
                 <th class="px-4 py-3">Phone</th>
@@ -188,7 +188,7 @@ const deleteTeacher = () => {
                 <td class="px-4 py-2 border-b">
                   {{ index + 1 + (props.teachers.per_page * (props.teachers.current_page - 1)) }}
                 </td>
-                <td class="px-4 py-2 border-b">{{ teacher.code }}</td>
+                <!-- <td class="px-4 py-2 border-b">{{ teacher.code }}</td> -->
                 <td class="px-4 py-2 border-b">{{ teacher.name }}</td>
                 <td class="px-4 py-2 border-b">{{ teacher.email }}</td>
                 <td class="px-4 py-2 border-b">{{ teacher.phone }}</td>
@@ -230,7 +230,7 @@ const deleteTeacher = () => {
             {{ editingTeacher ? "Edit Teacher" : "Add Teacher" }}
           </h2>
           <div class="space-y-4">
-            <div>
+            <!-- <div>
               <InputLabel for="code" value="Code" />
               <TextInput
                 id="code"
@@ -239,7 +239,7 @@ const deleteTeacher = () => {
                 class="w-full"
               />
               <InputError :message="form.errors.code" />
-            </div>
+            </div> -->
             <div>
               <InputLabel for="name" value="Name" />
               <TextInput

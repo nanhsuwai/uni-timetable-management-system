@@ -300,10 +300,9 @@ const downloadPDF = () => {
           label="Table View" />
         <BaseButton v-if="allSelectionsComplete" @click="downloadPDF" color="success" icon="mdi-download"
           label="Download PDF" />
-        <BaseButton v-if="allSelectionsComplete" @click="downloadExcel" color="info" icon="mdi-download"
-          label="Download Excel" />
+        
       </SectionTitleLineWithButton>
-      <div v-if="debugInfo.fridayEntries === 0 && filterYear"
+     <!--  <div v-if="debugInfo.fridayEntries === 0 && filterYear"
         class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
         <h4 class="font-semibold text-yellow-800 mb-2">Debug Information:</h4>
         <div class="text-sm text-yellow-700">
@@ -313,7 +312,7 @@ const downloadPDF = () => {
           <p>Friday Entries: {{ debugInfo.fridayEntries }}</p>
           <p>Current Filters: {{ JSON.stringify(debugInfo.currentFilters) }}</p>
         </div>
-      </div>
+      </div> -->
 
       <div class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div>
@@ -386,13 +385,13 @@ const downloadPDF = () => {
             <thead>
               <tr>
                 <th :colspan="1 + uniqueTimeSlots.length"
-                  class="text-center font-bold text-lg bg-gray-100 p-4 border border-gray-300">
+                  class="text-center font-bold text-lg bg-gray-100 p-4 border border-gray-300 text-teal-600">
                   University of Computer Studies, Hinthada
                 </th>
               </tr>
               <tr>
                 <th :colspan="1 + uniqueTimeSlots.length"
-                  class="text-center text-sm bg-gray-50 p-2 border border-gray-300">
+                  class="text-center text-sm bg-gray-50 p-2 border border-gray-300 text-teal-600">
                   <span v-if="selectedYear" class="font-bold text-base">
                     Academic Year: {{ selectedYear.name }}
                   </span>
@@ -403,7 +402,7 @@ const downloadPDF = () => {
               </tr>
               <tr>
                 <th :colspan="1 + uniqueTimeSlots.length"
-                  class="text-center text-sm bg-gray-50 p-2 border border-gray-300">
+                  class="text-center text-sm bg-gray-50 p-2 border border-gray-300 text-teal-600">
                   Timetable For -
                   <span v-if="selectedLevel"> {{ selectedLevel.name }} </span>
                   (<span v-if="selectedProgram">{{ selectedProgram.name }} </span>)
@@ -433,11 +432,11 @@ const downloadPDF = () => {
                   class="border border-gray-300 p-2 text-center min-h-20 align-top" :class="{
                     'bg-orange-50': isLunch(slot)
                   }">
-                  <div v-if="getEntry(day.key, slot)" class="text-xs">
-                    <div class="font-semibold text-blue-800 mb-1">
+                  <div v-if="getEntry(day.key, slot)" class="text-sm">
+                    <div class="font-semibold text-teal-700 mb-1">
                       {{ getSubjectDisplay(getEntry(day.key, slot)) }}
                     </div>
-                    <div class="text-gray-600 mb-1" :class="{
+                    <!-- <div class="text-gray-600 mb-1" :class="{
                       'text-xs': getEntry(day.key, slot).teachers && getEntry(day.key, slot).teachers.length > 1,
                       'text-sm': getEntry(day.key, slot).teachers && getEntry(day.key, slot).teachers.length === 1
                     }">
@@ -450,7 +449,7 @@ const downloadPDF = () => {
                         </span>
                       </span>
                       <span v-else class="text-gray-400">No teacher</span>
-                    </div>
+                    </div> -->
                   </div>
                   <div v-else-if="!isLunch(slot)" class="text-gray-400 text-xs italic">
                     No class
@@ -493,7 +492,7 @@ const downloadPDF = () => {
       <div class="mt-4 p-4 bg-gray-50 rounded-lg">
         <div class="flex flex-wrap gap-4 text-sm">
           <div class="flex items-center">
-            <div class="w-4 h-4 bg-orange-100 border border-gray-300 mr-2"></div>
+            <div class="w-4 h-4 bg-orange-500 border border-gray-300 mr-2"></div>
             <span>Lunch Period</span>
           </div>
           <div class="flex items-center">

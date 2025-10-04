@@ -29,7 +29,7 @@ class CreateController extends Controller
                         'Computer Foundation' => 'CST',
                         'Computer Technology' => 'CT',
                         'Computer Science' => 'CS',
-                        'Master' => 'Master'
+                        /* 'Master' => 'Master' */
                     },
                 ]);
                 $createdCount++;

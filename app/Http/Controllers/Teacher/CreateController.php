@@ -11,16 +11,16 @@ class CreateController extends Controller
     public function __invoke(Request $request)
     {
         $request->validate([
-            'code' => 'required|string|unique:teachers,code',
+            
             'name' => 'required|string',
             'email' => 'nullable|email|unique:teachers,email',
             'phone' => 'nullable|string',
-            'department' => 'nullable|string',
+            'department' => 'required|string',
             'head_of_department' => 'boolean',
         ]);
 
         Teacher::create([
-            'code' => $request->code,
+           /*  'code' => $request->code, */
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,

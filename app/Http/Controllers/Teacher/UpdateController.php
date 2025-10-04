@@ -11,16 +11,16 @@ class UpdateController extends Controller
     public function __invoke(Request $request, Teacher $teacher)
     {
         $request->validate([
-            'code' => 'required|string|unique:teachers,code,' . $teacher->id,
+           /*  'code' => 'required|string|unique:teachers,code,' . $teacher->id, */
             'name' => 'required|string',
             'email' => 'nullable|email|unique:teachers,email,' . $teacher->id,
             'phone' => 'nullable|string',
-            'department' => 'nullable|string',
+            'department' => 'required|string',
             'head_of_department' => 'boolean',
         ]);
 
         $teacher->update([
-            'code' => $request->code,
+            /* 'code' => $request->code, */
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,

@@ -20,9 +20,9 @@ class TimetableTemplate
     protected $classroom;
     protected $template;
     protected $mpdf;
-    
+
     // New property to hold the Excel data array
-    protected $excelData; 
+    protected $excelData;
 
     use MPDFTrait;
 
@@ -47,8 +47,8 @@ class TimetableTemplate
             'margin_right' => 10,
             'margin_top' => 5,
             'margin_bottom' => 10,
-            'format' => 'A4-L', // Landscape
-            'orientation' => 'L',
+            'format' => 'A4',
+            'orientation' => 'P',
             'defaultPageNumStyle' => 'myanmar'
         ];
         $this->mpdf = $this->mpdf($configs);
@@ -79,13 +79,13 @@ class TimetableTemplate
         foreach ($days as $day) {
             $row = ['Day' => $day];
             foreach ($timeSlots as $time) {
-                $entry = $this->entries->first(function($e) use ($day, $time) {
+                $entry = $this->entries->first(function ($e) use ($day, $time) {
                     return $e->timeSlot->day_of_week == strtolower($day) && $e->timeSlot->start_time == $time;
                 });
-                
+
                 $slot = $this->timeSlots->firstWhere('start_time', $time);
                 $isLunch = $slot?->is_lunch_period ?? false;
-                
+
                 if ($isLunch) {
                     $content = 'LUNCH BREAK';
                 } elseif ($entry) {
@@ -115,16 +115,19 @@ class TimetableTemplate
 
         $html = '<h1 style="text-align: center;">University of Computer Studies, Hinthada</h1>';
         if ($this->academicYear) {
-            $html .= '<p style="text-align: center;">Academic Year: ' . $this->academicYear->name . '</p>';
+            $html .= '<p style="text-align: center; color:green;">Academic Year: ' . $this->academicYear->name;
+            if ($this->semester) $html .= '(' . $this->semester->name . ')';
+            '</p>';
         }
-        $html .= '<p style="text-align: center;">';
-        if ($this->semester) $html .= 'Semester: ' . $this->semester->name . ' | ';
-        if ($this->program) $html .= 'Program: ' . $this->program->name . ' | ';
-        if ($this->level) $html .= 'Level: ' . $this->level->name . ' | ';
-        if ($this->section) $html .= 'Section: ' . $this->section->name . ' | ';
-        if ($this->section && $this->section->classroom) $html .= 'Classroom: ' . $this->section->classroom->room_no;
-        $html .= '</p>';
+        $html .= '<p style="text-align: center;">Timetable For - ';
 
+        if ($this->level) $html .=  $this->level->name;
+        if ($this->program) $html .= '(' . $this->program->name . ')';
+
+        if ($this->section) $html .= '(' . $this->section->name . ')';
+
+        $html .= '</p>';
+        if ($this->section && $this->section->classroom) $html .= 'Classroom: ' . $this->section->classroom->room_no;
         $html .= '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;">';
         $html .= '<thead><tr>';
         $html .= '<th style="border: 1px solid #d1d5db; padding: 12px; background-color: #f9fafb; font-weight: 600; font-size: 14px; width: 96px;">Day</th>';
@@ -148,7 +151,7 @@ class TimetableTemplate
             $html .= '<tr>';
             $html .= '<td style="border: 1px solid #d1d5db; padding: 12px; background-color: #f9fafb; font-weight: 600; text-align: center;">' . $day . '</td>';
             foreach ($timeSlots as $time) {
-                $entry = $this->entries->first(function($e) use ($day, $time) {
+                $entry = $this->entries->first(function ($e) use ($day, $time) {
                     return $e->timeSlot->day_of_week == strtolower($day) && $e->timeSlot->start_time == $time;
                 });
                 $slot = $this->timeSlots->firstWhere('start_time', $time);
@@ -170,7 +173,8 @@ class TimetableTemplate
                     $roomNo = $entry->classroom ? $entry->classroom->room_no : 'No room';
                     $html .= '<div style="font-size: 12px;">';
                     $html .= '<div style="font-weight: 600; color: #1e40af; margin-bottom: 4px;">' . $subjectName . '</div>';
-                    $html .= '<div style="color: #4b5563; margin-bottom: 4px; font-size: ' . ($teacherCount > 1 ? '12px' : '14px') . ';">' . $teacherDisplay . '</div>';
+                    /*                     $html .= '<div style="color: #4b5563; margin-bottom: 4px; font-size: ' . ($teacherCount > 1 ? '12px' : '14px') . ';">' . $teacherDisplay . '</div>';
+ */
                     $html .= '</div>';
                 } elseif (!$isLunch) {
                     $html .= '<div style="color: #9ca3af; font-size: 12px; font-style: italic;">No class</div>';
@@ -183,17 +187,31 @@ class TimetableTemplate
 
         // Subject Codes List
         $uniqueSubjects = collect($this->entries)->pluck('subject')->unique('id')->sortBy('code');
+        if ($this->section && $this->section->sectionHeadTeacher) {
+            $html .= '<h4 style="font-weight:600; margin-bottom:8px;">
+                 သင်တန်းမှူး - ' . $this->section->sectionHeadTeacher->name . '
+              </h4>';
+        }
+
         if ($uniqueSubjects->isNotEmpty()) {
-            $html .= '<h4 style="margin-top: 20px;">Subject Codes</h4>';
+
+
             $html .= '<table style="width: 50%; border-collapse: collapse; margin-top: 10px;">';
             $html .= '<thead><tr>';
-            $html .= '<th style="border: 1px solid #d1d5db; padding: 8px; background-color: #f9fafb; font-weight: 600; font-size: 12px;">Code</th>';
-            $html .= '<th style="border: 1px solid #d1d5db; padding: 8px; background-color: #f9fafb; font-weight: 600; font-size: 12px;">Name</th>';
+            $html .= '<th style="border: 1px solid #d1d5db; padding: 8px; background-color: #f9fafb; font-weight: 600; font-size: 12px;">Subject Code</th>';
+            $html .= '<th style="border: 1px solid #d1d5db; padding: 8px; background-color: #f9fafb; font-weight: 600; font-size: 12px;">Subject Name</th>';
+            $html .= '<th style="border: 1px solid #d1d5db; padding: 8px; background-color: #f9fafb; font-weight: 600; font-size: 12px;">Teacher Name</th>';
+
             $html .= '</tr></thead><tbody>';
             foreach ($uniqueSubjects as $subject) {
                 $html .= '<tr>';
                 $html .= '<td style="border: 1px solid #d1d5db; padding: 8px; font-size: 12px;">' . $subject->code . '</td>';
                 $html .= '<td style="border: 1px solid #d1d5db; padding: 8px; font-size: 12px;">' . $subject->name . '</td>';
+                $html .= '<td style="border:1px solid #d1d5db; padding:6px; font-size:12px; color:#374151; font-weight:500;">
+                        ' . ($subject->teacherNames) . ' 
+                            </td>';
+
+
                 $html .= '</tr>';
             }
             $html .= '</tbody></table>';
