@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\TimetableEntry;
 
 use App\Http\Controllers\Controller;
+use App\Models\Semester;
 use App\Models\TimetableEntry;
 use App\Models\TimeSlot;
 use Illuminate\Http\Request;
@@ -65,7 +66,42 @@ class CreateController extends Controller
                 $data['day_of_week'] = $timeSlot->day_of_week;
             }
         }
+        $duplicatePeriod = TimetableEntry::where('academic_year_id', $data['academic_year_id'])
+            ->where('semester_id', $data['semester_id'])
+            ->where('section_id', $data['section_id'])
+            ->where('subject_id', $data['subject_id'])
+            ->where('time_slot_id', $data['time_slot_id'])
+            ->first();
 
+        if ($duplicatePeriod) {
+            return back()->withErrors(['error' => 'This subject is already scheduled for the selected section in the same time slot.'])->withInput();
+        }
+        $checkDuplicateTeacher = TimetableEntry::where('academic_year_id', $data['academic_year_id'])
+            ->where('semester_id', $data['semester_id'])
+            ->where('time_slot_id', $data['time_slot_id'])
+            ->where('day_of_week', $data['day_of_week'])
+            ->where(function ($q) use ($data) {
+                $q->where('section_id', $data['section_id'])
+                  ->orWhere('classroom_id', $data['classroom_id']);
+            })
+            ->whereHas('teachers', function ($q) use ($request) {
+                $q->whereIn('teacher_id', $request->teacher_ids);
+            })
+            ->first();
+        if ($checkDuplicateTeacher) {
+            return back()->withErrors(['error' => 'One or more selected teachers are already assigned to another class during the selected time slot.'])->withInput();
+        }
+     //timetable entry count  for each section of a program in a semester should not exceed 40
+        $timetableEntryCount = TimetableEntry::where('academic_year_id', $data['academic_year_id'])
+            ->where('semester_id', $data['semester_id'])
+            ->where('section_id', $data['section_id'])
+            ->count();
+        $semester = Semester::where('academic_year_id',$data['academic_year_id'])->where('id',$data['semester_id'])->first();
+        $timeSlotCount = TimeSlot::where('academic_year_id',$data['academic_year_id'])->where('semester',$semester->name)->count();
+        if ($timetableEntryCount >= $timeSlotCount) {
+            return back()->withErrors(['error' => 'The number of timetable entries for this section exceeds the available time slots.'])->withInput();
+        }
+        
         $timetableEntry = TimetableEntry::create($data);
 
         // Attach teachers to the timetable entry
