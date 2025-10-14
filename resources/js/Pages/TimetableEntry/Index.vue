@@ -245,7 +245,7 @@ const createOrUpdateEntry = () => {
     form.post(route("timetable_entry:update", { timetableEntry: editingEntry.value.id }), {
       preserveScroll: true,
       onSuccess: () => {
-        // closeModal();
+        closeModal();
         toast.add({ message: "✅ Timetable entry updated!" });
       },
       onError: (err) => {
@@ -256,7 +256,7 @@ const createOrUpdateEntry = () => {
     form.post(route("timetable_entry:create"), {
       preserveScroll: true,
       onSuccess: () => {
-        // closeModal();
+        closeModal();
         toast.add({ message: "Timetable entry created!" });
       },
       onError: (err) => {

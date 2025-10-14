@@ -33,7 +33,7 @@ class CreateController extends Controller
         // Ensure the academic year is active
         $academicYear = \App\Models\AcademicYear::find($request->academic_year_id);
         if (!$academicYear || !$academicYear->isActive()) {
-            return back()->withErrors(['academic_year_id' => 'The selected academic year must be active.'])->withInput();
+            return back()->withErrors(['error' => 'The selected academic year must be active.'])->withInput();
         }
 
         // Check for time slot conflicts
@@ -51,7 +51,7 @@ class CreateController extends Controller
         // Check for teacher period frequency constraints
         $teacherFrequencyConflict = $this->checkTeacherFrequency($request);
         if ($teacherFrequencyConflict) {
-            return back()->withErrors(['teacher_ids' => 'One or more teachers exceed the allowed number of periods per day (max 2).'])->withInput();
+            return back()->withErrors(['error' => 'One or more teachers exceed the allowed number of periods per day (max 2).'])->withInput();
         }
 
 // dd($request->all());
