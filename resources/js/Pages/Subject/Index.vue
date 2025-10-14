@@ -134,6 +134,7 @@ const assignTeachers = (subject) => {
 
 <template>
   <LayoutAuthenticated>
+
     <Head title="Subjects" />
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -151,7 +152,8 @@ const assignTeachers = (subject) => {
         </div>
         <div>
           <InputLabel for="filterName" value="Name" />
-          <TextInput id="filterName" v-model="filterName" type="text" placeholder="e.g., Intro to Programming" class="w-full" />
+          <TextInput id="filterName" v-model="filterName" type="text" placeholder="e.g., Intro to Programming"
+            class="w-full" />
         </div>
         <div>
           <InputLabel for="filterLevel" value="Level" />
@@ -185,22 +187,30 @@ const assignTeachers = (subject) => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(subject, index) in props.subjects.data" :key="subject.id" class="hover:bg-gray-50 transition cursor-pointer">
-              <td class="px-4 py-2 border-b">{{ index + 1 + (props.subjects.per_page * (props.subjects.current_page - 1)) }}</td>
+            <tr v-for="(subject, index) in props.subjects.data" :key="subject.id"
+              class="hover:bg-gray-50 transition cursor-pointer">
+              <td class="px-4 py-2 border-b">{{ index + 1 + (props.subjects.per_page * (props.subjects.current_page -
+                1)) }}</td>
               <td class="px-4 py-2 border-b font-medium">{{ subject.code }}</td>
               <td class="px-4 py-2 border-b">{{ subject.name }}</td>
               <td class="px-4 py-2 border-b">{{ subject.level }}</td>
               <td class="px-4 py-2 border-b">{{ subject.program }}</td>
               <td class="px-4 py-2 border-b">{{ subject.semester }}</td>
               <td class="px-4 py-2 border-b capitalize">
-                <span :class="['px-3 py-1 text-xs rounded-full font-medium', subject.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">
+                <span
+                  :class="['px-3 py-1 text-xs rounded-full font-medium', subject.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">
                   {{ subject.status }}
                 </span>
               </td>
               <td class="px-4 py-2 border-b space-x-2 flex justify-center">
-                <button @click.prevent="showEditModal(subject)" class="px-3 py-1 rounded-md bg-blue-500 text-white text-xs hover:bg-blue-600">Edit</button>
-                <button @click.prevent="assignTeachers(subject)" class="px-3 py-1 rounded-md bg-green-500 text-white text-xs hover:bg-green-600">Assign</button>
-                <button @click.prevent="showDeleteSubjectModal(subject)" class="px-3 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600">Delete</button>
+                <button @click.prevent="assignTeachers(subject)"
+                  class="px-3 py-1 rounded-md bg-green-500 text-white text-xs hover:bg-green-600">Assign
+                  Teachers</button>
+
+                <button @click.prevent="showEditModal(subject)"
+                  class="px-3 py-1 rounded-md bg-blue-500 text-white text-xs hover:bg-blue-600">Edit</button>
+                <button @click.prevent="showDeleteSubjectModal(subject)"
+                  class="px-3 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600">Delete</button>
               </td>
             </tr>
             <tr v-if="props.subjects.data.length === 0">
@@ -218,7 +228,8 @@ const assignTeachers = (subject) => {
       <!-- Create/Edit Modal -->
       <Modal :show="confirmingSubjectCreation" @close="closeModal">
         <div class="p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ editingSubject ? "Edit Subject" : "Add Subject" }}</h2>
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ editingSubject ? "Edit Subject" : "Add Subject" }}
+          </h2>
           <div class="space-y-4">
             <div>
               <InputLabel for="code" value="Code" />
@@ -265,7 +276,8 @@ const assignTeachers = (subject) => {
           </div>
           <div class="mt-6 flex justify-end space-x-2">
             <SecondaryButton @click.prevent="closeModal">Cancel</SecondaryButton>
-            <PrimaryButton :disabled="form.processing" @click.prevent="createOrUpdateSubject">{{ editingSubject ? "Update" : "Create" }}</PrimaryButton>
+            <PrimaryButton :disabled="form.processing" @click.prevent="createOrUpdateSubject">{{ editingSubject ?
+              "Update" : "Create" }}</PrimaryButton>
           </div>
         </div>
       </Modal>
@@ -274,10 +286,12 @@ const assignTeachers = (subject) => {
       <Modal :show="showDeleteModal" @close="closeDeleteModal">
         <div class="p-6">
           <h2 class="text-lg font-semibold text-red-600 mb-2">Delete Subject</h2>
-          <p class="text-sm text-gray-600">Are you sure you want to delete this subject? This action cannot be undone.</p>
+          <p class="text-sm text-gray-600">Are you sure you want to delete this subject? This action cannot be undone.
+          </p>
           <div class="mt-6 flex justify-end space-x-2">
             <SecondaryButton @click.prevent="closeDeleteModal">Cancel</SecondaryButton>
-            <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="form.processing" @click.prevent="deleteSubject">Delete</PrimaryButton>
+            <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="form.processing"
+              @click.prevent="deleteSubject">Delete</PrimaryButton>
           </div>
         </div>
       </Modal>

@@ -15,7 +15,7 @@ class SubjectSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+   /*  public function run()
     {
         $subjects = [
             ProgramOption::CST->value => [
@@ -165,5 +165,5 @@ class SubjectSeeder extends Seeder
             $assignedTeachers = $teachers->random(rand(1, 3));
             $subject->teachers()->syncWithoutDetaching($assignedTeachers->pluck('id')->toArray());
         }
-    }
+    } */
 }

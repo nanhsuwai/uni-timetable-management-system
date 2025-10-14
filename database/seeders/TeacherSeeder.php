@@ -18,7 +18,7 @@ class TeacherSeeder extends Seeder
         // List of teachers
         $teachers = [
             [
-                'code' => 'T001', 
+                
                 'name' => 'Daw Win Theigi Myint', 
                 'email' => 'wintheigimyint@ucsh.edu.mm', 
                 'phone' => '+959123456789', 
@@ -27,7 +27,7 @@ class TeacherSeeder extends Seeder
                 'head_of_department' => true
             ],
             [
-                'code' => 'T002', 
+                 
                 'name' => 'Dr. Khin Theint Theint Soe', 
                 'email' => 'khintheinttheintsoe@ucsh.edu.mm', 
                 'phone' => '+959123456790', 
@@ -36,9 +36,18 @@ class TeacherSeeder extends Seeder
                 'head_of_department' => false
             ],
             [
-                'code' => 'T004',
+                
                 'name' => 'Dr. Thidar Win',
                 'email' => 'thidarwin@ucsh.edu.mm',
+                'phone' => '+959123456792',
+                'status' => 'active',
+                'department' => DepartmentOption::FCST,
+                'head_of_department' => true
+            ],
+             [
+                
+                'name' => 'ဒေါက်တာချယ်ရီထွန်း',
+                'email' => ' ',
                 'phone' => '+959123456792',
                 'status' => 'active',
                 'department' => DepartmentOption::FCST,

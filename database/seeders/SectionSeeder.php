@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\AcademicLevel;
+use App\Models\Section;
+use App\Models\Teacher;
 
 class SectionSeeder extends Seeder
 {
@@ -14,31 +16,27 @@ class SectionSeeder extends Seeder
      */
     public function run()
     {
-        $levels = \App\Models\AcademicLevel::all();
-        $teachers = \App\Models\Teacher::all();
+        $levels = AcademicLevel::all();
+        $teachers = Teacher::all();
 
         foreach ($levels as $level) {
-            // Default Section A for all levels
-            \App\Models\Section::firstOrCreate([
-                'level_id' => $level->id,
-                'name' => 'A',
-            ], [
-                'status' => 'active',
-                'section_head_teacher_id' => $teachers->random()->id,
-            ]);
+            // Define section names (A and B only)
+            $sectionNames = ['A', 'B'];
 
-            // Sections B and C for SecondYear, ThirdYear, FourthYear
-            if (in_array($level->name, ['Second Year', 'Third Year', 'Fourth Year'])) {
-                $additionalSections = ['B', 'C'];
-                foreach ($additionalSections as $sectionName) {
-                    \App\Models\Section::firstOrCreate([
+            foreach ($sectionNames as $index => $sectionName) {
+                // Assign deterministic teacher as section head based on index
+                $sectionHeadTeacher = $teachers->get($index % $teachers->count());
+
+                Section::firstOrCreate(
+                    [
                         'level_id' => $level->id,
                         'name' => $sectionName,
-                    ], [
+                    ],
+                    [
                         'status' => 'active',
-                        'section_head_teacher_id' => $teachers->random()->id,
-                    ]);
-                }
+                        'section_head_teacher_id' => $sectionHeadTeacher->id,
+                    ]
+                );
             }
         }
     }

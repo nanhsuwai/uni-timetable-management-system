@@ -52,7 +52,7 @@ const statsCards = computed(() => [
   { title: "Semesters", value: props.stats.total_semesters || 0, icon: mdiClockTimeFour, color: "success" },
   { title: "Academic Programs", value: props.stats.total_programs || 0, icon: mdiFileDocument, color: "warning" },
   { title: "Academic Levels", value: props.stats.total_levels || 0, icon: mdiFileChart, color: "danger" },
-  { title: "Sections", value: props.stats.total_sections || 0, icon: mdiAccountSchool, color: "info" },
+  { title: "Timetables", value: props.stats.total_sections || 0, icon: mdiAccountSchool, color: "info" },
   { title: "Classrooms", value: props.stats.total_classrooms || 0, icon: mdiShape, color: "success" },
   { title: "Subjects", value: props.stats.total_subjects || 0, icon: mdiBookshelf, color: "warning" },
   { title: "Teachers", value: props.stats.total_teachers || 0, icon: mdiAccountArrowRight, color: "danger" },
