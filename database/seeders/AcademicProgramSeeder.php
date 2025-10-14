@@ -20,7 +20,7 @@ class AcademicProgramSeeder extends Seeder
             // Create academic programs
             $programs = [
                 [
-                    'name' => 'Computer Foundation',
+                    'name' => 'CST',
                     'program_type' => 'CST',
                     'levels' => [\App\Enums\LevelName::FirstYear->value]
                 ],

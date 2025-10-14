@@ -18,11 +18,11 @@ class SubjectSeeder extends Seeder
     public function run()
     {
         $subjects = [
-            ProgramOption::ComputerFoundation->value => [
+            ProgramOption::CST->value => [
                 LevelName::FirstYear->value => [
                     SemesterName::FirstSemester->value => [
-                        ['code' => 'CST101', 'name' => 'Computer Fundamentals'],
-                        ['code' => 'CST102', 'name' => 'Programming Basics'],
+                        ['code' => 'M-1201', 'name' => 'Myanmar Language'],
+                        ['code' => 'E-1201', 'name' => 'English   Proficiency II'],
                     ],
                     SemesterName::SecondSemester->value => [
                         ['code' => 'M-1201', 'name' => 'Myanmar Language'],
@@ -36,26 +36,37 @@ class SubjectSeeder extends Seeder
                     ],
                 ],
             ],
-            ProgramOption::ComputerTechnology->value => [
+            ProgramOption::ComputerScience->value => [
                 LevelName::SecondYear->value => [
-                    
+                    SemesterName::FirstSemester->value => [
+                        ['code' => 'CS301', 'name' => 'Data Structures and Algorithms'],
+                        ['code' => 'CS302', 'name' => 'Database Management'],
+                    ],
                     SemesterName::SecondSemester->value => [
                         ['code' => 'E-2201', 'name' => 'English Proficiency IV'],
                         ['code' => 'CST-2211', 'name' => 'Data Structure and Algorithms'],
                         ['code' => 'CST-2242', 'name' => 'Linear Algebra'],
-                        ['code' => 'CST-2223', 'name' => 'Introduction to Software Engineering'],
+                        ['code' => 'CST-2223', 'name' => 'Introduction to Software Engineering '],
                         ['code' => 'CS-2254', 'name' => 'Web Development (Java Script)'],
-                        ['code' => 'CST-2205', 'name' => 'Advanced Java Programming (J2EE)'],
+                        ['code' => 'CST(SS)-2205', 'name' => 'Advanced Java Programming (J2EE)'],
+
                     ],
                 ],
                 LevelName::ThirdYear->value => [
                     SemesterName::FirstSemester->value => [
-                        ['code' => 'CT501', 'name' => 'Software Engineering'],
-                        ['code' => 'CT502', 'name' => 'Computer Networks'],
+                        ['code' => 'CS501', 'name' => 'Software Engineering'],
+                        ['code' => 'CS502', 'name' => 'Computer Networks'],
                     ],
                     SemesterName::SecondSemester->value => [
-                        ['code' => 'CT601', 'name' => 'Artificial Intelligence'],
-                        ['code' => 'CT602', 'name' => 'Cyber Security'],
+                        ['code' => 'CST-3211', 'name' => 'Operating Systems '],
+                        ['code' => 'CST-3242', 'name' => 'Probability and Statistics'],
+                        ['code' => 'CST-3213', 'name' => 'Professional Ethics'],
+                        ['code' => 'CS-3224', 'name' => 'Software Quality Assurance and Testing'],
+                        ['code' => 'CST-3235', 'name' => 'Computer Networks I'],
+                        ['code' => 'CST-3256(SS)', 'name' => 'Human  Computer Interaction'],
+                        ['code' => 'CST-3257(SS)', 'name' => 'Applied Database and Application (ADO.Net,C#)'],
+
+
                     ],
                 ],
                 LevelName::FourthYear->value => [
@@ -68,42 +79,61 @@ class SubjectSeeder extends Seeder
                         ['code' => 'CS-4125', 'name' => 'Software Project Management'],
                         ['code' => 'CS-4134', 'name' => 'Cloud Computing'],
                         ['code' => 'CS-4135', 'name' => 'Data Mining'],
-                    ],
-                   
-                ],
-            ],
-            ProgramOption::ComputerScience->value => [
-                LevelName::SecondYear->value => [
-                    SemesterName::FirstSemester->value => [
-                        ['code' => 'CS301', 'name' => 'Data Structures and Algorithms'],
-                        ['code' => 'CS302', 'name' => 'Database Management'],
+
+
+
                     ],
                     SemesterName::SecondSemester->value => [
-                        ['code' => 'CS401', 'name' => 'Computer Organization'],
-                        ['code' => 'CS402', 'name' => 'Statistics'],
+                        ['code' => 'CST-4211', 'name' => 'Parallel and Distributed Computing'],
+                        ['code' => 'CST-4242', 'name' => 'Modelling & Stimulation'],
+                        ['code' => 'CS-4223', 'name' => 'Object Oriented Design and Development'],
+                        ['code' => 'CS-4214', 'name' => 'Advanced Artificial Intelligence'],
+                        ['code' => ' CS-4225', 'name' => 'Advanced Database Systems'],
+                        ['code' => 'CST-4257', 'name' => 'Digital Business and E-Commerce Management'],
+
+                    ],
+                ],
+            ],
+            ProgramOption::ComputerTechnology->value => [
+                LevelName::SecondYear->value => [
+
+                    SemesterName::SecondSemester->value => [
+                        ['code' => 'E-2201', 'name' => 'English Proficiency IV'],
+                        ['code' => 'CST-2211', 'name' => 'Data Structure and Algorithms'],
+                        ['code' => 'CST-2242', 'name' => 'Linear Algebra'],
+                        ['code' => 'CST-2223', 'name' => 'Introduction to Software Engineering'],
+                        ['code' => 'CT-2234', 'name' => 'Circuits and Electronics'],
+                        ['code' => 'CST(SS)-2205', 'name' => 'Arduino Fundamentals'],
                     ],
                 ],
                 LevelName::ThirdYear->value => [
                     SemesterName::FirstSemester->value => [
-                        ['code' => 'CS501', 'name' => 'Software Engineering'],
-                        ['code' => 'CS502', 'name' => 'Computer Networks'],
+                        ['code' => 'CT501', 'name' => 'Software Engineering'],
+                        ['code' => 'CT502', 'name' => 'Computer Networks'],
                     ],
                     SemesterName::SecondSemester->value => [
-                        ['code' => 'CS601', 'name' => 'Machine Learning'],
-                        ['code' => 'CS602', 'name' => 'Web Technologies'],
+                        ['code' => 'CST-3211', 'name' => 'Operating Systems '],
+                        ['code' => 'CST-3242', 'name' => 'Probability and Statistics'],
+                        ['code' => 'CST-3213', 'name' => 'Professional Ethics'],
+                        ['code' => 'CS-3224', 'name' => 'Software Quality Assurance and Testing'],
+                        ['code' => 'CST-3235', 'name' => 'Computer Networks I'],
+                        ['code' => 'CST-3256(SS)', 'name' => 'Human  Computer Interaction'],
+                        ['code' => 'CST-3257(SS)', 'name' => 'Applied Database and Application (ADO.Net,C#)'],
                     ],
                 ],
                 LevelName::FourthYear->value => [
                     SemesterName::FirstSemester->value => [
-                        ['code' => 'CS701', 'name' => 'Big Data Analytics'],
-                        ['code' => 'CS702', 'name' => 'Mobile Computing'],
+                        ['code' => 'E-4101', 'name' => 'Business English I'],
+                        ['code' => 'CST-4111', 'name' => 'Analysis of Algorithms'],
+                        ['code' => 'CS-4142', 'name' => 'Operations Research'],
+                        ['code' => 'CS-4113', 'name' => 'Computer Vision'],
+                        ['code' => ' CS-4124', 'name' => 'Information Assurance and Security'],
+                        ['code' => 'CST-4125', 'name' => 'Software Project Management'],
                     ],
-                    SemesterName::SecondSemester->value => [
-                        ['code' => 'CS801', 'name' => 'Thesis'],
-                        ['code' => 'CS802', 'name' => 'Internship'],
-                    ],
+
                 ],
             ],
+
 
         ];
 

@@ -9,7 +9,7 @@ enum LevelName: string
     case FourthYear = 'Fourth Year';
     case FifthYear = 'Fifth Year';
     case Diploma = 'Diploma';
-    case Master = 'Master';
+    
    /*  case Coursework = 'Coursework';
     case Thesis = 'Thesis'; */
 }
