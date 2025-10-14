@@ -227,7 +227,7 @@ const getClassroomDisplay = (entry) => {
 
 <template>
 
-    <Head title="Welcome to University of Computer Studies, Hinthada Timetable System" />
+    <Head title="University Timetable Management System" />
 
     <!-- Loading Screen -->
     <div v-if="isLoading"
@@ -286,7 +286,43 @@ const getClassroomDisplay = (entry) => {
 
                 <div v-if="activeTab === 'welcome'">
                     <!-- Back to Timetable Button -->
-
+                    <div class="space-y-3 sm:space-y-4 mb-6 sm:mb-8 px-2 sm:px-0" :class="{
+                        'opacity-100 transform translate-y-0': animateFeatures,
+                        'opacity-0 transform translate-y-4': !animateFeatures
+                    }" style="transition: all 0.6s ease-out 0.6s;">
+                        <div
+                            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-300">
+                            <div class="flex-shrink-0">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-500" fill="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <span class="text-sm sm:text-base text-gray-700">Efficient Academic
+                                Scheduling</span>
+                        </div>
+                        <div
+                            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-300">
+                            <div class="flex-shrink-0">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-teal-500" fill="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path
+                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </div>
+                            <span class="text-sm sm:text-base text-gray-700">Smart Resource Management</span>
+                        </div>
+                        <div
+                            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-300">
+                            <div class="flex-shrink-0">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" fill="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                            <span class="text-sm sm:text-base text-gray-700">Real-time Updates</span>
+                        </div>
+                    </div>
 
                     <!-- Welcome Content -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start mb-12 lg:mb-16" :class="{
@@ -296,7 +332,7 @@ const getClassroomDisplay = (entry) => {
                         <!-- Left Column - Welcome Content -->
                         <div class="text-center lg:text-left order-2 lg:order-1">
                             <!-- University Branding -->
-                            <div class="mb-6 lg:mb-8 justify-items-center" >
+                            <div class="mb-6 lg:mb-8 justify-items-center">
 
 
                                 <p class="text-lg sm:text-xl text-gray-100 mb-4 sm:mb-6">University Timetable Management
@@ -354,43 +390,7 @@ const getClassroomDisplay = (entry) => {
                             </div>
 
                             <!-- Feature Highlights -->
-                            <div class="space-y-3 sm:space-y-4 mb-6 sm:mb-8 px-2 sm:px-0" :class="{
-                                'opacity-100 transform translate-y-0': animateFeatures,
-                                'opacity-0 transform translate-y-4': !animateFeatures
-                            }" style="transition: all 0.6s ease-out 0.6s;">
-                                <div
-                                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-300">
-                                    <div class="flex-shrink-0">
-                                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-500" fill="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <span class="text-sm sm:text-base text-gray-700">Efficient Academic
-                                        Scheduling</span>
-                                </div>
-                                <div
-                                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-300">
-                                    <div class="flex-shrink-0">
-                                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-teal-500" fill="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path
-                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                        </svg>
-                                    </div>
-                                    <span class="text-sm sm:text-base text-gray-700">Smart Resource Management</span>
-                                </div>
-                                <div
-                                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-300">
-                                    <div class="flex-shrink-0">
-                                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" fill="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                        </svg>
-                                    </div>
-                                    <span class="text-sm sm:text-base text-gray-700">Real-time Updates</span>
-                                </div>
-                            </div>
+
 
                             <!-- Call to Action -->
 
