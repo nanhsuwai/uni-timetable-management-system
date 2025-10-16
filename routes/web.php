@@ -19,6 +19,9 @@ use App\Notifications\Register\RegisterMember;
 
 
 
+
+
+
 Route::get('/', WelcomeController::class)->middleware('guest')->name('welcome');
 
 
@@ -31,22 +34,22 @@ Route::middleware('auth')->group(function () {
 });
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
-Route::middleware('auth')->group(function() {
-    require __DIR__.'/user/web.php';
-    require __DIR__.'/permissions/web.php';
-    require __DIR__.'/academic_year/web.php';
-    require __DIR__.'/semester/web.php';
-    require __DIR__.'/section/web.php';
-    require __DIR__.'/academic_program/web.php';
-    require __DIR__.'/academic_level/web.php';
-    require __DIR__.'/classroom/web.php';
-    require __DIR__.'/timetable_entry/web.php';
-    require __DIR__.'/teacher/web.php';
-    require __DIR__.'/subject/web.php';
-    require __DIR__.'/time_slot/web.php';
-    require __DIR__.'/time_slot_template/web.php';
+Route::middleware('auth')->group(function () {
+    require __DIR__ . '/user/web.php';
+    require __DIR__ . '/permissions/web.php';
+    require __DIR__ . '/academic_year/web.php';
+    require __DIR__ . '/semester/web.php';
+    require __DIR__ . '/section/web.php';
+    require __DIR__ . '/academic_program/web.php';
+    require __DIR__ . '/academic_level/web.php';
+    require __DIR__ . '/classroom/web.php';
+    require __DIR__ . '/timetable_entry/web.php';
+    require __DIR__ . '/teacher/web.php';
+    require __DIR__ . '/subject/web.php';
+    require __DIR__ . '/time_slot/web.php';
+    require __DIR__ . '/time_slot_template/web.php';
 });
 
 
@@ -57,7 +60,7 @@ Route::middleware('auth')->group(function() {
 
 
 
-Route::get('send-mail', function() {
+Route::get('send-mail', function () {
     try {
         $user = User::first();
         $user->notify(new RegisterMember($user, env('USER_PASSWORD')));

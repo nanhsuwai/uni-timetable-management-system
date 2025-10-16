@@ -244,7 +244,7 @@ const uniqueSubjects = computed(() => {
   return Array.from(subjectsMap.values())
     .map(subject => ({
       ...subject,
-      teacherNames: Array.from(subject.teachers).join(', ') || 'N/A',
+      teacherNames: Array.from(subject.teachers).join(' ၊ ') || 'N/A',
     }))
     .sort((a, b) => a.code.localeCompare(b.code));
 });
@@ -289,6 +289,17 @@ const downloadPDF = () => {
   });
   window.open(url, '_blank');
 };
+const exportExcel = () => {
+    const params = new URLSearchParams({
+        filterYear: filterYear.value,
+        filterSemester: filterSemester.value,
+        filterProgram: filterProgram.value,
+        filterLevel: filterLevel.value,
+        filterSection: filterSection.value,
+    });
+    window.open(`/timetable-entry/timetable/export?${params.toString()}`, '_blank');
+};
+
 
 </script>
 
@@ -296,13 +307,12 @@ const downloadPDF = () => {
   <LayoutAuthenticated>
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <SectionTitleLineWithButton :icon="mdiGrid" title="Timetable Grid View">
-        <BaseButton @click="router.get(route('timetable_entry:all'))" color="info" :icon="mdiTable"
-          label="Table View" />
-        <BaseButton v-if="allSelectionsComplete" @click="downloadPDF" color="success" icon="mdi-download"
-          label="Download PDF" />
-        
+        <BaseButton color="info" :icon="mdiTable" label="Table View" />
+        <BaseButton @click="downloadPDF" color="success" icon="mdi-download" label="Download PDF" />
+        <BaseButton @click="exportExcel" color="warning" icon="mdi-download" label="Export Excel" />
       </SectionTitleLineWithButton>
-     <!--  <div v-if="debugInfo.fridayEntries === 0 && filterYear"
+
+      <!--  <div v-if="debugInfo.fridayEntries === 0 && filterYear"
         class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
         <h4 class="font-semibold text-yellow-800 mb-2">Debug Information:</h4>
         <div class="text-sm text-yellow-700">
@@ -406,7 +416,15 @@ const downloadPDF = () => {
                   Timetable For -
                   <span v-if="selectedLevel"> {{ selectedLevel.name }} </span>
                   (<span v-if="selectedProgram">{{ selectedProgram.name }} </span>)
-                  (<span v-if="selectedSection">Section: {{ selectedSection.name }} </span>)
+                  <span v-if="selectedSection && selectedSection.name"> Section:
+                    {{ selectedSection.name }}
+                  </span>
+                  <span v-else>
+
+                  </span>
+
+
+
                   <span class="block text-right" v-if="selectedSection && selectedSection?.classroom">Classroom:
                     {{ selectedSection.classroom.room_no }} </span>
                 </th>
@@ -452,7 +470,7 @@ const downloadPDF = () => {
                     </div> -->
                   </div>
                   <div v-else-if="!isLunch(slot)" class="text-gray-400 text-xs italic">
-                    No class
+                    No subject
                   </div>
                 </td>
               </tr>
@@ -466,7 +484,7 @@ const downloadPDF = () => {
             v-if="selectedSection && selectedSection?.section_head_teacher">သင်တန်းမှူး - {{
               selectedSection.section_head_teacher.name }}</span>
         </h4>
-        
+
         <div class="overflow-x-auto">
           <table class="w-full border-collapse border border-gray-300">
             <thead>
