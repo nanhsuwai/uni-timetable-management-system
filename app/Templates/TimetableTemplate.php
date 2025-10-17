@@ -160,7 +160,7 @@ class TimetableTemplate
                     $roomNo = $entry->classroom?->room_no ?? 'No room';
                     $html .= "<div style='font-weight:600; color:blue;'>$subject</div>";
                 } else {
-                    $html .= '<i style="color:#9ca3af;">—</i>';
+                    $html .= '<i style="color:#9ca3af;">Library/Lab<br>အားကစား/ဂီတ </i>';
                 }
                 $html .= '</td>';
             }

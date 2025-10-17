@@ -255,16 +255,18 @@ const closeModal = () => {
   editingEntry.value = null;
 };
 
-// Helper to display all Laravel errors as toast messages
-const showErrors = (err) => {
-  if (err.errors) {
-    Object.values(err.errors).forEach(messages => {
-      messages.forEach(msg => toast.add({ message: msg, type: "error" }));
-    });
-  } else {
-    toast.add({ message: "Operation failed", type: "error" });
+const showErrors = (errors) => {
+  // Show custom Laravel `ValidationException` messages
+  Object.values(errors).forEach((message) => {
+    toast.add({ message, type: "error" });
+  });
+
+  // Also show global flash error (if sent by controller)
+  if ($page.props.flash?.error) {
+    toast.add({ message: $page.props.flash.error, type: "error" });
   }
 };
+
 
 // CRUD function
 const createOrUpdateEntry = () => {
@@ -337,44 +339,58 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
       </div>
 
       <!-- Filters -->
-      <div class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 bg-white p-4 rounded-lg shadow">
-        <div>
-          <InputLabel value="Academic Year" />
-          <select v-model="filterYear"
-            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            <option value="">All Years</option>
-            <option v-for="y in props.academicYears" :key="y.id" :value="y.id">{{ y.name }}</option>
-          </select>
-        </div>
-        <div>
-          <InputLabel value="Semester" />
-          <select v-model="filterSemester"
-            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            <option value="">All Semesters</option>
-            <option v-for="s in props.semesters" :key="s.id" :value="s.id">{{ s.name }}</option>
-          </select>
-        </div>
-        <div>
-          <InputLabel value="Academic Program" />
-          <select v-model="filterProgram"
-            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            <option value="">All Programs</option>
-            <option v-for="p in props.programs" :key="p.id" :value="p.id">{{ p.name }}</option>
-          </select>
-        </div>
-        <div>
-          <InputLabel value="Day" />
-          <select v-model="filterDay"
-            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            <option value="">All Days</option>
-            <option value="monday">Monday</option>
-            <option value="tuesday">Tuesday</option>
-            <option value="wednesday">Wednesday</option>
-            <option value="thursday">Thursday</option>
-            <option value="friday">Friday</option>
-          </select>
-        </div>
-      </div>
+      <!-- Filters -->
+<div class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 bg-white p-4 rounded-lg shadow">
+  <div>
+    <InputLabel value="Academic Year" />
+    <select v-model="filterYear"
+      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      <option value="">All Years</option>
+      <option v-for="y in props.academicYears" :key="y.id" :value="y.id">{{ y.name }}</option>
+    </select>
+  </div>
+
+  <div>
+    <InputLabel value="Semester" />
+    <select v-model="filterSemester"
+      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      <option value="">All Semesters</option>
+      <option v-for="s in props.semesters" :key="s.id" :value="s.id">{{ s.name }}</option>
+    </select>
+  </div>
+
+  <div>
+    <InputLabel value="Academic Program" />
+    <select v-model="filterProgram"
+      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      <option value="">All Programs</option>
+      <option v-for="p in props.programs" :key="p.id" :value="p.id">{{ p.name }}</option>
+    </select>
+  </div>
+
+  <!-- ✅ New Section Filter -->
+  <div>
+    <InputLabel value="Section" />
+    <select v-model="filterSection"
+      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      <option value="">All Sections</option>
+      <option v-for="sec in props.sections" :key="sec.id" :value="sec.id">{{ sec.name }}</option>
+    </select>
+  </div>
+
+  <div>
+    <InputLabel value="Day" />
+    <select v-model="filterDay"
+      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      <option value="">All Days</option>
+      <option value="monday">Monday</option>
+      <option value="tuesday">Tuesday</option>
+      <option value="wednesday">Wednesday</option>
+      <option value="thursday">Thursday</option>
+      <option value="friday">Friday</option>
+    </select>
+  </div>
+</div>
 
       <!-- Table -->
       <div class="bg-white shadow rounded-lg overflow-hidden">

@@ -14,7 +14,7 @@ class CreateController extends Controller
     public function __invoke(Request $request)
     {
         $request->validate([
-            'code' => 'required|string|unique:subjects,code',
+            'code' => 'nullable|string|unique:subjects,code',
             'name' => 'required|string',
             'status' => 'required|in:active,inactive',
             'level' => 'required|in:First Year,Second Year,Third Year,Fourth Year,Fifth Year',

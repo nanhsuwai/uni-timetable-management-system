@@ -290,14 +290,14 @@ const downloadPDF = () => {
   window.open(url, '_blank');
 };
 const exportExcel = () => {
-    const params = new URLSearchParams({
-        filterYear: filterYear.value,
-        filterSemester: filterSemester.value,
-        filterProgram: filterProgram.value,
-        filterLevel: filterLevel.value,
-        filterSection: filterSection.value,
-    });
-    window.open(`/timetable-entry/timetable/export?${params.toString()}`, '_blank');
+  const params = new URLSearchParams({
+    filterYear: filterYear.value,
+    filterSemester: filterSemester.value,
+    filterProgram: filterProgram.value,
+    filterLevel: filterLevel.value,
+    filterSection: filterSection.value,
+  });
+  window.open(`/timetable-entry/timetable/export?${params.toString()}`, '_blank');
 };
 
 
@@ -307,7 +307,8 @@ const exportExcel = () => {
   <LayoutAuthenticated>
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <SectionTitleLineWithButton :icon="mdiGrid" title="Timetable Grid View">
-        <BaseButton color="info" :icon="mdiTable" label="Table View" />
+        <BaseButton @click="router.get(route('timetable_entry:all'))" color="info" :icon="mdiTable"
+          label="Table View" />
         <BaseButton @click="downloadPDF" color="success" icon="mdi-download" label="Download PDF" />
         <BaseButton @click="exportExcel" color="warning" icon="mdi-download" label="Export Excel" />
       </SectionTitleLineWithButton>
