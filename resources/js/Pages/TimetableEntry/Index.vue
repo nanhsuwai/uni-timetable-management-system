@@ -111,36 +111,71 @@ watch(
   }
 );
 
-// Computed for dependent selects
 const filteredPrograms = computed(() => {
-  if (!selectedYear.value) return props.programs;
-  return props.programs.filter((p) => p.academic_year_id == selectedYear.value);
+    // If no year is selected, show all programs.
+    if (!selectedYear.value) return props.programs;
+    
+    // Filter programs based on the selected academic year ID.
+    return props.programs.filter((p) => p.academic_year_id == selectedYear.value);
 });
 
 const filteredLevels = computed(() => {
-  if (!selectedProgram.value) return props.levels;
-  return props.levels.filter((l) => l.program_id == selectedProgram.value);
+    // If no program is selected, show all levels.
+    if (!selectedProgram.value) return props.levels;
+    
+    // Filter levels based on the selected program ID.
+    return props.levels.filter((l) => l.program_id == selectedProgram.value);
 });
 
 const filteredSections = computed(() => {
-  if (!selectedLevel.value) return props.sections;
-  return props.sections.filter((s) => s.level_id == selectedLevel.value);
+    // If no level is selected, show all sections.
+    if (!selectedLevel.value) return props.sections;
+    
+    // Filter sections based on the selected level ID.
+    return props.sections.filter((s) => s.level_id == selectedLevel.value);
 });
 
 const filteredClassrooms = computed(() => {
-  if (!selectedSection.value) return props.classrooms;
-  return props.classrooms.filter((c) => c.section_id == selectedSection.value);
+    // If no section is selected, show all classrooms.
+    if (!selectedSection.value) return props.classrooms;
+    
+    // Filter classrooms based on the selected section ID.
+    return props.classrooms.filter((c) => c.section_id == selectedSection.value);
 });
 
 // Semesters available for selected year
 const filteredSemesters = computed(() => {
-  return props.semesters.filter((s) => s.academic_year_id == selectedYear.value);
+    // If no year is selected, show all semesters.
+    if (!selectedYear.value) return props.semesters;
+
+    // Filter semesters based on the selected academic year ID.
+    return props.semesters.filter((s) => s.academic_year_id == selectedYear.value);
 });
 
-// Subjects filtered by semester name
+// Subjects filtered by Academic Year, Level, AND Semester
 const filteredSubjects = computed(() => {
-  const semName = props.semesters.find((s) => s.id == form.semester_id)?.name || "";
-  return props.subjects.filter((s) => s.semester == semName);
+    // Extract filter values from the form/state
+    const academicYearFilter = form.academic_year; 
+    const levelFilter = form.level;
+    
+    // Convert semester ID to the name string for filtering (e.g., 1 -> "Fall")
+    const semesterNameFilter = props.semesters.find((s) => s.id == form.semester_id)?.name;
+
+    // Filter the original subjects array based on all three criteria
+    return props.subjects.filter((subject) => {
+        
+        // Match Academic Year (must match if a year is selected)
+        const matchesYear = !academicYearFilter || subject.academic_year === academicYearFilter;
+
+        // Match Level (must match if a level is selected)
+        const matchesLevel = !levelFilter || subject.level === levelFilter;
+
+        // Match Semester Name (must match if a semester is selected)
+        const matchesSemester = !semesterNameFilter || subject.semester === semesterNameFilter;
+
+        // Subject is included only if ALL active conditions are met
+        return matchesYear && matchesLevel && matchesSemester;
+    });
 });
 
 // Teachers filtered by selected subject (only show teachers assigned to that subject)

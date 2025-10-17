@@ -2,7 +2,7 @@
 
 namespace App\Models;
 use App\Enums\LevelName;
-use App\Enums\ProgramOption;
+use App\Enums\ProgramOption; // Still needed if you use it elsewhere
 use App\Enums\SemesterName;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,13 +16,15 @@ class Subject extends Model
         'name',
         'status',
         'level',
-        'program',
+        'program', // This is now a simple string containing CSV
         'semester',
     ];
+    
+    // 🛑 REMOVE 'program' CAST
     protected $casts = [
         'level' => LevelName::class,
-        'program' => ProgramOption::class,
         'semester' => SemesterName::class,
+        // 'program' => ProgramOption::class, // <-- REMOVED!
     ];
 
     /**
