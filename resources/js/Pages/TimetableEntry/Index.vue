@@ -249,6 +249,7 @@ const createOrUpdateEntry = () => {
         toast.add({ message: "✅ Timetable entry updated!" });
       },
       onError: (err) => {
+        form.teacher_ids = [];
         toast.add({ message: err.errors.error, type: "error" });
       },
     });
@@ -260,7 +261,9 @@ const createOrUpdateEntry = () => {
         toast.add({ message: "Timetable entry created!" });
       },
       onError: (err) => {
-        toast.add({ message: err.error, type: "error" });
+        form.teacher_ids = [];
+        console.log(err)
+        toast.add({ message: err.error || error.error[0], type: "error" });
       },
     });
   }
