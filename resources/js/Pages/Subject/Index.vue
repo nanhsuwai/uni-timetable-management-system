@@ -12,49 +12,48 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
 
 const props = defineProps({
-    subjects: {
-        type: Object,
-        default: () => ({ data: [], meta: {} }),
-    },
-    semesters: Array,
-    levels: Array,
-    programs: Array, // Array of program names/options
-    filters: {
-        type: Object,
-        default: () => ({}),
-    },
+  subjects: {
+    type: Object,
+    default: () => ({ data: [], meta: {} }),
+  },
+  semesters: Array,
+  levels: Array,
+  programs: Array,
+  filters: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 
-// Filters (Keep filterProgram as a single selection for the main table)
+// Filters
 const filterCode = ref(props.filters.filterCode || "");
 const filterName = ref(props.filters.filterName || "");
 const filterLevel = ref(props.filters.filterLevel || "");
-const filterProgram = ref(props.filters.filterProgram || ""); // Single selection for filtering
+const filterProgram = ref(props.filters.filterProgram || "");
 const filterSemester = ref(props.filters.filterSemester || "");
 
 watch([filterCode, filterName, filterLevel, filterProgram, filterSemester], () => {
-    router.get(
-        route("subject:all"),
-        {
-            filterCode: filterCode.value,
-            filterName: filterName.value,
-            filterLevel: filterLevel.value,
-            filterProgram: filterProgram.value,
-            filterSemester: filterSemester.value,
-        },
-        { preserveState: true, replace: true }
-    );
+  router.get(
+    route("subject:all"),
+    {
+      filterCode: filterCode.value,
+      filterName: filterName.value,
+      filterLevel: filterLevel.value,
+      filterProgram: filterProgram.value,
+      filterSemester: filterSemester.value,
+    },
+    { preserveState: true, replace: true }
+  );
 });
 
-// Form: program field is now an array 'programs' for multiple selection
+// Form
 const form = useForm({
-    code: "",
-    name: "",
-    level: "",
-    // MUST be 'programs' (plural) to hold the array for the multi-select input
-    programs: [], 
-    semester: "",
-    status: "active",
+  code: "",
+  name: "",
+  level: "",
+  program: "",
+  semester: "",
+  status: "active",
 });
 
 const confirmingSubjectCreation = ref(false);
@@ -63,88 +62,73 @@ const showDeleteModal = ref(false);
 const deletingSubject = ref(null);
 
 const showCreateModal = () => {
-    confirmingSubjectCreation.value = true;
-    form.reset();
-    // Manually reset the array field as well
-    form.programs = [];
-    editingSubject.value = null;
+  confirmingSubjectCreation.value = true;
+  form.reset();
+  editingSubject.value = null;
 };
 
 const showEditModal = (subject) => {
-    editingSubject.value = subject;
-    form.code = subject.code;
-    form.name = subject.name;
-    form.level = subject.level;
-    
-    // CRITICAL FIX: Split the comma-separated string from the database into an array
-    if (typeof subject.program === 'string' && subject.program) {
-        // Split by comma, map to trim whitespace, and filter out empty strings
-        form.programs = subject.program
-            .split(',')
-            .map(p => p.trim())
-            .filter(p => p.length > 0);
-    } else {
-        form.programs = [];
-    }
-
-    form.semester = subject.semester;
-    form.status = subject.status;
-    confirmingSubjectCreation.value = true;
+  editingSubject.value = subject;
+  form.code = subject.code;
+  form.name = subject.name;
+  form.level = subject.level;
+  form.program = subject.program;
+  form.semester = subject.semester;
+  form.status = subject.status;
+  confirmingSubjectCreation.value = true;
 };
 
 const closeModal = () => {
-    confirmingSubjectCreation.value = false;
-    form.reset();
-    form.programs = [];
-    editingSubject.value = null;
+  confirmingSubjectCreation.value = false;
+  form.reset();
+  editingSubject.value = null;
 };
 
 const createOrUpdateSubject = () => {
-    // When submitting, the form sends the 'programs' array correctly
-    if (editingSubject.value) {
-        form.post(
-            route("subject:update", { subject: editingSubject.value.id }),
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    closeModal();
-                    toast.add({ message: "✅ Subject updated!" });
-                },
-            }
-        );
-    } else {
-        form.post(route("subject:create"), {
-            preserveScroll: true,
-            onSuccess: () => {
-                closeModal();
-                toast.add({ message: "✅ Subject created!" });
-            },
-        });
-    }
+  if (editingSubject.value) {
+    form.post(
+      route("subject:update", { subject: editingSubject.value.id }),
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          closeModal();
+          toast.add({ message: "✅ Subject updated!" });
+        },
+      }
+    );
+  } else {
+    form.post(route("subject:create"), {
+      preserveScroll: true,
+      onSuccess: () => {
+        closeModal();
+        toast.add({ message: "✅ Subject created!" });
+      },
+    });
+  }
 };
 
 const showDeleteSubjectModal = (subject) => {
-    showDeleteModal.value = true;
-    deletingSubject.value = subject;
+  showDeleteModal.value = true;
+  deletingSubject.value = subject;
 };
 
 const closeDeleteModal = () => {
-    showDeleteModal.value = false;
-    deletingSubject.value = null;
+  showDeleteModal.value = false;
+  deletingSubject.value = null;
 };
 
 const deleteSubject = () => {
-    router.delete(route("subject:delete", deletingSubject.value), {
-        preserveScroll: true,
-        onSuccess: () => {
-            closeDeleteModal();
-            toast.add({ message: "🗑️ Subject deleted!" });
-        },
-    });
+  router.delete(route("subject:delete", deletingSubject.value), {
+    preserveScroll: true,
+    onSuccess: () => {
+      closeDeleteModal();
+      toast.add({ message: "🗑️ Subject deleted!" });
+    },
+  });
 };
 
 const assignTeachers = (subject) => {
-    router.visit(route("subject:assign-teacher", subject.id));
+  router.visit(route("subject:assign-teacher", subject.id));
 };
 </script>
 
@@ -266,25 +250,13 @@ const assignTeachers = (subject) => {
               <InputError :message="form.errors.level" />
             </div>
             <div>
-    <InputLabel for="programs" value="Program(s)" />
-    <select
-        id="programs"
-        v-model="form.programs"
-        multiple
-        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-        style="min-height: 120px;" 
-    >
-        <option
-            v-for="program in props.programs"
-            :key="program"
-            :value="program"
-        >
-            {{ program }}
-        </option>
-    </select>
-    <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd (or Shift) to select multiple programs</p>
-    <InputError :message="form.errors.programs" />
-</div>
+              <InputLabel for="program" value="Program" />
+              <select v-model="form.program" class="w-full border-gray-300 rounded-md px-3 py-2">
+                <option value="">-- Select Program --</option>
+                <option v-for="program in props.programs" :key="program" :value="program">{{ program }}</option>
+              </select>
+              <InputError :message="form.errors.program" />
+            </div>
             <div>
               <InputLabel for="semester" value="Semester" />
               <select v-model="form.semester" class="w-full border-gray-300 rounded-md px-3 py-2">

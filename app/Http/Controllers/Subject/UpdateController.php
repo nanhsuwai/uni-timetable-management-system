@@ -17,8 +17,8 @@ class UpdateController extends Controller
             'code' => 'required|string|unique:subjects,code,' . $subject->id,
             'name' => 'required|string',
             'status' => 'required|in:active,inactive',
-            'level' => 'required|in:First Year,Second Year,Third Year,Fourth Year,Fifth Year,Master',
-            'program' => 'required|in:Computer Foundation,Computer Technology,Computer Science,Master',
+            'level' => 'required|in:First Year,Second Year,Third Year,Fourth Year,Fifth Year',
+            'program' => 'required|in:CST,Computer Technology,Computer Science',
             'semester' => 'required|in:First Semester,Second Semester',
         ]);
 
