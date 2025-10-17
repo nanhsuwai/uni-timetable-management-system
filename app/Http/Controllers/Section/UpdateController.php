@@ -4,63 +4,75 @@ namespace App\Http\Controllers\Section;
 
 use App\Http\Controllers\Controller;
 use App\Models\Section;
-use App\Models\AcademicLevel;
 use App\Models\Classroom;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class UpdateController extends Controller
 {
+    /**
+     * Update the specified section in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Section  $section
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function __invoke(Request $request, Section $section)
     {
-        $request->validate([
-            'academic_level_id' => 'required|exists:academic_levels,id',
-            'name' => 'required|string',
-            'section_head_teacher_id' => 'nullable|exists:teachers,id|unique:sections,section_head_teacher_id,' . $section->id,
-            'classroom_id' => 'required|exists:classrooms,id',
-        ]);
-        try {
-            $isavailableClassroom = Classroom::where('id', $request->classroom_id)->where('is_available', false)->first();
-            if ($isavailableClassroom && $section->classroom?->id != $isavailableClassroom->id) {
-                // dd($isavailableClassroom);
-                throw new \Exception('This classroom is already assigned to another section.');
-            }
-            $isHasHeaderTeacher = Section::where('section_head_teacher_id', $request->section_head_teacher_id)->where('id', '!=', $section->id)->first();
-            if ($isHasHeaderTeacher) {
-                throw new \Exception('This teacher is already assigned as a section head to another section.');
-            }
-            $section->update([
-                'level_id' => $request->academic_level_id,
-                'name' => $request->name,
-                'section_head_teacher_id' => $request->section_head_teacher_id ?: null,
-            ]);
-
-            $section->load('classroom');
-    // dd($section);
-            if ($request->classroom_id) {
-                // If a classroom is assigned, update the classroom to link to this section
-                $classroom = \App\Models\Classroom::find($request->classroom_id);
-                if ($classroom) {
-                    if ($classroom->section_id && $classroom->section_id != $section->id) {
-                        throw new \Exception('This classroom is already assigned to another section.');
+        // 1️⃣ Enhanced Validation
+        $validatedData = $request->validate([
+            'academic_level_id' => ['required', 'exists:academic_levels,id'],
+            // ✅ CHANGED: 'required' is now 'nullable' to allow optional section names.
+            'name'                => ['nullable', 'string', 'max:255'],
+            'section_head_teacher_id' => [
+                'nullable',
+                'exists:teachers,id',
+                Rule::unique('sections')->ignore($section->id),
+            ],
+            'classroom_id' => [
+                'required',
+                'exists:classrooms,id',
+                function ($attribute, $value, $fail) use ($section) {
+                    $classroom = Classroom::find($value);
+                    if ($classroom->section_id && $classroom->section_id !== $section->id) {
+                        $fail('This classroom is already assigned to another section.');
                     }
-                    $classroom->section_id = $section->id;
-                    $classroom->level_id = $request->academic_level_id;
-                    $classroom->is_available = false;
-                    $classroom->save();
+                },
+            ],
+        ]);
+
+        try {
+            // 2️⃣ Use a Database Transaction for data integrity
+            DB::transaction(function () use ($validatedData, $section) {
+                $oldClassroomId = $section->classroom?->id;
+                $newClassroomId = $validatedData['classroom_id'];
+
+                // 3️⃣ Update the Section model
+                $section->update([
+                    'level_id'                => $validatedData['academic_level_id'],
+                    'name'                    => $validatedData['name'], // This will correctly pass null if the name is empty
+                    'section_head_teacher_id' => $validatedData['section_head_teacher_id'] ?? null,
+                ]);
+
+                // 4️⃣ Efficiently handle classroom changes
+                if ($oldClassroomId !== $newClassroomId) {
+                    if ($oldClassroomId) {
+                        Classroom::where('id', $oldClassroomId)->update([
+                            'section_id'   => null,
+                            'is_available' => true,
+                        ]);
+                    }
+
+                    Classroom::where('id', $newClassroomId)->update([
+                        'section_id'   => $section->id,
+                        'level_id'     => $validatedData['academic_level_id'],
+                        'is_available' => false,
+                    ]);
                 }
-                // If the section was previously assigned to a different classroom, mark that classroom as available
-                $oldClassroom = Classroom::where('section_id', $section->id)->first();
-                
-                if ($oldClassroom && $oldClassroom->id != $request->classroom_id) {
-                    $oldClassroom = $section->classroom;
-                    $oldClassroom->section_id = null;
-                    $oldClassroom->is_available = true;
-                    $oldClassroom->save();
-                }
-               
-            }
+            });
         } catch (\Exception $e) {
-            return back()->withErrors(['general' => $e->getMessage()]);
+            return back()->withErrors(['general' => 'An error occurred while updating the section. ' . $e->getMessage()]);
         }
 
         return redirect()->back()->with('toast', 'Section updated successfully!');
