@@ -8,19 +8,16 @@ use App\Http\Controllers\TimetableEntry\DeleteController;
 use App\Http\Controllers\TimetableEntry\GridViewController;
 use App\Http\Controllers\TimetableEntry\GenerateTimetableController;
 use App\Http\Controllers\TimetableEntry\ExportController;
-use App\Exports\TimetableExport;
-use Maatwebsite\Excel\Facades\Excel;
 
-Route::prefix('timetable-entry')->name('timetable_entry:')->group(function () {
+Route::prefix('timetable-entry')->name('timetable_entry.')->group(function () {
     Route::get('/', IndexController::class)->name('all');
     Route::get('/grid', GridViewController::class)->name('grid');
     Route::post('/create', CreateController::class)->name('create');
     Route::post('/update/{timetableEntry}', UpdateController::class)->name('update');
     Route::delete('/delete/{timetableEntry}', DeleteController::class)->name('delete');
     Route::get('/generate', GenerateTimetableController::class)->name('generate');
-    
-    // Export Excel
-    Route::get('/export', [ExportController::class, 'exportExcel'])
-        ->name('export'); // name inside group
-});
 
+    // ✅ Excel Export Route (corrected)
+    Route::get('/timetable/export', [ExportController::class, 'exportExcel'])
+        ->name('export');
+});
