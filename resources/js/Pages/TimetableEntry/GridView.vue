@@ -297,7 +297,9 @@ const exportExcel = () => {
     filterLevel: filterLevel.value,
     filterSection: filterSection.value,
   });
-  window.open(route('timetable_entry.export') + '?' + params.toString(), '_blank');
+    window.open(`/timetable-entry/timetable/export?${params.toString()}`, '_blank');
+
+  //window.open(route('timetable_entry.export') + '?' + params.toString(), '_blank');
 };
 
 
