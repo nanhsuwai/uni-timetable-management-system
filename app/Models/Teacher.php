@@ -24,7 +24,7 @@ class Teacher extends Model
      */
     protected $casts = [
         'head_of_department' => 'boolean',
-        'department' => DepartmentOption::class, // Use enum casting
+        // 'department' => DepartmentOption::class, // Use enum casting
     ];
 
     /**

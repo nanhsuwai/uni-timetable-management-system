@@ -12,7 +12,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import BaseButton from "@/Components/BaseButton.vue";
-import { mdiTable, mdiGrid, mdiShapePlus } from "@mdi/js";
+import { mdiTable, mdiGrid, mdiShapePlus, mdiHeart, mdiHeartOutline } from "@mdi/js";
 
 // Props from Laravel
 const props = defineProps({
@@ -290,14 +290,14 @@ const downloadPDF = () => {
   window.open(url, '_blank');
 };
 const exportExcel = () => {
-  const params = new URLSearchParams({
+  const url = route('timetable_entry:export', {
     filterYear: filterYear.value,
     filterSemester: filterSemester.value,
     filterProgram: filterProgram.value,
     filterLevel: filterLevel.value,
     filterSection: filterSection.value,
   });
-    window.open(`/timetable-entry/timetable/export?${params.toString()}`, '_blank');
+    window.open(url, '_blank');
 
   //window.open(route('timetable_entry.export') + '?' + params.toString(), '_blank');
 };

@@ -18,6 +18,6 @@ Route::prefix('timetable-entry')->name('timetable_entry:')->group(function () {
     Route::get('/generate', GenerateTimetableController::class)->name('generate');
 
     // ✅ Excel Export Route (corrected)
-    // Route::get('/timetable/export', [ExportController::class, 'exportExcel'])
-    //     ->name('export');
+    Route::get('/export', [ExportController::class, 'exportExcel'])
+        ->name('export');
 });
