@@ -31,7 +31,11 @@ class TimetableExport implements FromCollection, WithHeadings, WithMapping, With
     {
         $this->request = $request;
         $this->filters = $request->only([
-            'filterYear', 'filterSemester', 'filterProgram', 'filterLevel', 'filterSection'
+            'filterYear',
+            'filterSemester',
+            'filterProgram',
+            'filterLevel',
+            'filterSection'
         ]);
 
         // Build query similar to GridViewController
@@ -40,7 +44,8 @@ class TimetableExport implements FromCollection, WithHeadings, WithMapping, With
             'semester:id,name',
             'academicProgram:id,name',
             'academicLevel:id,name',
-            'section:id,name','section.classroom:id,room_no',
+            'section:id,name',
+            'section.classroom:id,room_no',
             'classroom:id,room_no',
             'subject:id,name,code',
             'teachers:id,name',
@@ -62,7 +67,7 @@ class TimetableExport implements FromCollection, WithHeadings, WithMapping, With
         }
 
         if ($request->filled('filterYear')) {
-            $query->whereHas('timeSlot', function($q) use ($request) {
+            $query->whereHas('timeSlot', function ($q) use ($request) {
                 $q->where('academic_year_id', $request->filterYear);
             });
         }
@@ -71,12 +76,12 @@ class TimetableExport implements FromCollection, WithHeadings, WithMapping, With
 
         // Get reference data
         $this->referenceData = [
-            'academicYears' => AcademicYear::select('id','name')->get(),
-            'semesters' => Semester::select('id','name','academic_year_id')->get(),
-            'programs' => AcademicProgram::select('id','name','academic_year_id')->get(),
-            'levels' => AcademicLevel::select('id','name','program_id')->get(),
-            'sections' => Section::with(['classroom','sectionHeadTeacher'])->get(),
-            'timeSlots' => TimeSlot::select('id','name','start_time','end_time','day_of_week','academic_year_id','is_lunch_period')->get(),
+            'academicYears' => AcademicYear::select('id', 'name')->get(),
+            'semesters' => Semester::select('id', 'name', 'academic_year_id')->get(),
+            'programs' => AcademicProgram::select('id', 'name', 'academic_year_id')->get(),
+            'levels' => AcademicLevel::select('id', 'name', 'program_id')->get(),
+            'sections' => Section::with(['classroom', 'sectionHeadTeacher'])->get(),
+            'timeSlots' => TimeSlot::select('id', 'name', 'start_time', 'end_time', 'day_of_week', 'academic_year_id', 'is_lunch_period')->get(),
         ];
     }
 
@@ -210,7 +215,7 @@ class TimetableExport implements FromCollection, WithHeadings, WithMapping, With
         $timetableText = 'Timetable For -';
         if ($selectedLevel) $timetableText .= ' ' . $selectedLevel->name;
         if ($selectedProgram) $timetableText .= ' (' . $selectedProgram->name . ')';
-        if ($selectedSection) $timetableText .= ' Section: ' . $selectedSection->name;
+        if ($selectedSection) $timetableText .= ' Section: ' . '(' . $selectedSection->name . ')';
         if ($selectedSection && $selectedSection->classroom) {
             $timetableText .= "\nClassroom: " . $selectedSection->classroom->room_no;
         }
@@ -266,13 +271,16 @@ class TimetableExport implements FromCollection, WithHeadings, WithMapping, With
             $row++;
         }
 
-        // Section head teacher
-        if ($selectedSection && $selectedSection->section_head_teacher) {
-            $row++; // Empty row
-            $sheet->setCellValue('A' . $row, 'သင်တန်းမှူး - ' . $selectedSection->section_head_teacher->name);
-            $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+        //  Section Head Teacher (Excel Export)
+        if (!empty($selectedSection?->sectionHeadTeacher?->name)) {
+            $sheet->setCellValue('A' . (++$row), 'သင်တန်းမှူး - ' . $selectedSection->sectionHeadTeacher->name);
+            $sheet->getStyle('A' . $row)->getFont()
+                ->setBold(true)
+                ->setSize(12);
+            $sheet->getRowDimension($row)->setRowHeight(20);
             $row++;
         }
+
 
         // Subject-Teacher table
         if (!empty($uniqueSubjects)) {
@@ -310,7 +318,7 @@ class TimetableExport implements FromCollection, WithHeadings, WithMapping, With
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event) {
+            AfterSheet::class => function (AfterSheet $event) {
                 // Auto-size columns if needed
             },
         ];

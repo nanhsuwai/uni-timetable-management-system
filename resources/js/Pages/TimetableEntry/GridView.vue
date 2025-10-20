@@ -202,17 +202,7 @@ const debugInfo = computed(() => {
   };
 });
 
-// Get unique subjects from entries - Kept as is
-/* const uniqueSubjects = computed(() => {
-  const subjects = new Map();
-  props.entries.forEach(entry => {
-    if (entry.subject) {
-      subjects.set(entry.subject.id, entry.subject);
-    }
-  });
-  return Array.from(subjects.values()).sort((a, b) => a.code.localeCompare(b.code));
-}); */
-// Get unique subjects from entries and include a list of teachers
+
 const uniqueSubjects = computed(() => {
   const subjectsMap = new Map();
 
@@ -316,18 +306,6 @@ const exportExcel = () => {
         <BaseButton @click="downloadPDF" color="success" icon="mdi-download" label="Download PDF" />
         <BaseButton @click="exportExcel" color="warning" icon="mdi-download" label="Export Excel" />
       </SectionTitleLineWithButton>
-
-      <!--  <div v-if="debugInfo.fridayEntries === 0 && filterYear"
-        class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <h4 class="font-semibold text-yellow-800 mb-2">Debug Information:</h4>
-        <div class="text-sm text-yellow-700">
-          <p>Total Entries: {{ debugInfo.totalEntries }}</p>
-          <p>Total Time Slots: {{ debugInfo.totalTimeSlots }}</p>
-          <p>Filtered Time Slots: {{ debugInfo.filteredTimeSlots }}</p>
-          <p>Friday Entries: {{ debugInfo.fridayEntries }}</p>
-          <p>Current Filters: {{ JSON.stringify(debugInfo.currentFilters) }}</p>
-        </div>
-      </div> -->
 
       <div class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div>

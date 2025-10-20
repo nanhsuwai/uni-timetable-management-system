@@ -172,7 +172,7 @@ class TimetableTemplate
 
         // 👩‍🏫 Section Head Teacher
         if ($this->section && $this->section->sectionHeadTeacher) {
-            $html .= '<p style="margin-top:12px; font-weight:600;"> သင်တန်းမှူ - ' . $this->section->sectionHeadTeacher->name . '</p>';
+            $html .= '<p style="margin-top:12px; font-weight:600;"> သင်တန်းမှူး - ' . $this->section->sectionHeadTeacher->name . '</p>';
         }
 
         // 📘 Subject Codes + Teachers
