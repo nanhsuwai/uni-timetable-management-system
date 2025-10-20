@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dashboard\IndexController;
 use App\Http\Controllers\WelcomeController;
 use App\Notifications\Register\RegisterMember;
+use App\Http\Controllers\TimetableEntry\GenerateTimetableController;
+use App\Http\Controllers\TimetableEntry\ExportController;
 
 
 
@@ -23,7 +25,9 @@ use App\Notifications\Register\RegisterMember;
 
 
 Route::get('/', WelcomeController::class)->middleware('guest')->name('welcome');
-
+Route::get('/generate', GenerateTimetableController::class)->name('generate');
+Route::get('/export', [ExportController::class, 'exportExcel'])
+        ->name('export');
 
 Route::get('/dashboard', IndexController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -64,7 +68,7 @@ Route::get('send-mail', function () {
     try {
         $user = User::first();
         $user->notify(new RegisterMember($user, env('USER_PASSWORD')));
-        dd('hey success');
+        
     } catch (\Throwable $th) {
         throw $th;
     }

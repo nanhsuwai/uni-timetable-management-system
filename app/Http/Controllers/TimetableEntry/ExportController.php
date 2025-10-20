@@ -12,6 +12,7 @@ class ExportController extends Controller
 {
     public function exportExcel(Request $request)
     {
+        
         $query = TimetableEntry::with([
             'academicYear:id,name',
             'semester:id,name',
