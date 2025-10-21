@@ -257,7 +257,7 @@ class TimetableExport implements FromCollection, WithHeadings, WithMapping, With
                     $sheet->setCellValue($col . $row, $entry->subject->code);
                     $sheet->getStyle($col . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 } else if (!$slot->is_lunch_period) {
-                    $sheet->setCellValue($col . $row, 'No subject');
+                    $sheet->setCellValue($col . $row, 'Lab/Library/အားကစား/ဂီတ');
                     $sheet->getStyle($col . $row)->getFont()->setItalic(true)->getColor()->setRGB('9CA3AF');
                     $sheet->getStyle($col . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 }

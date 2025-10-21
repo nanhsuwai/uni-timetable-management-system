@@ -302,8 +302,8 @@ const exportExcel = () => {
         filterLevel: filterLevel.value,
         filterSection: filterSection.value,
     });
-window.open(url, '_blank');
-//window.open(route('export') + '?' + params.toString(), '_blank');
+    window.open(url, '_blank');
+    //window.open(route('export') + '?' + params.toString(), '_blank');
 };
 </script>
 
@@ -327,9 +327,9 @@ window.open(url, '_blank');
         </div>
     </div>
 
-    <header class="bg-teal-900 border-b border-cyan-500 shadow-xl transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-4">
-            <div class="flex items-center py-3 sm:py-4 space-x-3 sm:space-x-4">
+    <header class="bg-sky-700 border-b border-cyan-500 shadow-xl transition-all duration-300">
+        <div class="mx-auto px-1 sm:px-4 lg:px-4">
+            <div class="flex items-center py-3 sm:py-4 space-x-2 sm:space-x-4">
 
 
                 <img src="/images/logo.png" alt="UCSh Logo" class="w-20 h-14 object-contain sm:w-20 sm:h-13" />
@@ -437,8 +437,8 @@ window.open(url, '_blank');
                                         <!-- View Timetable Button -->
                                         <button @click="switchToTimetable" class="inline-flex items-center justify-center px-6 sm:px-8 py-3 border border-transparent 
            text-sm sm:text-base font-medium rounded-xl text-white 
-           bg-gradient-to-r from-teal-600 to-teal-700 
-           hover:from-teal-700 hover:to-teal-800 
+           bg-gradient-to-r from-sky-600 to-sky-700 
+           hover:from-sky-700 hover:to-sky-800 
            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 
            transition-all duration-300 transform hover:scale-105 
            shadow-lg hover:shadow-xl backdrop-blur-md">
@@ -454,8 +454,8 @@ window.open(url, '_blank');
                                         <!-- Admin Sign In Button -->
                                         <button @click="switchToLogin" class="inline-flex items-center justify-center px-6 sm:px-8 py-3 
            border border-teal-600 text-sm sm:text-base font-medium 
-           rounded-xl text-teal-700 bg-white/80 
-           hover:bg-teal-50 
+           rounded-xl text-sky-700 bg-white/80 
+           hover:bg-sky-50 
            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 
            transition-all duration-300 transform hover:scale-105 
            shadow-md hover:shadow-lg backdrop-blur-md">
@@ -536,6 +536,33 @@ window.open(url, '_blank');
                                     </select>
                                 </div>
                             </div>
+                            <div v-if="!allSelectionsComplete"
+                                class="mb-6 p-4 bg-sky-500 border border-blue-200 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-gray-50" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-gray-50">
+                                            Complete Your Selection
+                                        </h3>
+                                        <div class="mt-2 text-sm text-gray-50">
+                                            <p>Please select all the following to view the timetable:</p>
+                                            <ul class="list-disc list-inside mt-1">
+                                                <li>Academic Year</li>
+                                                <li>Semester</li>
+                                                <li>Academic Program</li>
+                                                <li>Academic Level</li>
+                                                <li>Section</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <SectionTitleLineWithButton>
 
                                 <BaseButton @click="downloadPDF" color="info" icon="mdi-download"
@@ -545,7 +572,8 @@ window.open(url, '_blank');
                             <!-- Timetable Grid -->
                             <CardBox v-if="allSelectionsComplete">
 
-                                <table class="w-full border-collapse min-w-[600px] md:min-w-full">
+                                <table
+                                    class="table table-responsive w-full border-collapse min-w-[600px] md:min-w-full">
                                     <thead>
                                         <tr>
                                             <th :colspan="1 + uniqueTimeSlots.length"
@@ -676,8 +704,8 @@ window.open(url, '_blank');
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-gray-300 border-t border-gray-700">
-        <div class="text-center text-sm text-gray-500 py-3">
+    <footer class="bg-sky-800 text-gray-50 border-t border-gray-700">
+        <div class="text-center text-sm text-gray-50 py-3">
             © 2025 University of Computer Studies, Hinthada. All rights reserved.
         </div>
     </footer>
