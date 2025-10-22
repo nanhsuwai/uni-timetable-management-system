@@ -83,6 +83,18 @@ class CreateController extends Controller
             'time_slot_id'   => ['required', Rule::exists('time_slots', 'id')],
         ]);
 
+        // --- Additional Check: Prevent Duplicate Period for the Same Section ---
+        $duplicatePeriod = TimetableEntry::where('section_id', $request->input('section_id'))
+            ->where('time_slot_id', $timeSlot->id)
+            ->where('day_of_week', $timeSlot->day_of_week)
+            ->exists();
+
+        if ($duplicatePeriod) {
+            return back()->withErrors([
+                'time_slot_id' => 'This period is already assigned for this section. Please choose another time slot.',
+            ])->withInput();
+        }
+
         // --- 2. Check for Teacher Conflicts (More Direct Query) ---
         // Checks if ANY of the selected teachers are already scheduled for this TimeSlot/Day
         $teacherConflict = TimetableEntry::where('day_of_week', $timeSlot->day_of_week)

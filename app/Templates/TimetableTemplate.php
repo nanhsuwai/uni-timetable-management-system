@@ -63,7 +63,7 @@ class TimetableTemplate
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
         $timeSlots = $this->timeSlots->pluck('start_time')->unique()->sort();
 
-        $headers = ['Day'];
+        $headers = ['Day\Time'];
         foreach ($timeSlots as $time) {
             $slot = $this->timeSlots->firstWhere('start_time', $time);
             $end = $slot?->end_time ?? '';
@@ -127,7 +127,7 @@ class TimetableTemplate
         // 🧾 Timetable Table
         $html .= '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;">';
         $html .= '<thead><tr>';
-        $html .= '<th style="border: 1px solid #ccc; padding: 8px; background-color: #f3f4f6;">Day</th>';
+        $html .= '<th style="border: 1px solid #ccc; padding: 8px; background-color: #f3f4f6;">Day\Time</th>';
 
         foreach ($timeSlots as $time) {
             $slot = $this->timeSlots->firstWhere('start_time', $time);
@@ -141,7 +141,7 @@ class TimetableTemplate
 
         foreach ($days as $day) {
             $html .= '<tr>';
-            $html .= '<td style="border:1px solid #ccc; padding:8px; text-align:center; font-weight:600;">' . $day . '</td>';
+            $html .= '<td style="border:1px solid #ccc; padding:8px; text-align:center; font-weight:300;">' . $day . '</td>';
 
             foreach ($timeSlots as $time) {
                 $entry = $this->entries->first(function ($e) use ($day, $time) {
@@ -158,9 +158,9 @@ class TimetableTemplate
                     $subject = $entry->subject?->code ?? 'Unknown';
                     $teacherNames = $entry->teachers->pluck('name')->implode(', ');
                     $roomNo = $entry->classroom?->room_no ?? 'No room';
-                    $html .= "<div style='font-weight:600; color:blue;'>$subject</div>";
+                    $html .= "<div style='font-weight:600; color:#005975;'>$subject</div>";
                 } else {
-                    $html .= '<i style="color:#9ca3af;">Library/Lab<br>အားကစား/ဂီတ </i>';
+                    $html .= '<i style="color:#1CADA1;">Library/Lab<br>အားကစား/ဂီတ </i>';
                 }
                 $html .= '</td>';
             }
@@ -180,7 +180,7 @@ class TimetableTemplate
 
         if ($uniqueSubjects->isNotEmpty()) {
 
-            $html .= '<table style="width:100%; border-collapse: collapse; margin-top:6px;">';
+            $html .= '<table style="width:100%; border:2px; border-collapse: collapse; margin-top:6px;">';
             $html .= '<thead><tr>
                 <th style="border:1px solid #ccc; padding:6px; background:#f3f4f6;">Code</th>
                 <th style="border:1px solid #ccc; padding:6px; background:#f3f4f6;">Subject Name</th>
@@ -192,7 +192,7 @@ class TimetableTemplate
                 $teacherNames = $relatedEntries->flatMap(fn($e) => $e->teachers->pluck('name'))->unique()->implode(' ၊ ');
                 $html .= '<tr>
                     <td style="border:1px solid #ccc; padding:6px; font-size:12px;">' . $subject->code . '</td>
-                    <td style="border:1px solid #ccc; padding:6px; font-size:12px;">' . $subject->name . '</td>
+                    <td style="border:1px solid #ccc; text-align:left; padding:6px; font-size:12px;">' . $subject->name . '</td>
                     <td style="border:1px solid #ccc; text-align:left; padding:6px; font-size:12px;">' . $teacherNames . '</td>
                 </tr>';
             }
@@ -202,7 +202,7 @@ class TimetableTemplate
 
         // ✍️ Footer Signature
         $html .= '
-<div style="width:100%; text-align:right; font-size:12px; margin-top:80px;">
+<div style="width:100%; text-align:right; font-size:12px; margin-top:190px;">
     Date: ' . date('d/m/Y') . '
 </div>
 

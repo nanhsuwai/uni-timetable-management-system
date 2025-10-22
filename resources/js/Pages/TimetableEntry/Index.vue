@@ -373,9 +373,9 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
         <PrimaryButton @click="showCreateModal">+ Add Entry</PrimaryButton>
       </div>
 
+      
       <!-- Filters -->
-      <!-- Filters -->
-<div class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 bg-white p-4 rounded-lg shadow">
+<div class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 bg-white p-4 rounded-lg shadow">
   <div>
     <InputLabel value="Academic Year" />
     <select v-model="filterYear"
@@ -403,7 +403,16 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
     </select>
   </div>
 
-  <!-- ✅ New Section Filter -->
+  <!-- ✅ New Academic Level Filter -->
+  <div>
+    <InputLabel value="Academic Level" />
+    <select v-model="filterLevel"
+      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      <option value="">All Levels</option>
+      <option v-for="l in props.levels" :key="l.id" :value="l.id">{{ l.name }}</option>
+    </select>
+  </div>
+
   <div>
     <InputLabel value="Section" />
     <select v-model="filterSection"

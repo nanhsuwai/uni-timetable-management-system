@@ -337,7 +337,7 @@ const exportExcel = () => {
 
                 <div class="min-w-0">
                     <h1 class="text-lg sm:text-xl lg:text-2xl font-extrabold text-white truncate">
-                        University of Computer Studies, Hinthada
+                        University Timetable Management System
                     </h1>
                     <p class="text-sm sm:text-base text-cyan-300 truncate">
                         ကွန်ပျူတာတက္ကသိုလ်(ဟင်္သာတ)
@@ -460,10 +460,11 @@ const exportExcel = () => {
            transition-all duration-300 transform hover:scale-105 
            shadow-md hover:shadow-lg backdrop-blur-md">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                                            </svg>
+    viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M13 8l4 4m0 0l-4 4m4-4H3m5-4v-1a3 3 0 013-3h7a3 3 0 013 3v10a3 3 0 01-3 3h-7a3 3 0 01-3-3v-1" />
+</svg>
+
                                             Admin Sign In
                                         </button>
                                     </div>
@@ -572,12 +573,13 @@ const exportExcel = () => {
                             <!-- Timetable Grid -->
                             <CardBox v-if="allSelectionsComplete">
 
+                                
                                 <table
-                                    class="table table-responsive w-full border-collapse min-w-[600px] md:min-w-full">
+                                    class="w-full border-collapse min-w-[600px] md:min-w-full">
                                     <thead>
                                         <tr>
                                             <th :colspan="1 + uniqueTimeSlots.length"
-                                                class="text-center font-bold text-lg bg-gray-100 p-4 border border-gray-300 text-teal-600 sm:text-sm">
+                                                class="text-center font-bold text-lg bg-gray-100 p-4 border border-gray-300 text-teal-600">
                                                 University of Computer Studies, Hinthada
                                             </th>
                                         </tr>
