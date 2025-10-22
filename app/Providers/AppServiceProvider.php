@@ -24,11 +24,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot() : void
     {
         // Force URL scheme depending on environment
-        // if (env('APP_ENV') === 'local') {
-        //     URL::forceScheme('http');
-        // } else {
-        //     URL::forceScheme('https');
-        // }
+        if (env('APP_ENV') === 'local') {
+            URL::forceScheme('http');
+        } else {
+            URL::forceScheme('https');
+        }
 
         // Load migrations from config path (if defined)
         if (config('migration.paths')) {
