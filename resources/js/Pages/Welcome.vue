@@ -151,21 +151,34 @@ const selectedSection = computed(() => props.sections.find(s => s.id == filterSe
 // Time slots for the grid - using dynamic data from backend and filtering by academic year
 const timeSlots = computed(() => {
     let slots = Array.isArray(props.timeSlots) ? props.timeSlots : [];
+
     // Filter by academic year if selected
     if (filterYear.value) {
         slots = slots.filter(slot => slot.academic_year_id == filterYear.value);
     }
-    console.log("Filtered Time Slots:", props.timeSlots);
+
+    const to12Hour = (time) => {
+        if (!time) return '';
+        const date = new Date(`1970-01-01T${time}`);
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        minutes = minutes.toString().padStart(2, '0');
+        return `${hours}:${minutes} ${ampm}`;
+    };
+
     return slots.map(slot => ({
         start: slot.start_time,
         end: slot.end_time,
-        label: `${slot.start_time} - ${slot.end_time}`,
+        label: `${to12Hour(slot.start_time)} - ${to12Hour(slot.end_time)}`,
         name: slot.name,
         day_of_week: slot.day_of_week,
         academic_year_id: slot.academic_year_id,
         is_lunch_period: slot.is_lunch_period,
     }));
 });
+
 
 // Days of the week
 const days = [
@@ -460,10 +473,10 @@ const exportExcel = () => {
            transition-all duration-300 transform hover:scale-105 
            shadow-md hover:shadow-lg backdrop-blur-md">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
-    viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-        d="M13 8l4 4m0 0l-4 4m4-4H3m5-4v-1a3 3 0 013-3h7a3 3 0 013 3v10a3 3 0 01-3 3h-7a3 3 0 01-3-3v-1" />
-</svg>
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 8l4 4m0 0l-4 4m4-4H3m5-4v-1a3 3 0 013-3h7a3 3 0 013 3v10a3 3 0 01-3 3h-7a3 3 0 01-3-3v-1" />
+                                            </svg>
 
                                             Admin Sign In
                                         </button>
@@ -556,7 +569,7 @@ const exportExcel = () => {
                                             <ul class="list-disc list-inside mt-1">
                                                 <li>Academic Year</li>
                                                 <li>Semester</li>
-                                                <li>Academic Program</li>
+                                                <li>Academic Programs</li>
                                                 <li>Academic Level</li>
                                                 <li>Section</li>
                                             </ul>
@@ -565,7 +578,6 @@ const exportExcel = () => {
                                 </div>
                             </div>
                             <SectionTitleLineWithButton>
-
                                 <BaseButton @click="downloadPDF" color="info" icon="mdi-download"
                                     label="Download PDF" />
                                 <BaseButton @click="exportExcel" color="success" label="Export Excel" />
@@ -573,83 +585,117 @@ const exportExcel = () => {
                             <!-- Timetable Grid -->
                             <CardBox v-if="allSelectionsComplete">
 
-                                
-                                <table
-                                    class="w-full border-collapse min-w-[600px] md:min-w-full">
-                                    <thead>
-                                        <tr>
-                                            <th :colspan="1 + uniqueTimeSlots.length"
-                                                class="text-center font-bold text-lg bg-gray-100 p-4 border border-gray-300 text-teal-600">
-                                                University of Computer Studies, Hinthada
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th :colspan="1 + uniqueTimeSlots.length"
-                                                class="text-center text-sm bg-gray-50 p-2 border border-gray-300 text-teal-600">
-                                                <span v-if="selectedYear" class="font-bold text-base">
-                                                    Academic Year: {{ selectedYear.name }}
-                                                </span>
-                                                <span v-if="selectedSemester" class="ml-4">
-                                                    ( {{ selectedSemester.name }})
-                                                </span>
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th :colspan="1 + uniqueTimeSlots.length"
-                                                class="text-center text-sm bg-gray-50 p-2 border border-gray-300 text-teal-600">
-                                                Timetable For -
-                                                <span v-if="selectedLevel"> {{ selectedLevel.name }} </span>
-                                                (<span v-if="selectedProgram">{{ selectedProgram.name }} </span>)
-                                                <span v-if="selectedSection && selectedSection.name"> Section:
-                                                    {{ selectedSection.name }}
-                                                </span>
-                                                <span v-else>
-                                                </span>
-                                                <span class="block text-right"
-                                                    v-if="selectedSection && selectedSection?.classroom">Classroom:
-                                                    {{ selectedSection.classroom.room_no }} </span>
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th
-                                                class="border border-gray-300 p-3 sm:p-2 bg-gray-50 font-semibold text-xs sm:text-sm w-24 sm:w-12">
-                                                Day</th>
-                                            <th v-for="slot in uniqueTimeSlots" :key="slot.start"
-                                                class="border border-gray-300 p-3 bg-gray-50 font-semibold text-sm text-center min-w-32"
-                                                :class="{
-                                                    'bg-orange-100': isLunch(slot)
-                                                }">
-                                                {{ slot.label }}
-                                                <div v-if="isLunch(slot)" class="text-xs text-orange-700 font-normal">
-                                                    Lunch</div>
-                                            </th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        <tr v-for="day in days" :key="day.key">
-                                            <td
-                                                class="border border-gray-300 p-3 bg-gray-50 sm:text-sm font-semibold text-center">
-                                                {{ day.label }}
-                                            </td>
-                                            <td v-for="slot in uniqueTimeSlots" :key="`${day.key}-${slot.start}`"
-                                                class="border border-gray-300 p-2 text-center min-h-20 align-top"
-                                                :class="{
-                                                    'bg-orange-50': isLunch(slot)
-                                                }">
-                                                <div v-if="getEntry(day.key, slot)" class="text-sm">
-                                                    <div class="sm:text-sm font-semibold text-teal-700 mb-1">
-                                                        {{ getSubjectDisplay(getEntry(day.key, slot)) }}
+                                <!-- Timetable Table -->
+                                <div class="overflow-x-auto">
+                                    <table class="hidden md:table w-full border-collapse min-w-[600px] md:min-w-full">
+                                        <thead>
+                                            <tr>
+                                                <th :colspan="1 + uniqueTimeSlots.length"
+                                                    class="text-center font-bold text-lg bg-gray-100 p-4 border border-gray-300 text-teal-600">
+                                                    University of Computer Studies, Hinthada
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <th :colspan="1 + uniqueTimeSlots.length"
+                                                    class="text-center text-sm bg-gray-50 p-2 border border-gray-300 text-teal-600">
+                                                    <span v-if="selectedYear" class="font-bold text-base">
+                                                        Academic Year: {{ selectedYear.name }}
+                                                    </span>
+                                                    <span v-if="selectedSemester" class="ml-4">
+                                                        ({{ selectedSemester.name }})
+                                                    </span>
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <th :colspan="1 + uniqueTimeSlots.length"
+                                                    class="text-center text-sm bg-gray-50 p-2 border border-gray-300 text-teal-600">
+                                                    Timetable For -
+                                                    <span v-if="selectedLevel">{{ selectedLevel.name }}</span>
+                                                    (<span v-if="selectedProgram">{{ selectedProgram.name }}</span>)
+                                                    <span v-if="selectedSection && selectedSection.name">
+                                                        Section: {{ selectedSection.name }}
+                                                    </span>
+                                                    <span class="block text-right"
+                                                        v-if="selectedSection && selectedSection?.classroom">
+                                                        Classroom: {{ selectedSection.classroom.room_no }}
+                                                    </span>
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <th
+                                                    class="border border-gray-300 p-3 sm:p-2 bg-gray-50 font-semibold text-xs sm:text-sm w-24 sm:w-12">
+                                                    Day\Time
+                                                </th>
+                                                <th v-for="slot in uniqueTimeSlots" :key="slot.start"
+                                                    class="border border-gray-300 p-3 bg-gray-50 font-semibold text-sm text-center min-w-32"
+                                                    :class="{
+                                                        'bg-orange-100': isLunch(slot)
+                                                    }">
+                                                    {{ slot.label }}
+                                                    <div v-if="isLunch(slot)"
+                                                        class="text-xs text-orange-700 font-normal">
+                                                        Lunch
                                                     </div>
-                                                </div>
-                                                <div v-else-if="!isLunch(slot)"
-                                                    class="text-gray-400 sm:text-sm text-xs italic">
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr v-for="day in days" :key="day.key">
+                                                <td
+                                                    class="border border-gray-300 p-3 bg-gray-50 sm:text-sm font-semibold text-center">
+                                                    {{ day.label }}
+                                                </td>
+                                                <td v-for="slot in uniqueTimeSlots" :key="`${day.key}-${slot.start}`"
+                                                    class="border border-gray-300 p-2 text-center min-h-20 align-top"
+                                                    :class="{
+                                                        'bg-orange-50': isLunch(slot)
+                                                    }">
+                                                    <div v-if="getEntry(day.key, slot)" class="text-sm">
+                                                        <div class="sm:text-sm font-semibold text-teal-700 mb-1">
+                                                            {{ getSubjectDisplay(getEntry(day.key, slot)) }}
+                                                        </div>
+                                                    </div>
+                                                    <div v-else-if="!isLunch(slot)"
+                                                        class="text-gray-400 sm:text-sm text-xs italic">
+                                                        No subject
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- 📱 Mobile View -->
+                                <div class="md:hidden space-y-4">
+                                    <div v-for="day in days" :key="day.key"
+                                        class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+                                        <div class="bg-teal-600 text-white text-center py-2 font-semibold">
+                                            {{ day.label }}
+                                        </div>
+
+                                        <div v-for="slot in uniqueTimeSlots" :key="`${day.key}-${slot.start}`"
+                                            class="p-3 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between"
+                                            :class="{ 'bg-orange-50': isLunch(slot) }">
+                                            <div class="font-medium text-gray-800">
+                                                <span class="text-sm text-gray-500">Time: </span> {{ slot.label }}
+                                                <span v-if="isLunch(slot)"
+                                                    class="ml-2 text-xs text-orange-700 font-semibold">
+                                                    (Lunch)
+                                                </span>
+                                            </div>
+                                            <div class="mt-1 text-teal-700 font-semibold text-sm">
+                                                <span v-if="getEntry(day.key, slot)">
+                                                    {{ getSubjectDisplay(getEntry(day.key, slot)) }}
+                                                </span>
+                                                <span v-else-if="!isLunch(slot)" class="text-gray-400 italic">
                                                     No subject
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
 
                             </CardBox>
                             <CardBox v-if="allSelectionsComplete && uniqueSubjects.length > 0" class="mt-4">
@@ -658,24 +704,29 @@ const exportExcel = () => {
                                             selectedSection.section_head_teacher.name }}</span>
                                 </h4>
 
+                                <!-- 📘 Responsive Subject Table -->
                                 <div class="overflow-x-auto">
-                                    <table class="w-full border-collapse border border-gray-300">
+                                    <!-- 💻 Desktop View -->
+                                    <table class="hidden md:table w-full border-collapse border border-gray-300">
                                         <thead>
                                             <tr>
                                                 <th class="border border-gray-300 p-2 bg-gray-50 font-semibold w-24">
                                                     Code</th>
                                                 <th
                                                     class="border border-x border-gray-300 p-2 bg-gray-50 font-semibold w-auto">
-                                                    Subject Name</th>
+                                                    Subject Name
+                                                </th>
                                                 <th class="border border-gray-300 p-2 bg-gray-50 font-semibold w-64">
                                                     Teacher Name</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="subject in uniqueSubjects" :key="subject.id">
-                                                <td class="border border-gray-300 p-2 text-sm">{{ subject.code }}</td>
-                                                <td class="border border-x border-gray-300 p-2 text-sm">{{ subject.name
-                                                }}</td>
+                                                <td class="border border-gray-300 p-2 text-sm text-gray-700">{{
+                                                    subject.code }}</td>
+                                                <td class="border border-x border-gray-300 p-2 text-sm text-gray-800">
+                                                    {{ subject.name }}
+                                                </td>
                                                 <td
                                                     class="border border-gray-300 p-2 text-sm text-gray-700 font-medium">
                                                     {{ subject.teacherNames }}
@@ -683,7 +734,22 @@ const exportExcel = () => {
                                             </tr>
                                         </tbody>
                                     </table>
+
+                                    <!-- 📱 Mobile View -->
+                                    <div class="md:hidden space-y-3">
+                                        <div v-for="subject in uniqueSubjects" :key="subject.id"
+                                            class="border border-gray-200 rounded-lg shadow-sm p-3 bg-white">
+                                            <div class="text-sm font-semibold text-teal-700 mb-1">
+                                                {{ subject.code }} — {{ subject.name }}
+                                            </div>
+                                            <div class="text-sm text-gray-600">
+                                                <span class="font-medium text-gray-800">Teacher:</span>
+                                                {{ subject.teacherNames }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+
                             </CardBox>
 
 
