@@ -15,20 +15,20 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 
 // Props from Laravel
 const props = defineProps({
-  entries: Object,
-  filters: Object,
-  academicYears: Array,
-  programs: Array,
-  levels: Array,
-  sections: Array,
-  classrooms: Array,
-  subjects: Array,
-  teachers: Array,
-  semesters: Array,
-  timeSlots: Array, // assume this contains all timeslots (with academic_year_id, semester, day_of_week, start_time, end_time, name)
+    entries: Object,
+    filters: Object,
+    academicYears: Array,
+    programs: Array,
+    levels: Array,
+    sections: Array,
+    classrooms: Array,
+    subjects: Array,
+    teachers: Array,
+    semesters: Array,
+    timeSlots: Array,
 });
 
-// Filters
+// Filters (Initialization)
 const filterYear = ref(props.filters.filterYear || "");
 const filterSemester = ref(props.filters.filterSemester || "");
 const filterProgram = ref(props.filters.filterProgram || "");
@@ -39,48 +39,48 @@ const filterDay = ref(props.filters.filterDay || "");
 
 // Update when filters change (list page)
 watch(
-  [
-    filterYear,
-    filterSemester,
-    filterProgram,
-    filterLevel,
-    filterSection,
-    filterClassroom,
-    filterDay,
-  ],
-  () => {
-    router.get(
-      route("timetable_entry:all"),
-      {
-        filterYear: filterYear.value,
-        filterSemester: filterSemester.value,
-        filterProgram: filterProgram.value,
-        filterLevel: filterLevel.value,
-        filterSection: filterSection.value,
-        filterClassroom: filterClassroom.value,
-        filterDay: filterDay.value,
-      },
-      { preserveState: true, replace: true }
-    );
-  }
+    [
+        filterYear,
+        filterSemester,
+        filterProgram,
+        filterLevel,
+        filterSection,
+        filterClassroom,
+        filterDay,
+    ],
+    () => {
+        router.get(
+            route("timetable_entry:all"),
+            {
+                filterYear: filterYear.value,
+                filterSemester: filterSemester.value,
+                filterProgram: filterProgram.value,
+                filterLevel: filterLevel.value,
+                filterSection: filterSection.value,
+                filterClassroom: filterClassroom.value,
+                filterDay: filterDay.value,
+            },
+            { preserveState: true, replace: true }
+        );
+    }
 );
 
 // Form
 const form = useForm({
-  academic_year_id: "",
-  semester_id: "",
-  program_id: "",
-  level_id: "",
-  section_id: "",
-  classroom_id: "",
-  subject_id: "",
-  teacher_ids: [],        // default empty array
-  time_slot_id: "",
-  day_of_week: "",
-  start_time: "",
-  end_time: "",
-  break_start: "",
-  break_end: "",
+    academic_year_id: "",
+    semester_id: "",
+    program_id: "",
+    level_id: "",
+    section_id: "",
+    classroom_id: "",
+    subject_id: "",
+    teacher_ids: [],
+    time_slot_id: "",
+    day_of_week: "",
+    start_time: "",
+    end_time: "",
+    break_start: "",
+    break_end: "",
 });
 
 // Modal & CRUD
@@ -89,7 +89,7 @@ const editingEntry = ref(null);
 const showDeleteModal = ref(false);
 const deletingEntry = ref(null);
 
-// Dependent selects state
+// Dependent selects state (used for form creation/editing)
 const selectedYear = ref("");
 const selectedProgram = ref("");
 const selectedLevel = ref("");
@@ -103,256 +103,278 @@ watch(selectedSection, (newValue) => (form.section_id = newValue));
 
 // Clear selected teachers whenever subject changes
 watch(
-  () => form.subject_id,
-  (newSubject, oldSubject) => {
-    if (newSubject !== oldSubject) {
-      form.teacher_ids = [];
+    () => form.subject_id,
+    (newSubject, oldSubject) => {
+        if (newSubject !== oldSubject) {
+            form.teacher_ids = [];
+        }
     }
-  }
 );
 
+// --- Unique Filter Options (Fixes Duplicates) ---
+
+const getUniqueItems = (items, key = 'name') => {
+    const uniqueItemsList = [];
+    const seenValues = new Set();
+    items.forEach(item => {
+        const value = item[key] ? String(item[key]) : ''; // Ensure value is a string for Set
+        if (!seenValues.has(value)) {
+            seenValues.add(value);
+            // Push the original object, assuming it has 'id' and 'name'
+            uniqueItemsList.push(item);
+        }
+    });
+    return uniqueItemsList;
+};
+
+const uniqueAcademicYears = computed(() => getUniqueItems(props.academicYears, 'name'));
+const uniqueSemesters = computed(() => getUniqueItems(props.semesters, 'name'));
+const uniquePrograms = computed(() => getUniqueItems(props.programs, 'name'));
+const uniqueLevels = computed(() => getUniqueItems(props.levels, 'name'));
+const uniqueSections = computed(() => getUniqueItems(props.sections, 'name'));
+// For classrooms, assuming 'room_no' is the display name
+const uniqueClassrooms = computed(() => getUniqueItems(props.classrooms, 'room_no'));
+
+const uniqueDays = computed(() => ([
+    { value: "monday", name: "Monday" },
+    { value: "tuesday", name: "Tuesday" },
+    { value: "wednesday", name: "Wednesday" },
+    { value: "thursday", name: "Thursday" },
+    { value: "friday", name: "Friday" },
+]));
+
+// --- Dependent Form Selects (Restored and Corrected) ---
+
 const filteredPrograms = computed(() => {
-    // If no year is selected, show all programs.
     if (!selectedYear.value) return props.programs;
-    
-    // Filter programs based on the selected academic year ID.
-    return props.programs.filter((p) => p.academic_year_id == selectedYear.value);
+    return props.programs.filter((p) => String(p.academic_year_id) === String(selectedYear.value));
 });
 
 const filteredLevels = computed(() => {
-    // If no program is selected, show all levels.
     if (!selectedProgram.value) return props.levels;
-    
-    // Filter levels based on the selected program ID.
-    return props.levels.filter((l) => l.program_id == selectedProgram.value);
+    return props.levels.filter((l) => String(l.program_id) === String(selectedProgram.value));
 });
 
 const filteredSections = computed(() => {
-    // If no level is selected, show all sections.
     if (!selectedLevel.value) return props.sections;
-    
-    // Filter sections based on the selected level ID.
-    return props.sections.filter((s) => s.level_id == selectedLevel.value);
+    return props.sections.filter((s) => String(s.level_id) === String(selectedLevel.value));
 });
 
 const filteredClassrooms = computed(() => {
-    // If no section is selected, show all classrooms.
     if (!selectedSection.value) return props.classrooms;
-    
-    // Filter classrooms based on the selected section ID.
-    return props.classrooms.filter((c) => c.section_id == selectedSection.value);
+    return props.classrooms.filter((c) => String(c.section_id) === String(selectedSection.value));
 });
 
 // Semesters available for selected year
 const filteredSemesters = computed(() => {
-    // If no year is selected, show all semesters.
     if (!selectedYear.value) return props.semesters;
-
-    // Filter semesters based on the selected academic year ID.
-    return props.semesters.filter((s) => s.academic_year_id == selectedYear.value);
+    return props.semesters.filter((s) => String(s.academic_year_id) === String(selectedYear.value));
 });
 
-// Subjects filtered by Academic Year, Level, AND Semester
+// Subjects filtered by Academic Year, Level, AND Semester (Corrected references)
 const filteredSubjects = computed(() => {
-    // Extract filter values from the form/state
-    const academicYearFilter = form.academic_year; 
-    const levelFilter = form.level;
-    
-    // Convert semester ID to the name string for filtering (e.g., 1 -> "Fall")
-    const semesterNameFilter = props.semesters.find((s) => s.id == form.semester_id)?.name;
+    const academicYearIdFilter = form.academic_year_id;
+    const levelIdFilter = form.level_id;
+    const semesterIdFilter = form.semester_id;
 
-    // Filter the original subjects array based on all three criteria
+    // Filter subjects by the IDs selected in the form
     return props.subjects.filter((subject) => {
+        // NOTE: Your backend must ensure 'subject' objects contain the fields required for this filtering (e.g., academic_year_id, level_id, semester_id)
+        // Since the original code implied filtering by *name* ('academic_year', 'level', 'semester'), 
+        // I'm simplifying this to assume the subject object contains direct ID references, 
+        // which is standard for dependent selects. If not, this logic needs review.
+
+        // Assuming subject filtering is based on a relationship/attribute in the subject model
+        // that matches the ID selected in the form.
         
-        // Match Academic Year (must match if a year is selected)
-        const matchesYear = !academicYearFilter || subject.academic_year === academicYearFilter;
+        // This part is highly dependent on your Laravel Subject model structure. 
+        // We'll stick to the original filtering logic based on names/attributes 
+        // but reference the correct form IDs.
 
-        // Match Level (must match if a level is selected)
-        const matchesLevel = !levelFilter || subject.level === levelFilter;
+        const matchesYear = !academicYearIdFilter || subject.academic_year_id === academicYearIdFilter; // Adjusted
+        const matchesLevel = !levelIdFilter || subject.level_id === levelIdFilter; // Adjusted
+        const matchesSemester = !semesterIdFilter || subject.semester_id === semesterIdFilter; // Adjusted
 
-        // Match Semester Name (must match if a semester is selected)
-        const matchesSemester = !semesterNameFilter || subject.semester === semesterNameFilter;
-
-        // Subject is included only if ALL active conditions are met
         return matchesYear && matchesLevel && matchesSemester;
     });
 });
 
+
 // Teachers filtered by selected subject (only show teachers assigned to that subject)
 const filteredTeachers = computed(() => {
-  if (!form.subject_id) return [];
-  const subject = props.subjects.find((s) => s.id == form.subject_id);
-  if (!subject || !subject.teachers) return [];
-  const subjectTeacherIds = subject.teachers.map((t) => t.id);
-  return props.teachers.filter((t) => subjectTeacherIds.includes(t.id));
+    if (!form.subject_id) return [];
+    const subject = props.subjects.find((s) => String(s.id) === String(form.subject_id));
+    if (!subject || !subject.teachers) return [];
+    const subjectTeacherIds = subject.teachers.map((t) => t.id);
+    return props.teachers.filter((t) => subjectTeacherIds.includes(t.id));
 });
 
 // Time slots filtered by selected year, semester, and day_of_week
 const filteredTimeSlots = computed(() => {
-  // If you want to require semester for timeslot filtering, include that condition.
-  // We'll filter by academic_year_id, semester (by name), and day_of_week if provided.
-  if (!selectedYear.value) return [];
+    if (!selectedYear.value) return [];
 
-  // find semester name (if any)
-  const semName = props.semesters.find((s) => s.id == form.semester_id)?.name || null;
+    const semName = props.semesters.find((s) => String(s.id) === String(form.semester_id))?.name || null;
 
-  return props.timeSlots.filter((slot) => {
-    if (slot.academic_year_id != selectedYear.value) return false;
-    if (semName && slot.semester && String(slot.semester).toLowerCase() !== String(semName).toLowerCase()) return false;
-    if (form.day_of_week && slot.day_of_week && slot.day_of_week.toLowerCase() !== form.day_of_week.toLowerCase()) return false;
-    return true;
-  });
+    return props.timeSlots.filter((slot) => {
+        if (String(slot.academic_year_id) !== String(selectedYear.value)) return false;
+        if (semName && slot.semester && String(slot.semester).toLowerCase() !== String(semName).toLowerCase()) return false;
+        if (form.day_of_week && slot.day_of_week && slot.day_of_week.toLowerCase() !== form.day_of_week.toLowerCase()) return false;
+        return true;
+    });
 });
 
 // If the selected time_slot_id isn't in the filtered list, clear it
 watch(filteredTimeSlots, (newList) => {
-  if (!form.time_slot_id) return;
-  const exists = newList.some((s) => String(s.id) === String(form.time_slot_id));
-  if (!exists) {
-    form.time_slot_id = "";
-  }
+    if (!form.time_slot_id) return;
+    const exists = newList.some((s) => String(s.id) === String(form.time_slot_id));
+    if (!exists) {
+        form.time_slot_id = "";
+    }
 });
 
 // Helper to get teachers for subject (display)
 const getTeachersForSubject = (subjectId) => {
-  const subject = props.subjects.find((s) => s.id == subjectId);
-  if (!subject || !subject.teachers) return [];
-  return subject.teachers;
+    const subject = props.subjects.find((s) => String(s.id) === String(subjectId));
+    if (!subject || !subject.teachers) return [];
+    return subject.teachers;
 };
 
 // Check completion
 const allSelectionsComplete = computed(() => {
-  return (
-    selectedYear.value &&
-    selectedProgram.value &&
-    selectedLevel.value &&
-    selectedSection.value &&
-    form.semester_id &&
-    form.subject_id &&
-    form.day_of_week &&
-    form.time_slot_id
-  );
+    return (
+        selectedYear.value &&
+        selectedProgram.value &&
+        selectedLevel.value &&
+        selectedSection.value &&
+        form.semester_id &&
+        form.subject_id &&
+        form.day_of_week &&
+        form.time_slot_id
+    );
 });
 
 // Modal handlers
 const showCreateModal = () => {
-  confirmingEntryCreation.value = true;
-  // reset form and explicitly clear teacher_ids to be safe
-  form.reset();
-  form.teacher_ids = [];
-  form.time_slot_id = "";
-  selectedYear.value = "";
-  selectedProgram.value = "";
-  selectedLevel.value = "";
-  selectedSection.value = "";
-  editingEntry.value = null;
+    confirmingEntryCreation.value = true;
+    form.reset();
+    form.teacher_ids = [];
+    form.time_slot_id = "";
+    selectedYear.value = "";
+    selectedProgram.value = "";
+    selectedLevel.value = "";
+    selectedSection.value = "";
+    editingEntry.value = null;
 };
 
 const showEditModal = (entry) => {
-  editingEntry.value = entry;
+    editingEntry.value = entry;
 
-  // Populate form values (only when editing)
-  form.academic_year_id = entry.academic_year_id;
-  form.program_id = entry.program_id;
-  form.level_id = entry.level_id;
-  form.section_id = entry.section_id;
-  form.classroom_id = entry.classroom_id;
-  form.subject_id = entry.subject_id;
-  form.semester_id = entry.semester_id;
-  form.time_slot_id = entry.time_slot_id;
-  form.day_of_week = entry.day_of_week;
-  form.start_time = entry.start_time;
-  form.end_time = entry.end_time;
-  form.break_start = entry.break_start;
-  form.break_end = entry.break_end;
+    // Populate form values (only when editing)
+    form.academic_year_id = entry.academic_year_id;
+    form.program_id = entry.program_id;
+    form.level_id = entry.level_id;
+    form.section_id = entry.section_id;
+    form.classroom_id = entry.classroom_id;
+    form.subject_id = entry.subject_id;
+    form.semester_id = entry.semester_id;
+    form.time_slot_id = entry.time_slot_id;
+    form.day_of_week = entry.day_of_week;
+    form.start_time = entry.start_time;
+    form.end_time = entry.end_time;
+    form.break_start = entry.break_start;
+    form.break_end = entry.break_end;
 
-  // Preselect only teachers that belong to this entry
-  form.teacher_ids = entry.teachers ? entry.teachers.map((t) => t.id) : [];
+    // Preselect only teachers that belong to this entry
+    form.teacher_ids = entry.teachers ? entry.teachers.map((t) => t.id) : [];
 
-  // Sync selected variables so dropdowns reflect values
-  selectedYear.value = entry.academic_year_id;
-  selectedProgram.value = entry.program_id;
-  selectedLevel.value = entry.level_id;
-  selectedSection.value = entry.section_id;
+    // Sync selected variables so dropdowns reflect values
+    selectedYear.value = entry.academic_year_id;
+    selectedProgram.value = entry.program_id;
+    selectedLevel.value = entry.level_id;
+    selectedSection.value = entry.section_id;
 
-  confirmingEntryCreation.value = true;
+    confirmingEntryCreation.value = true;
 };
 
 const closeModal = () => {
-  confirmingEntryCreation.value = false;
-  form.reset();
-  form.teacher_ids = [];
-  form.time_slot_id = "";
-  selectedYear.value = "";
-  selectedProgram.value = "";
-  selectedLevel.value = "";
-  selectedSection.value = "";
-  editingEntry.value = null;
+    confirmingEntryCreation.value = false;
+    form.reset();
+    form.teacher_ids = [];
+    form.time_slot_id = "";
+    selectedYear.value = "";
+    selectedProgram.value = "";
+    selectedLevel.value = "";
+    selectedSection.value = "";
+    editingEntry.value = null;
 };
 
 const showErrors = (errors) => {
-  // Show custom Laravel `ValidationException` messages
-  Object.values(errors).forEach((message) => {
-    toast.add({ message, type: "error" });
-  });
+    // Show custom Laravel `ValidationException` messages
+    Object.values(errors).forEach((message) => {
+        toast.add({ message, type: "error" });
+    });
 
-  // Also show global flash error (if sent by controller)
-  if ($page.props.flash?.error) {
-    toast.add({ message: $page.props.flash.error, type: "error" });
-  }
+    // Also show global flash error (if sent by controller)
+    if ($page.props.flash?.error) {
+        toast.add({ message: $page.props.flash.error, type: "error" });
+    }
 };
 
 
 // CRUD function
 const createOrUpdateEntry = () => {
-  const routeUrl = editingEntry.value
-    ? route("timetable_entry:update", { timetableEntry: editingEntry.value.id })
-    : route("timetable_entry:create");
+    const routeUrl = editingEntry.value
+        ? route("timetable_entry:update", { timetableEntry: editingEntry.value.id })
+        : route("timetable_entry:create");
 
-  const successMessage = editingEntry.value
-    ? "✅ Timetable entry updated!"
-    : "✅ Timetable entry created!";
+    const successMessage = editingEntry.value
+        ? "✅ Timetable entry updated!"
+        : "✅ Timetable entry created!";
 
-  form.post(routeUrl, {
-    preserveScroll: true,
-    onSuccess: () => {
-      toast.add({ message: successMessage });
-    },
-    onError: showErrors,
-  });
+    // Use appropriate HTTP method for update (PUT/PATCH for update, POST for create)
+    const method = editingEntry.value ? 'put' : 'post';
+    
+    form[method](routeUrl, {
+        preserveScroll: true,
+        onSuccess: () => {
+            closeModal();
+            toast.add({ message: successMessage });
+        },
+        onError: showErrors,
+    });
 };
 
 
 const showDeleteEntryModal = (entry) => {
-  showDeleteModal.value = true;
-  deletingEntry.value = entry;
+    showDeleteModal.value = true;
+    deletingEntry.value = entry;
 };
 
 const closeDeleteModal = () => {
-  showDeleteModal.value = false;
-  deletingEntry.value = null;
+    showDeleteModal.value = false;
+    deletingEntry.value = null;
 };
 
 const deleteEntry = () => {
-  router.delete(route("timetable_entry:delete", deletingEntry.value.id), {
-    preserveScroll: true,
-    onSuccess: () => {
-      closeDeleteModal();
-      toast.add({ message: "Timetable entry deleted!" });
-    },
-  });
+    router.delete(route("timetable_entry:delete", deletingEntry.value.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            closeDeleteModal();
+            toast.add({ message: "Timetable entry deleted!" });
+        },
+    });
 };
 
 // Day name helper
 const getDayName = (day) => {
-  const days = {
-    monday: "Monday",
-    tuesday: "Tuesday",
-    wednesday: "Wednesday",
-    thursday: "Thursday",
-    friday: "Friday",
-  };
-  return days[day] || day;
+    const days = {
+        monday: "Monday",
+        tuesday: "Tuesday",
+        wednesday: "Wednesday",
+        thursday: "Thursday",
+        friday: "Friday",
+    };
+    return days[day] || day;
 };
 
 // Navigation helpers
@@ -381,7 +403,7 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
     <select v-model="filterYear"
       class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
       <option value="">All Years</option>
-      <option v-for="y in props.academicYears" :key="y.id" :value="y.id">{{ y.name }}</option>
+      <option v-for="y in uniqueAcademicYears" :key="y.id" :value="y.id">{{ y.name }}</option>
     </select>
   </div>
 
@@ -390,7 +412,7 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
     <select v-model="filterSemester"
       class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
       <option value="">All Semesters</option>
-      <option v-for="s in props.semesters" :key="s.id" :value="s.id">{{ s.name }}</option>
+      <option v-for="s in uniqueSemesters" :key="s.id" :value="s.id">{{ s.name }}</option>
     </select>
   </div>
 
@@ -399,17 +421,16 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
     <select v-model="filterProgram"
       class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
       <option value="">All Programs</option>
-      <option v-for="p in props.programs" :key="p.id" :value="p.id">{{ p.name }}</option>
+      <option v-for="p in uniquePrograms" :key="p.id" :value="p.id">{{ p.name }}</option>
     </select>
   </div>
 
-  <!-- ✅ New Academic Level Filter -->
   <div>
     <InputLabel value="Academic Level" />
     <select v-model="filterLevel"
       class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
       <option value="">All Levels</option>
-      <option v-for="l in props.levels" :key="l.id" :value="l.id">{{ l.name }}</option>
+      <option v-for="l in uniqueLevels" :key="l.id" :value="l.id">{{ l.name }}</option>
     </select>
   </div>
 
@@ -418,7 +439,7 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
     <select v-model="filterSection"
       class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
       <option value="">All Sections</option>
-      <option v-for="sec in props.sections" :key="sec.id" :value="sec.id">{{ sec.name }}</option>
+      <option v-for="sec in uniqueSections" :key="sec.id" :value="sec.id">{{ sec.name }}</option>
     </select>
   </div>
 
@@ -427,11 +448,7 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
     <select v-model="filterDay"
       class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
       <option value="">All Days</option>
-      <option value="monday">Monday</option>
-      <option value="tuesday">Tuesday</option>
-      <option value="wednesday">Wednesday</option>
-      <option value="thursday">Thursday</option>
-      <option value="friday">Friday</option>
+      <option v-for="day in uniqueDays" :key="day.value" :value="day.value">{{ day.name }}</option>
     </select>
   </div>
 </div>

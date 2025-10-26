@@ -15,6 +15,7 @@ use App\Models\Teacher;
 use App\Models\TimeSlot;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB; // <-- 1. Import DB Facade
 
 class IndexController extends Controller
 {
@@ -48,8 +49,17 @@ class IndexController extends Controller
             }
         }
 
-        $entries = $query->orderBy('day_of_week')->orderBy('start_time')->paginate(10);
+        // 🎯 OPTIMIZATION: Custom Ordering by Day of the Week (Monday to Friday)
+        $query->orderBy(DB::raw("FIELD(LOWER(day_of_week), 'monday', 'tuesday', 'wednesday', 'thursday', 'friday')"));
 
+        // Keep the secondary order by time for chronological sorting within each day
+        $query->orderBy('start_time');
+
+        $entries = $query->paginate(10);
+        $activeFilters = $request->only(array_keys($filters));
+$entries = $query->paginate(10)->appends($activeFilters); 
+        
+        // OPTIMIZATION: Consolidate the reference data fetch using collection methods (optional)
         $referenceData = [
             'academicYears' => AcademicYear::select('id','name')->get(),
             'semesters' => Semester::select('id','name','academic_year_id')->get(),

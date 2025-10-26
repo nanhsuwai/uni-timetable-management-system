@@ -349,13 +349,13 @@ const clear = () => {
             :icon="mdiShapePlus"
             title="Users Management"
           >
-           <!--  <BaseButton
+             <BaseButton
               label="Add"
               color="contrast"
               small
               rounded-full
               @click.prevent="showAddUserModal"
-            /> -->
+            />
           </SectionTitleLineWithButton>
           <div
             class="grid gap-2 py-6 border border-gray-500 px-3 mb-4 text-xs rounded sm:grid-cols-1 md:grid-cols-2"
@@ -715,7 +715,7 @@ const clear = () => {
                   />
                   <InputError :message="form.errors.username" class="mt-2" />
                 </div>
-                <div class="">
+               <!--  <div class="">
                   <InputLabel for="date_of_birth" value="မွေးနေ့" />
                   <TextInput
                     id="date_of_birth"
@@ -728,9 +728,9 @@ const clear = () => {
                     :message="form.errors.date_of_birth"
                     class="mt-2"
                   />
-                </div>
+                </div> -->
               </div>
-              <div class="grid grid-cols-2 gap-2">
+              <!-- <div class="grid grid-cols-2 gap-2">
                 <div class="mt-6">
                   <InputLabel for="education" value="ပညာအရည်အချင်း" />
 
@@ -739,7 +739,7 @@ const clear = () => {
                     v-model="form.education"
                     type="text"
                     class="mt-1 block w-full"
-                    placeholder="B.E (IT)"
+                    placeholder=" "
                   />
 
                   <InputError :message="form.errors.education" class="mt-2" />
@@ -764,9 +764,9 @@ const clear = () => {
                   </div>
                   <InputError :message="form.errors.gender" class="mt-2" />
                 </div>
-              </div>
+              </div> -->
 
-              <div class="grid grid-cols-2 gap-2">
+              <!-- <div class="grid grid-cols-2 gap-2">
                 <div class="mt-6">
                   <InputLabel for="employee_number" value="ဝန်ထမ်းအမှတ်" />
                   <TextInput
@@ -796,9 +796,9 @@ const clear = () => {
                   <InputError
                     :message="form.errors.employee_type"
                     class="mt-2"
-                  />
+                  /> 
                 </div>
-              </div>
+              </div> -->
 
               <div class="grid grid-cols-3 gap-2">
                 <div class="mt-6">
@@ -826,7 +826,7 @@ const clear = () => {
                 <div class="mt-6">
                   <InputLabel
                     for="office_phone"
-                    value="ရုံးဖုန်းနံပါတ်/ဖက်စ်"
+                    value="ရုံးဖုန်းနံပါတ်"
                   />
                   <TextInput
                     id="office_phone"
@@ -846,7 +846,7 @@ const clear = () => {
                 <div class="mt-6">
                   <InputLabel
                     for="ministry"
-                    value="ဝန်ကြီးဌာန/အဖွဲ့အစည်း"
+                    value="ဌာန အမည်"
                     class="mb-2"
                   />
                   <select
@@ -856,7 +856,7 @@ const clear = () => {
                     class="mt-1 block w-full border-gray-300 rounded"
                   >
                     <option value="">
-                      ဝန်ကြီးဌာန/အဖွဲ့အစည်း ရွေးချယ်ပါ...
+                      ဌာနရွေးချယ်ပါ...
                     </option>
                     <option
                       v-for="ministry in props.ministries"
@@ -871,7 +871,7 @@ const clear = () => {
                     class="mt-2"
                   />
                 </div>
-                <div class="mt-6">
+                <!-- <div class="mt-6">
                   <InputLabel
                     for="department"
                     value="ဦးစီးဌာန/လုပ်ငန်း"
@@ -883,7 +883,7 @@ const clear = () => {
                     id="department"
                     class="mt-1 block w-full border-gray-300 rounded"
                   >
-                    <option value="">ဦးစီးဌာန/လုပ်ငန်း ရွေးချယ်ပါ...</option>
+                    <option value="">ဌာန ရွေးချယ်ပါ...</option>
                     <option
                       v-for="department in filterDepartments"
                       :value="department.id"
@@ -891,7 +891,7 @@ const clear = () => {
                       {{ department.name }}
                     </option>
                   </select>
-                </div>
+                </div> -->
                 <div class="mt-6">
                   <InputLabel for="position" value="ရာထူး" class="mb-2" />
                   <select
@@ -911,7 +911,7 @@ const clear = () => {
                 </div>
               </div>
 
-              <div class="mt-6">
+             <!--  <div class="mt-6">
                 <InputLabel
                   for="job_description"
                   value="လုပ်ငန်းတာဝန်"
@@ -925,8 +925,8 @@ const clear = () => {
                   placeholder="လုပ်ငန်းတာဝန်"
                   class="w-full rounded border-gray-300"
                 ></textarea>
-              </div>
-              <div class="mt-6">
+              </div> -->
+              <!-- <div class="mt-6">
                 <InputLabel
                   for="office_address"
                   value="ရုံးလိပ်စာ"
@@ -940,7 +940,7 @@ const clear = () => {
                   placeholder="ရုံးလိပ်စာ"
                   class="w-full rounded border-gray-300"
                 ></textarea>
-              </div>
+              </div> -->
               <div class="grid grid-cols-2 gap-2">
                 <div class="mt-6">
                   <InputLabel

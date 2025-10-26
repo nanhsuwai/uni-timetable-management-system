@@ -69,6 +69,7 @@ const switchToLogin = () => switchTab('login');
 const switchToRegister = () => switchTab('register');
 const switchToWelcome = () => switchTab('welcome');
 const switchToTimetable = () => switchTab('timetable');
+const switchToSignUp = () => switchTab('signup');
 
 // Props from Laravel
 const props = defineProps({
@@ -439,7 +440,7 @@ const exportExcel = () => {
                                     Manage timetables, resources, and schedules efficiently with real-time updates and
                                     intelligent conflict resolution.
                                 </p>
-                                <!-- Right Column - System Features -->
+
                                 <div class="lg:pl-4 xl:pl-8 order-1 lg:order-2" :class="{
                                     'opacity-100 transform translate-x-0': animateFeatures,
                                     'opacity-0 transform translate-x-8': !animateFeatures
@@ -480,6 +481,27 @@ const exportExcel = () => {
 
                                             Admin Sign In
                                         </button>
+
+                                        <!--Teacher sign in button-->
+                                        <button @click="switchToSignUp" class="inline-flex items-center justify-center px-6 sm:px-8 py-3 
+         border border-transparent text-sm sm:text-base font-semibold rounded-xl 
+         text-white bg-gradient-to-r from-cyan-600 via-sky-600 to-teal-700 
+         hover:from-cyan-700 hover:via-sky-700 hover:to-teal-800 
+         focus:outline-none focus:ring-4 focus:ring-sky-300/60 
+         transition-all duration-300 transform hover:scale-105 
+         shadow-md hover:shadow-xl backdrop-blur-md">
+
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm-7 8a7 7 0 0114 0H5zM3 6a9 9 0 0118 0v12a9 9 0 01-18 0V6z" />
+                                            </svg>
+
+
+
+                                            Teacher Sign Up
+                                        </button>
+
                                     </div>
 
                                 </div>
@@ -657,8 +679,8 @@ const exportExcel = () => {
                                                         </div>
                                                     </div>
                                                     <div v-else-if="!isLunch(slot)"
-                                                        class="text-gray-400 sm:text-sm text-xs italic">
-                                                        No subject
+                                                        class="text-teal-800 sm:text-sm text-xs italic">
+                                                        Library/Lab/<br>အားကစား/ဂီတ
                                                     </div>
                                                 </td>
                                             </tr>

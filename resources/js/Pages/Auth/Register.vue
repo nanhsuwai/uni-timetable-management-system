@@ -90,7 +90,7 @@ const submit = () => {
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
                     <p class="text-gray-600">Join University of Computer Studies, Hinthada</p>
-                    <p class="text-sm text-teal-600 mt-1">Timetable Management System</p>
+                    <p class="text-sm text-teal-600 mt-1">University Timetable Management System</p>
                 </div>
 
                 <!-- Registration Form -->
@@ -253,7 +253,7 @@ const submit = () => {
 
                 <!-- Footer -->
                 <div class="text-center text-sm text-gray-600">
-                    <p>© 2024 University of Computer Studies, Hinthada</p>
+                    <p>© 2025 University of Computer Studies, Hinthada</p>
                     <p class="mt-1">All rights reserved</p>
                 </div>
             </div>

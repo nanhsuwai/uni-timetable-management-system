@@ -104,25 +104,31 @@ class TimetableTemplate
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
         $timeSlots = $this->timeSlots->pluck('start_time')->unique()->sort();
 
-        // 🏫 Header
-        $html = '<h1 style="text-align: center;color:#00B9C4; font-size: 20px;">University of Computer Studies, Hinthada</h1>';
-        $html .= '<p style="text-align: center; color:#00B9C4;">Academic Year: ' . $this->academicYear->name;
+        // 🏫 Header Section
+        $html  = '<div style="display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #00B9C4; padding-bottom:6px; margin-bottom:10px;">';
+
+        $html .= '<div style="flex:0 0 auto;">';
+        $html .= '<img src="' . public_path('images/logo.png') . '" alt="University Logo" style="width:65px; height:auto;">';
+        $html .= '</div>';
+
+        $html .= '<div style="flex:1; text-align:center;">';
+        $html .= '<h1 style="color:#00B9C4; font-size:20px; margin:0;">University of Computer Studies, Hinthada</h1>';
+        $html .= '<p style="color:#00B9C4; margin:4px 0;">Academic Year: ' . $this->academicYear->name;
         if ($this->semester) $html .= ' (' . $this->semester->name . ')';
         $html .= '</p>';
 
-        $html .= '<p style="text-align: center;color:#00B9C4;">Timetable for ';
+        $html .= '<p style="color:#00B9C4; margin:4px 0;">Timetable for ';
         if ($this->level) $html .= $this->level->name . ' ';
         if ($this->program) $html .= '(' . $this->program->name . ') ';
         if (!empty($this->section) && !empty($this->section->name)) {
             $html .= '(Section: ' . $this->section->name . ')';
-        } else {
-            $html .= '';
         }
-
         $html .= '</p>';
-
+        $html .= '</div>';
+        $html .= '</div>';
         if ($this->section && $this->section->classroom)
-            $html .= '<p style="text-align:right; font-size:12px;">Room - ' . $this->section->classroom->room_no . '</p>';
+            $html .= '<p style="text-align:right; font-size:12px; margin-top:5px;">Room - ' . $this->section->classroom->room_no . '</p>';
+
 
         // 🧾 Timetable Table
         $html .= '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;">';
