@@ -291,11 +291,12 @@ const getTemplateDisplayName = (template) => {
     <LayoutAuthenticated>
 
         <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Quick Actions -->
-        <SectionTitleLineWithButton :icon="mdiClockOutline" title="Time Slot Management" />
+            <SectionTitleLineWithButton :icon="mdiClockOutline" title="Time Slot Management" 
+                class="border-b-2 border-teal-400 pb-2" />
 
             <div class="mb-6 flex flex-wrap gap-4">
-                <PrimaryButton @click.prevent="showCreateModal" class="ml-0">
+                <PrimaryButton @click.prevent="showCreateModal" 
+                    class="ml-0 bg-teal-600 hover:bg-teal-700 text-white">
                     <span class="flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -304,7 +305,7 @@ const getTemplateDisplayName = (template) => {
                         Add Time Slot
                     </span>
                 </PrimaryButton>
-                <PrimaryButton @click.prevent="showCreateTemplateModal" class="bg-purple-600 hover:bg-purple-700">
+                <PrimaryButton @click.prevent="showCreateTemplateModal" class="bg-cyan-600 hover:bg-cyan-700 text-white">
                     <span class="flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -314,7 +315,7 @@ const getTemplateDisplayName = (template) => {
                         Manage Templates
                     </span>
                 </PrimaryButton>
-                <PrimaryButton @click.prevent="showGenerateTimeSlotsModal" class="bg-green-600 hover:bg-green-700">
+                <PrimaryButton @click.prevent="showGenerateTimeSlotsModal" class="bg-sky-600 hover:bg-sky-700 text-white">
                     <span class="flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -326,7 +327,6 @@ const getTemplateDisplayName = (template) => {
                 </PrimaryButton>
             </div>
 
-            <!-- Filters -->
             <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <InputLabel for="filterName" value="Filter by Name" />
@@ -336,13 +336,14 @@ const getTemplateDisplayName = (template) => {
                 <div>
                     <InputLabel for="filterDay" value="Filter by Day" />
                     <select id="filterDay" v-model="filterDay"
-                        class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                        class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 rounded-md shadow-sm">
                         <option value="">All Days</option>
                         <option value="monday">Monday</option>
                         <option value="tuesday">Tuesday</option>
                         <option value="wednesday">Wednesday</option>
                         <option value="thursday">Thursday</option>
                         <option value="friday">Friday</option>
+                        
                     </select>
                 </div>
                 <div>
@@ -353,19 +354,18 @@ const getTemplateDisplayName = (template) => {
                 <div>
                     <InputLabel for="filterSemester" value="Filter by Semester" />
                     <select id="filterSemester" v-model="filterSemester"
-                        class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                        class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-teal-500 dark:focus:border-teal-600 focus:ring-teal-500 dark:focus:ring-teal-600 rounded-md shadow-sm">
                         <option value="">All Semesters</option>
                         <option v-for="s in semesters" :key="s" :value="s">{{ s }}</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Time Slot Templates Section -->
             <CardBox class="mb-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-900">Time Slot Templates</h3>
                     <PrimaryButton @click.prevent="showCreateTemplateModal" size="sm"
-                        class="bg-purple-600 hover:bg-purple-700">
+                        class="bg-cyan-600 hover:bg-cyan-700 text-white">
                         Add Template
                     </PrimaryButton>
                 </div>
@@ -377,7 +377,7 @@ const getTemplateDisplayName = (template) => {
                             <h4 class="font-medium text-gray-900">{{ getTemplateDisplayName(template) }}</h4>
                             <div class="flex gap-2">
                                 <button @click.prevent="showEditTemplateModal(template)"
-                                    class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
+                                    class="text-sky-600 hover:text-sky-800 text-sm">Edit</button>
                                 <button @click.prevent="showDeleteTemplateModal(template)"
                                     class="text-red-600 hover:text-red-800 text-sm">Delete</button>
                             </div>
@@ -386,9 +386,10 @@ const getTemplateDisplayName = (template) => {
                             <div>{{ formatTime(template.start_time) }} - {{ formatTime(template.end_time) }}</div>
                             <div class="mt-1">
                                 <span :class="[
-                                    'px-2 py-1 rounded text-xs font-medium capitalize',
-                                    template.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                                ]">
+                                        'px-2 py-1 rounded text-xs font-medium capitalize',
+                                        // Template Status: Using Teal for active
+                                        template.status === 'active' ? 'bg-teal-100 text-teal-800' : 'bg-gray-100 text-gray-800'
+                                    ]">
                                     {{ template.status }}
                                 </span>
                             </div>
@@ -397,7 +398,6 @@ const getTemplateDisplayName = (template) => {
                 </div>
             </CardBox>
 
-            <!-- Time Slots Table -->
             <CardBox has-table>
                 <table class="text-xs w-full">
                     <thead>
@@ -436,29 +436,28 @@ const getTemplateDisplayName = (template) => {
                             </td>
                             <td>
                                 <span :class="[
-                                    'px-2 py-1 rounded text-white text-xs',
-                                    timeSlot.status === 'active' ? 'bg-green-600' : 'bg-gray-400'
-                                ]">
+                                        'px-2 py-1 rounded text-white text-xs',
+                                        // Time Slot Status: Using Teal for active
+                                        timeSlot.status === 'active' ? 'bg-teal-600' : 'bg-gray-400'
+                                    ]">
                                     {{ timeSlot.status === 'active' ? 'Active' : 'Inactive' }}
                                 </span>
                             </td>
                             <td class="flex gap-2">
                                 <button @click.prevent="showEditModal(timeSlot)"
-                                    class="border p-1 rounded hover:bg-blue-600 hover:text-white">Edit</button>
+                                    class="border p-1 rounded hover:bg-sky-600 hover:text-white transition-colors">Edit</button>
                                 <button @click.prevent="showDeleteTimeSlotModal(timeSlot)"
-                                    class="border p-1 rounded hover:bg-red-600 hover:text-white">Delete</button>
+                                    class="border p-1 rounded hover:bg-red-600 hover:text-white transition-colors">Delete</button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </CardBox>
 
-            <!-- Pagination -->
             <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
                 <PaginationLinks :links="props.timeSlots.links" />
             </div>
 
-            <!-- Create / Edit Time Slot Modal -->
             <Modal :show="confirmingTimeSlotCreation" @close="closeModal">
                 <div class="p-6 w-full">
                     <h2 class="text-xl font-semibold text-gray-900 mb-6">
@@ -466,19 +465,17 @@ const getTemplateDisplayName = (template) => {
                     </h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Name -->
                         <div class="col-span-2">
                             <InputLabel for="name" value="Name" />
                             <TextInput id="name" v-model="form.name" placeholder="Enter time slot name"
-                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400" />
+                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-teal-400" />
                             <InputError :message="form.errors.name" />
                         </div>
 
-                        <!-- Academic Year -->
                         <div class="col-span-2">
                             <InputLabel for="academic_year_id" value="Academic Year" />
                             <select id="academic_year_id" v-model="form.academic_year_id"
-                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400">
+                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-teal-400">
                                 <option value="">Select Academic Year</option>
                                 <option v-for="y in academicYears" :key="y.id" :value="y.id">{{ y.name }}</option>
                             </select>
@@ -486,77 +483,73 @@ const getTemplateDisplayName = (template) => {
                         </div>
 
 
-                        <!-- Semester -->
                         <div class="col-span-2">
                             <InputLabel for="semester_id" value="Semester (Optional)" />
                             <select id="semester_id" v-model="form.semester_id"
-                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400">
+                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-teal-400">
                                 <option value="">Select Semester</option>
                                 <option v-for="s in semesters" :key="s" :value="s">{{ s }}</option>
                             </select>
                             <InputError :message="form.errors.semester" />
                         </div>
 
-                        <!-- Day of Week -->
                         <div class="col-span-2">
                             <InputLabel value="Day of Week" />
                             <div class="flex flex-wrap gap-2 mt-1">
                                 <button
                                     v-for="day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']"
                                     :key="day" @click.prevent="form.day_of_week = day" :class="[
-                                        'px-3 py-1 rounded-full text-sm font-medium transition-colors',
-                                        form.day_of_week === day
-                                            ? 'bg-indigo-600 text-white'
-                                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                                    ]">
+                                            'px-3 py-1 rounded-full text-sm font-medium transition-colors',
+                                            // Active Day Selection: Changed to Teal
+                                            form.day_of_week === day
+                                                ? 'bg-teal-600 text-white shadow-md'
+                                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                                        ]">
                                     {{ day.charAt(0).toUpperCase() + day.slice(1) }}
                                 </button>
                             </div>
                             <InputError :message="form.errors.day_of_week" />
                         </div>
 
-                        <!-- Time -->
                         <div class="col-span-2 flex gap-4">
                             <div class="flex-1">
                                 <InputLabel for="start_time" value="Start Time" />
                                 <TextInput id="start_time" type="time" v-model="form.start_time"
-                                    class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400" />
+                                    class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-teal-400" />
                                 <InputError :message="form.errors.start_time" />
                             </div>
                             <div class="flex-1">
                                 <InputLabel for="end_time" value="End Time" />
                                 <TextInput id="end_time" type="time" v-model="form.end_time"
-                                    class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400" />
+                                    class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-teal-400" />
                                 <InputError :message="form.errors.end_time" />
                             </div>
                         </div>
 
-                        <!-- Lunch Period Toggle -->
                         <div class="col-span-2">
                             <label class="flex items-center">
                                 <input type="checkbox" v-model="form.is_lunch_period"
-                                    class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                    class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
                                 <span class="ml-2 text-sm text-gray-600">Mark as lunch period</span>
                             </label>
                             <InputError :message="form.errors.is_lunch_period" />
                         </div>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="mt-6 flex justify-end gap-3">
                         <SecondaryButton @click.prevent="closeModal"
                             class="bg-gray-200 text-gray-700 hover:bg-gray-300">
                             Cancel
                         </SecondaryButton>
                         <PrimaryButton :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
-                            :disabled="form.processing" @click.prevent="createOrUpdateTimeSlot">
+                            :disabled="form.processing" @click.prevent="createOrUpdateTimeSlot"
+                            class="bg-teal-600 hover:bg-teal-700 text-white">
                             {{ editingTimeSlot ? 'Update Slot' : 'Add Slot' }}
                         </PrimaryButton>
                     </div>
                 </div>
             </Modal>
 
-            <!-- Time Slot Template Modal -->
             <Modal :show="showTemplateModal" @close="closeTemplateModal">
                 <div class="p-6 w-full">
                     <h2 class="text-xl font-semibold text-gray-900 mb-6">
@@ -564,64 +557,60 @@ const getTemplateDisplayName = (template) => {
                     </h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Name -->
                         <div class="col-span-2">
                             <InputLabel for="template_name" value="Template Name" />
                             <TextInput id="template_name" v-model="templateForm.name" placeholder="Enter template name"
-                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400" />
+                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-cyan-400" />
                             <InputError :message="templateForm.errors.name" />
                         </div>
 
-                        <!-- Period Number -->
                         <div class="col-span-2">
                             <InputLabel for="period_number" value="Period Number" />
                             <TextInput id="period_number" v-model="templateForm.period_number" type="number" min="1"
                                 placeholder="Enter period number"
-                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400" />
+                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-cyan-400" />
                             <InputError :message="templateForm.errors.period_number" />
                         </div>
 
-                        <!-- Time -->
                         <div class="col-span-2 flex gap-4">
                             <div class="flex-1">
                                 <InputLabel for="template_start_time" value="Start Time" />
                                 <TextInput id="template_start_time" type="time" v-model="templateForm.start_time"
-                                    class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400" />
+                                    class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-cyan-400" />
                                 <InputError :message="templateForm.errors.start_time" />
                             </div>
                             <div class="flex-1">
                                 <InputLabel for="template_end_time" value="End Time" />
                                 <TextInput id="template_end_time" type="time" v-model="templateForm.end_time"
-                                    class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400" />
+                                    class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-cyan-400" />
                                 <InputError :message="templateForm.errors.end_time" />
                             </div>
                         </div>
 
-                        <!-- Lunch Period -->
                         <div class="col-span-2 flex items-center mt-2">
-    <input 
-        id="is_lunch_period" 
-        type="checkbox" 
-        v-model="templateForm.is_lunch_period" 
-        :true-value="1" 
-        :false-value="0"
-        class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" 
-    />
-    <label for="is_lunch_period" class="ml-2 block text-sm text-gray-700">
-        Mark as Lunch Period
-    </label>
-    <InputError :message="templateForm.errors.is_lunch_period" />
-</div>
+                            <input 
+                                id="is_lunch_period" 
+                                type="checkbox" 
+                                v-model="templateForm.is_lunch_period" 
+                                :true-value="1" 
+                                :false-value="0"
+                                class="h-4 w-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500" 
+                            />
+                            <label for="is_lunch_period" class="ml-2 block text-sm text-gray-700">
+                                Mark as Lunch Period
+                            </label>
+                            <InputError :message="templateForm.errors.is_lunch_period" />
+                        </div>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="mt-6 flex justify-end gap-3">
                         <SecondaryButton @click.prevent="closeTemplateModal"
                             class="bg-gray-200 text-gray-700 hover:bg-gray-300">
                             Cancel
                         </SecondaryButton>
                         <PrimaryButton :class="{ 'opacity-50 cursor-not-allowed': templateForm.processing }"
-                            :disabled="templateForm.processing" @click.prevent="createOrUpdateTemplate">
+                            :disabled="templateForm.processing" @click.prevent="createOrUpdateTemplate"
+                            class="bg-cyan-600 hover:bg-cyan-700 text-white">
                             {{ editingTemplate ? 'Update Template' : 'Add Template' }}
                         </PrimaryButton>
                     </div>
@@ -629,7 +618,6 @@ const getTemplateDisplayName = (template) => {
             </Modal>
 
 
-            <!-- Delete Time Slot Modal -->
             <Modal :show="showDeleteModal" @close="closeDeleteModal">
                 <div class="p-6">
                     <h2 class="text-lg font-medium text-red-600">Delete Time Slot</h2>
@@ -637,14 +625,14 @@ const getTemplateDisplayName = (template) => {
                     <div class="mt-6 flex justify-end gap-2">
                         <SecondaryButton @click.prevent="closeDeleteModal">Cancel</SecondaryButton>
                         <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
-                            @click.prevent="deleteTimeSlot">
+                            @click.prevent="deleteTimeSlot"
+                            class="bg-red-600 hover:bg-red-700 text-white">
                             Delete
                         </PrimaryButton>
                     </div>
                 </div>
             </Modal>
 
-            <!-- Delete Template Modal -->
             <Modal :show="confirmingTemplateDeletion" @close="closeDeleteTemplateModal">
                 <div class="p-6">
                     <h2 class="text-lg font-medium text-red-600">Delete Template</h2>
@@ -652,14 +640,14 @@ const getTemplateDisplayName = (template) => {
                     <div class="mt-6 flex justify-end gap-2">
                         <SecondaryButton @click.prevent="closeDeleteTemplateModal">Cancel</SecondaryButton>
                         <PrimaryButton :class="{ 'opacity-25': templateForm.processing }"
-                            :disabled="templateForm.processing" @click.prevent="deleteTemplate">
+                            :disabled="templateForm.processing" @click.prevent="deleteTemplate"
+                            class="bg-red-600 hover:bg-red-700 text-white">
                             Delete
                         </PrimaryButton>
                     </div>
                 </div>
             </Modal>
 
-            <!-- Generate Time Slots Modal -->
             <Modal :show="showGenerateModal" @close="closeGenerateModal">
                 <div class="p-6 w-full max-w-md">
                     <h2 class="text-xl font-semibold text-gray-900 mb-6">
@@ -667,43 +655,39 @@ const getTemplateDisplayName = (template) => {
                     </h2>
 
                     <div class="space-y-4">
-                        <!-- Academic Year Selection -->
                         <div>
                             <InputLabel for="generate_academic_year_id" value="Academic Year" />
                             <select id="generate_academic_year_id" v-model="generateForm.academic_year_id"
-                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400">
+                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-sky-400">
                                 <option value="">Select Academic Year</option>
                                 <option v-for="y in academicYears" :key="y.id" :value="y.id">{{ y.name }}</option>
                             </select>
                             <InputError :message="generateForm.errors.academic_year_id" />
                         </div>
-                        <!-- semester selection -->
                         <div>
                             <InputLabel for="generate_semester_id" value="Semester (Optional)" />
                             <select id="generate_semester_id" v-model="generateForm.semester"
-                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-indigo-400">
+                                class="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-sky-400">
                                 <option value="">Select Semester</option>
                                 <option v-for="s in semesters" :key="s" :value="s">{{ s }}</option>
                             </select>
                             <InputError :message="generateForm.errors.semester" />
                         </div>
-                        <!-- Clear Existing Checkbox -->
                         <div class="flex items-center">
                             <input id="clear_existing" type="checkbox" v-model="generateForm.clear_existing"
-                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                class="rounded border-gray-300 text-sky-600 focus:ring-sky-500">
                             <label for="clear_existing" class="ml-2 text-sm text-gray-600">
                                 Clear existing time slots for this academic year
                             </label>
                         </div>
 
-                        <!-- Time Slots Preview -->
-                        <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="bg-gray-50 p-4 rounded-lg border border-sky-200">
                             <h4 class="font-medium text-gray-900 mb-2">Time Slots to be Generated:</h4>
                             <div class="text-sm text-gray-600 space-y-1">
                                 <div>• Period 1: 9:00 - 10:00</div>
                                 <div>• Period 2: 10:05 - 11:05</div>
                                 <div>• Period 3: 11:10 - 12:10</div>
-                                <div>• Lunch: 12:15 - 13:15</div>
+                                <div class="text-orange-600">• Lunch: 12:15 - 13:15</div>
                                 <div>• Period 4: 13:20 - 14:20</div>
                                 <div>• Period 5: 14:25 - 15:25</div>
                                 <div>• Period 6: 15:30 - 16:30</div>
@@ -714,7 +698,6 @@ const getTemplateDisplayName = (template) => {
                         </div>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="mt-6 flex justify-end gap-3">
                         <SecondaryButton @click.prevent="closeGenerateModal"
                             class="bg-gray-200 text-gray-700 hover:bg-gray-300">
@@ -722,7 +705,8 @@ const getTemplateDisplayName = (template) => {
                         </SecondaryButton>
                         <PrimaryButton :class="{ 'opacity-50 cursor-not-allowed': generateForm.processing }"
                             :disabled="generateForm.processing || !generateForm.academic_year_id"
-                            @click.prevent="generateTimeSlots">
+                            @click.prevent="generateTimeSlots"
+                            class="bg-sky-600 hover:bg-sky-700 text-white">
                             {{ generateForm.processing ? 'Generating...' : 'Generate Slots' }}
                         </PrimaryButton>
                     </div>

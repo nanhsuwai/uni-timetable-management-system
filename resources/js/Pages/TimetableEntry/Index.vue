@@ -3,7 +3,7 @@ import { Head, useForm, router } from "@inertiajs/vue3";
 import { ref, watch, computed } from "vue";
 import toast from "@/Stores/toast";
 
-// Components
+// Components (kept as is)
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
 import PaginationLinks from "@/Components/PaginationLinks.vue";
 import Modal from "@/Components/Modal.vue";
@@ -13,7 +13,7 @@ import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 
-// Props from Laravel
+// Props from Laravel (kept as is)
 const props = defineProps({
     entries: Object,
     filters: Object,
@@ -28,7 +28,7 @@ const props = defineProps({
     timeSlots: Array,
 });
 
-// Filters (Initialization)
+// Filters (Initialization - kept as is)
 const filterYear = ref(props.filters.filterYear || "");
 const filterSemester = ref(props.filters.filterSemester || "");
 const filterProgram = ref(props.filters.filterProgram || "");
@@ -37,7 +37,7 @@ const filterSection = ref(props.filters.filterSection || "");
 const filterClassroom = ref(props.filters.filterClassroom || "");
 const filterDay = ref(props.filters.filterDay || "");
 
-// Update when filters change (list page)
+// Update when filters change (list page - kept as is)
 watch(
     [
         filterYear,
@@ -65,7 +65,7 @@ watch(
     }
 );
 
-// Form
+// Form (kept as is)
 const form = useForm({
     academic_year_id: "",
     semester_id: "",
@@ -83,13 +83,13 @@ const form = useForm({
     break_end: "",
 });
 
-// Modal & CRUD
+// Modal & CRUD state (kept as is)
 const confirmingEntryCreation = ref(false);
 const editingEntry = ref(null);
 const showDeleteModal = ref(false);
 const deletingEntry = ref(null);
 
-// Dependent selects state (used for form creation/editing)
+// Dependent selects state (used for form creation/editing - kept as is)
 const selectedYear = ref("");
 const selectedProgram = ref("");
 const selectedLevel = ref("");
@@ -101,7 +101,30 @@ watch(selectedProgram, (newValue) => (form.program_id = newValue));
 watch(selectedLevel, (newValue) => (form.level_id = newValue));
 watch(selectedSection, (newValue) => (form.section_id = newValue));
 
-// Clear selected teachers whenever subject changes
+watch(selectedProgram, (newProgram, oldProgram) => {
+    if (newProgram !== oldProgram) {
+        selectedLevel.value = ""; // Clear selected Level
+        selectedSection.value = ""; // Clear selected Section
+        form.level_id = ""; // Clear form ID
+        form.section_id = "";
+        form.classroom_id = "";
+        // Reset subject_id to ensure a clean filter
+        form.subject_id = "";
+    }
+});
+
+// 2. Reset Section/Classroom/Subject when Level changes
+watch(selectedLevel, (newLevel, oldLevel) => {
+    if (newLevel !== oldLevel) {
+        selectedSection.value = ""; // Clear selected Section
+        form.section_id = ""; // Clear form ID
+        form.classroom_id = "";
+        
+        // CRITICAL: Clear subject_id when Level changes
+        form.subject_id = "";
+    }
+});
+// Clear selected teachers whenever subject changes (kept as is)
 watch(
     () => form.subject_id,
     (newSubject, oldSubject) => {
@@ -111,16 +134,14 @@ watch(
     }
 );
 
-// --- Unique Filter Options (Fixes Duplicates) ---
-
+// --- Unique Filter Options (Fixes Duplicates - kept as is) ---
 const getUniqueItems = (items, key = 'name') => {
     const uniqueItemsList = [];
     const seenValues = new Set();
     items.forEach(item => {
-        const value = item[key] ? String(item[key]) : ''; // Ensure value is a string for Set
+        const value = item[key] ? String(item[key]) : '';
         if (!seenValues.has(value)) {
             seenValues.add(value);
-            // Push the original object, assuming it has 'id' and 'name'
             uniqueItemsList.push(item);
         }
     });
@@ -132,9 +153,8 @@ const uniqueSemesters = computed(() => getUniqueItems(props.semesters, 'name'));
 const uniquePrograms = computed(() => getUniqueItems(props.programs, 'name'));
 const uniqueLevels = computed(() => getUniqueItems(props.levels, 'name'));
 const uniqueSections = computed(() => getUniqueItems(props.sections, 'name'));
-// For classrooms, assuming 'room_no' is the display name
 const uniqueClassrooms = computed(() => getUniqueItems(props.classrooms, 'room_no'));
-
+const uniqueSubjects = computed(() => getUniqueItems(props.subjects, 'name'));
 const uniqueDays = computed(() => ([
     { value: "monday", name: "Monday" },
     { value: "tuesday", name: "Tuesday" },
@@ -143,8 +163,7 @@ const uniqueDays = computed(() => ([
     { value: "friday", name: "Friday" },
 ]));
 
-// --- Dependent Form Selects (Restored and Corrected) ---
-
+// --- Dependent Form Selects (kept as is) ---
 const filteredPrograms = computed(() => {
     if (!selectedYear.value) return props.programs;
     return props.programs.filter((p) => String(p.academic_year_id) === String(selectedYear.value));
@@ -165,42 +184,32 @@ const filteredClassrooms = computed(() => {
     return props.classrooms.filter((c) => String(c.section_id) === String(selectedSection.value));
 });
 
-// Semesters available for selected year
 const filteredSemesters = computed(() => {
     if (!selectedYear.value) return props.semesters;
     return props.semesters.filter((s) => String(s.academic_year_id) === String(selectedYear.value));
 });
 
-// Subjects filtered by Academic Year, Level, AND Semester (Corrected references)
+// --- CORRECTED Subject Filter ---
 const filteredSubjects = computed(() => {
-    const academicYearIdFilter = form.academic_year_id;
-    const levelIdFilter = form.level_id;
-    const semesterIdFilter = form.semester_id;
+
+    // We must use 'form.level_id' because 'selectedLevel.value' syncs to it
+    // BUT, since 'selectedLevel' is used immediately above to filter sections, 
+    // we use selectedLevel.value here for immediate reactivity.
+    const levelId = form.level_id;
+    const semesterId = form.semester_id;
 
     // Filter subjects by the IDs selected in the form
-    return props.subjects.filter((subject) => {
-        // NOTE: Your backend must ensure 'subject' objects contain the fields required for this filtering (e.g., academic_year_id, level_id, semester_id)
-        // Since the original code implied filtering by *name* ('academic_year', 'level', 'semester'), 
-        // I'm simplifying this to assume the subject object contains direct ID references, 
-        // which is standard for dependent selects. If not, this logic needs review.
-
-        // Assuming subject filtering is based on a relationship/attribute in the subject model
-        // that matches the ID selected in the form.
-        
-        // This part is highly dependent on your Laravel Subject model structure. 
-        // We'll stick to the original filtering logic based on names/attributes 
-        // but reference the correct form IDs.
-
-        const matchesYear = !academicYearIdFilter || subject.academic_year_id === academicYearIdFilter; // Adjusted
-        const matchesLevel = !levelIdFilter || subject.level_id === levelIdFilter; // Adjusted
-        const matchesSemester = !semesterIdFilter || subject.semester_id === semesterIdFilter; // Adjusted
-
-        return matchesYear && matchesLevel && matchesSemester;
-    });
+    if (!levelId || !semesterId) {
+        return props.subjects;
+    }
+    
+    return props.subjects.filter((sub) => (
+        String(sub.level_id) === String(levelId) &&
+        String(sub.semester_id) === String(semesterId)
+    ));
 });
 
-
-// Teachers filtered by selected subject (only show teachers assigned to that subject)
+// Teachers filtered by selected subject (only show teachers assigned to that subject - kept as is)
 const filteredTeachers = computed(() => {
     if (!form.subject_id) return [];
     const subject = props.subjects.find((s) => String(s.id) === String(form.subject_id));
@@ -209,7 +218,7 @@ const filteredTeachers = computed(() => {
     return props.teachers.filter((t) => subjectTeacherIds.includes(t.id));
 });
 
-// Time slots filtered by selected year, semester, and day_of_week
+// Time slots filtered by selected year, semester, and day_of_week (kept as is)
 const filteredTimeSlots = computed(() => {
     if (!selectedYear.value) return [];
 
@@ -223,7 +232,7 @@ const filteredTimeSlots = computed(() => {
     });
 });
 
-// If the selected time_slot_id isn't in the filtered list, clear it
+// If the selected time_slot_id isn't in the filtered list, clear it (kept as is)
 watch(filteredTimeSlots, (newList) => {
     if (!form.time_slot_id) return;
     const exists = newList.some((s) => String(s.id) === String(form.time_slot_id));
@@ -232,14 +241,14 @@ watch(filteredTimeSlots, (newList) => {
     }
 });
 
-// Helper to get teachers for subject (display)
+// Helper to get teachers for subject (display) (kept as is)
 const getTeachersForSubject = (subjectId) => {
     const subject = props.subjects.find((s) => String(s.id) === String(subjectId));
     if (!subject || !subject.teachers) return [];
     return subject.teachers;
 };
 
-// Check completion
+// Check completion (kept as is)
 const allSelectionsComplete = computed(() => {
     return (
         selectedYear.value &&
@@ -380,272 +389,290 @@ const getDayName = (day) => {
 // Navigation helpers
 const navigateToGridView = () => router.visit(route("timetable_entry:grid"));
 const navigateToAcademicPrograms = () => router.visit(route("academic_program:index"));
-const navigateToSubjectTeacherManagement = () => router.visit(route("subject:assign-teacher"));
+const navigateToSubjectTeacherManagement = () => router.visit(route("{subject}/assign-teacher"));
 </script>
 
 <template>
   <LayoutAuthenticated>
-
     <Head title="Timetable Entries" />
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <!-- Page Header -->
       <div class="flex justify-between items-center mb-6">
-        <h1 class="text-xl font-semibold text-gray-800">Timetable Entries</h1>
-        <PrimaryButton @click="showCreateModal">+ Add Entry</PrimaryButton>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Timetable Entries</h1>
+        <PrimaryButton @click="showCreateModal"
+          class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:ring-indigo-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out">
+          + Add Entry
+        </PrimaryButton>
       </div>
 
-      
-      <!-- Filters -->
-<div class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 bg-white p-4 rounded-lg shadow">
-  <div>
-    <InputLabel value="Academic Year" />
-    <select v-model="filterYear"
-      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-      <option value="">All Years</option>
-      <option v-for="y in uniqueAcademicYears" :key="y.id" :value="y.id">{{ y.name }}</option>
-    </select>
-  </div>
+      <div
+        class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
+        <div>
+          <InputLabel value="Academic Year" class="text-gray-700 dark:text-gray-300 mb-1" />
+          <select v-model="filterYear"
+            class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition duration-150">
+            <option value="">All Years</option>
+            <option v-for="y in uniqueAcademicYears" :key="y.id" :value="y.id">{{ y.name }}</option>
+          </select>
+        </div>
 
-  <div>
-    <InputLabel value="Semester" />
-    <select v-model="filterSemester"
-      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-      <option value="">All Semesters</option>
-      <option v-for="s in uniqueSemesters" :key="s.id" :value="s.id">{{ s.name }}</option>
-    </select>
-  </div>
+        <div>
+          <InputLabel value="Semester" class="text-gray-700 dark:text-gray-300 mb-1" />
+          <select v-model="filterSemester"
+            class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition duration-150">
+            <option value="">All Semesters</option>
+            <option v-for="s in uniqueSemesters" :key="s.id" :value="s.id">{{ s.name }}</option>
+          </select>
+        </div>
 
-  <div>
-    <InputLabel value="Academic Program" />
-    <select v-model="filterProgram"
-      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-      <option value="">All Programs</option>
-      <option v-for="p in uniquePrograms" :key="p.id" :value="p.id">{{ p.name }}</option>
-    </select>
-  </div>
+        <div>
+          <InputLabel value="Academic Program" class="text-gray-700 dark:text-gray-300 mb-1" />
+          <select v-model="filterProgram"
+            class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition duration-150">
+            <option value="">All Programs</option>
+            <option v-for="p in uniquePrograms" :key="p.id" :value="p.id">{{ p.name }}</option>
+          </select>
+        </div>
 
-  <div>
-    <InputLabel value="Academic Level" />
-    <select v-model="filterLevel"
-      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-      <option value="">All Levels</option>
-      <option v-for="l in uniqueLevels" :key="l.id" :value="l.id">{{ l.name }}</option>
-    </select>
-  </div>
+        <div>
+          <InputLabel value="Academic Level" class="text-gray-700 dark:text-gray-300 mb-1" />
+          <select v-model="filterLevel"
+            class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition duration-150">
+            <option value="">All Levels</option>
+            <option v-for="l in uniqueLevels" :key="l.id" :value="l.id">{{ l.name }}</option>
+          </select>
+        </div>
 
-  <div>
-    <InputLabel value="Section" />
-    <select v-model="filterSection"
-      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-      <option value="">All Sections</option>
-      <option v-for="sec in uniqueSections" :key="sec.id" :value="sec.id">{{ sec.name }}</option>
-    </select>
-  </div>
+        <div>
+          <InputLabel value="Section" class="text-gray-700 dark:text-gray-300 mb-1" />
+          <select v-model="filterSection"
+            class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition duration-150">
+            <option value="">All Sections</option>
+            <option v-for="sec in uniqueSections" :key="sec.id" :value="sec.id">{{ sec.name }}</option>
+          </select>
+        </div>
 
-  <div>
-    <InputLabel value="Day" />
-    <select v-model="filterDay"
-      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-      <option value="">All Days</option>
-      <option v-for="day in uniqueDays" :key="day.value" :value="day.value">{{ day.name }}</option>
-    </select>
-  </div>
-</div>
+        <div>
+          <InputLabel value="Day" class="text-gray-700 dark:text-gray-300 mb-1" />
+          <select v-model="filterDay"
+            class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition duration-150">
+            <option value="">All Days</option>
+            <option v-for="day in uniqueDays" :key="day.value" :value="day.value">{{ day.name }}</option>
+          </select>
+        </div>
+      </div>
 
-      <!-- Table -->
-      <div class="bg-white shadow rounded-lg overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-center">
-            <thead class="bg-teal-500 text-gray-700 uppercase text-xs">
+            <thead
+              class="bg-indigo-600 dark:bg-indigo-700 text-white dark:text-gray-100 uppercase text-xs tracking-wider">
               <tr>
-                <th class="px-4 py-3">#</th>
-                <th class="px-4 py-3">Academic Year</th>
-                <th class="px-4 py-3">Semester</th>
-                <th class="px-4 py-3">Academic Program</th>
-                <th class="px-4 py-3">Level</th>
-                <th class="px-4 py-3">Section</th>
-                <th class="px-4 py-3">Subject</th>
-                <th class="px-4 py-3">Teachers</th>
-                <th class="px-4 py-3">Assignment</th>
-                <th class="px-4 py-3">Day</th>
-                <th class="px-4 py-3">Time</th>
-                <th class="px-4 py-3">Actions</th>
+                <th class="px-4 py-3 font-medium">#</th>
+                <th class="px-4 py-3 font-medium">Academic Year</th>
+                <th class="px-4 py-3 font-medium">Semester</th>
+                <th class="px-4 py-3 font-medium">Academic Program</th>
+                <th class="px-4 py-3 font-medium">Level</th>
+                <th class="px-4 py-3 font-medium">Section</th>
+                <th class="px-4 py-3 font-medium">Subject</th>
+                <th class="px-4 py-3 font-medium">Teachers</th>
+                <th class="px-4 py-3 font-medium">Assignment</th>
+                <th class="px-4 py-3 font-medium">Day</th>
+                <th class="px-4 py-3 font-medium">Time</th>
+                <th class="px-4 py-3 font-medium">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr v-for="(entry, index) in props.entries.data" :key="entry.id" class="hover:bg-gray-50 transition">
-                <td class="px-4 py-2 border-b">
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+              <tr v-for="(entry, index) in props.entries.data" :key="entry.id"
+                class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition duration-150 text-gray-700 dark:text-gray-300">
+                <td class="px-4 py-3 border-b dark:border-gray-700">
                   {{ index + 1 + (props.entries.per_page * (props.entries.current_page - 1)) }}
                 </td>
-                <td class="px-4 py-2 border-b">{{ entry.academic_year?.name }}</td>
-                <td class="px-4 py-2 border-b">{{ entry.semester?.name }}</td>
-                <td class="px-4 py-2 border-b">
+                <td class="px-4 py-3 border-b dark:border-gray-700">{{ entry.academic_year?.name }}</td>
+                <td class="px-4 py-3 border-b dark:border-gray-700">{{ entry.semester?.name }}</td>
+                <td class="px-4 py-3 border-b dark:border-gray-700">
                   <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-teal-800">
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
                     {{ entry.academic_program?.name || 'N/A' }}
                   </span>
                 </td>
-                <td class="px-4 py-2 border-b">{{ entry.academic_level?.name }}</td>
-                <td class="px-4 py-2 border-b">{{ entry.section?.name }}</td>
-                <td class="px-4 py-2 border-b">{{ entry.subject?.name }}</td>
-                <td class="px-4 py-2 border-b">
-                  <div v-if="entry.teachers && entry.teachers.length > 0" class="flex flex-wrap gap-1">
+                <td class="px-4 py-3 border-b dark:border-gray-700">{{ entry.academic_level?.name }}</td>
+                <td class="px-4 py-3 border-b dark:border-gray-700">{{ entry.section?.name }}</td>
+                <td class="px-4 py-3 border-b dark:border-gray-700 font-medium">{{ entry.subject?.name }}</td>
+                <td class="px-4 py-3 border-b dark:border-gray-700">
+                  <div v-if="entry.teachers && entry.teachers.length > 0" class="flex flex-wrap justify-center gap-1">
                     <span v-for="teacher in entry.teachers" :key="teacher.id"
-                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-100 whitespace-nowrap">
                       {{ teacher.name }}
                     </span>
                   </div>
-                  <span v-else class="text-gray-400 text-xs">No teachers assigned</span>
+                  <span v-else class="text-gray-400 dark:text-gray-500 text-xs">No teachers assigned</span>
                 </td>
-                <td class="px-4 py-2 border-b">
+                <td class="px-4 py-3 border-b dark:border-gray-700">
                   <span v-if="entry.subject_id && entry.teachers && entry.teachers.length > 0"
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    ✓ {{ entry.teachers.length }} teacher{{ entry.teachers.length > 1 ? 's' : '' }} assigned
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {{ entry.teachers.length }} teacher{{ entry.teachers.length > 1 ? 's' : '' }} assigned
                   </span>
                   <span v-else-if="entry.subject_id && (!entry.teachers || entry.teachers.length === 0)"
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                    ⚠ No teachers assigned
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.3 16c-.77 1.333.192 3 1.732 3z">
+                      </path>
+                    </svg>
+                    No teachers assigned
                   </span>
-                  <span v-else class="text-gray-400 text-xs">N/A</span>
+                  <span v-else class="text-gray-400 dark:text-gray-500 text-xs">N/A</span>
                 </td>
-                <td class="px-4 py-2 border-b">{{ getDayName(entry.day_of_week) }}</td>
-                <td class="px-4 py-2 border-b">{{ entry.time_slot?.name || 'N/A' }} ({{ entry.start_time }} - {{
-                  entry.end_time }})</td>
-                <td class="px-4 py-2 border-b space-x-2">
+                <td class="px-4 py-3 border-b dark:border-gray-700">{{ getDayName(entry.day_of_week) }}</td>
+                <td class="px-4 py-3 border-b dark:border-gray-700 font-mono">
+                  {{ entry.time_slot?.name || 'N/A' }} ({{ entry.start_time }} - {{ entry.end_time }})
+                </td>
+                <td class="px-4 py-3 border-b dark:border-gray-700 space-x-1 whitespace-nowrap">
                   <button @click.prevent="showEditModal(entry)"
-                    class="px-3 py-1 rounded-md text-white text-xs hover:bg-blue-600">
-                    <img src="/images/pen.png" height="50" width="50" />
+                    class="p-2 rounded-full text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition duration-150 hover:bg-blue-50 dark:hover:bg-gray-700"
+                    title="Edit">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                      </path>
+                    </svg>
                   </button>
                   <button @click.prevent="showDeleteEntryModal(entry)"
-                    class="px-3 py-1 rounded-md text-white text-xs hover:bg-red-600">
-                    <img src="/images/bin.png" height="50" width="50" />
+                    class="p-2 rounded-full text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition duration-150 hover:bg-red-50 dark:hover:bg-gray-700"
+                    title="Delete">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                      </path>
+                    </svg>
                   </button>
                 </td>
               </tr>
-              <tr v-if="props.entries.data.length === 0">
-                <td colspan="12" class="py-6 text-gray-500 text-sm">No timetable entries found.</td>
+              <tr v-if="props.entries.data.length === 0"
+                class="bg-white dark:bg-gray-800 transition duration-150 text-gray-700 dark:text-gray-300">
+                <td colspan="12" class="py-6 text-gray-500 dark:text-gray-400 text-base">No timetable entries found.</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- Pagination -->
-      <div class="p-4 border-t bg-gray-50">
+      <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-xl">
         <PaginationLinks :links="props.entries.links" />
       </div>
 
-      <!-- Create / Edit Modal -->
       <Modal :show="confirmingEntryCreation" @close="closeModal">
-        <div class="p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-3">
             {{ editingEntry ? "Edit Timetable Entry" : "Add Timetable Entry" }}
           </h2>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Academic Year -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <InputLabel value="Academic Year" />
+              <InputLabel value="Academic Year" class="text-gray-700 dark:text-gray-300 mb-1" />
               <select v-model="selectedYear"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
                 <option value="">Select Year</option>
                 <option v-for="y in props.academicYears" :key="y.id" :value="y.id">{{ y.name }}</option>
               </select>
             </div>
 
-            <!-- Academic Program -->
             <div>
-              <InputLabel value="Academic Program" />
+              <InputLabel value="Academic Program" class="text-gray-700 dark:text-gray-300 mb-1" />
               <select v-model="selectedProgram"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5"
                 :disabled="filteredPrograms.length === 0 && selectedYear">
                 <option value="">Select Academic Program</option>
                 <option v-for="p in filteredPrograms" :key="p.id" :value="p.id">{{ p.name }}</option>
               </select>
             </div>
 
-            <!-- Level -->
             <div>
-              <InputLabel value="Level" />
+              <InputLabel value="Level" class="text-gray-700 dark:text-gray-300 mb-1" />
               <select v-model="selectedLevel"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
                 <option value="">Select Level</option>
                 <option v-for="l in filteredLevels" :key="l.id" :value="l.id">{{ l.name }}</option>
               </select>
             </div>
 
-            <!-- Section -->
             <div>
-              <InputLabel value="Section" />
+              <InputLabel value="Section" class="text-gray-700 dark:text-gray-300 mb-1" />
               <select v-model="selectedSection"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
                 <option value="">Select Section</option>
                 <option v-for="s in filteredSections" :key="s.id" :value="s.id">{{ s.name }}</option>
               </select>
             </div>
 
-            <!-- Classroom -->
             <div>
-              <InputLabel value="Classroom" />
+              <InputLabel value="Classroom" class="text-gray-700 dark:text-gray-300 mb-1" />
               <select v-model="form.classroom_id"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
                 <option value="">Select Classroom</option>
                 <option v-for="c in filteredClassrooms" :key="c.id" :value="c.id">{{ c.room_no }}</option>
               </select>
             </div>
 
-            <!-- Semester -->
             <div>
-              <InputLabel value="Semester" />
+              <InputLabel value="Semester" class="text-gray-700 dark:text-gray-300 mb-1" />
               <select v-model="form.semester_id"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
                 <option value="">Select Semester</option>
                 <option v-for="s in filteredSemesters" :key="s.id" :value="s.id">{{ s.name }}</option>
               </select>
             </div>
 
-            <!-- Subject -->
             <div>
-              <InputLabel value="Subject" />
+              <InputLabel value="Subject" class="text-gray-700 dark:text-gray-300 mb-1" />
               <select v-model="form.subject_id"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
                 <option value="">Select Subject</option>
                 <option v-for="sub in filteredSubjects" :key="sub.id" :value="sub.id">{{ sub.name }}</option>
               </select>
             </div>
 
-            <!-- Teachers -->
             <div>
-              <InputLabel value="Teachers" />
+              <InputLabel value="Teachers" class="text-gray-700 dark:text-gray-300 mb-1" />
               <div v-if="filteredTeachers.length === 0 && form.subject_id"
-                class="w-full border border-gray-300 rounded-md shadow-sm p-3 bg-gray-50">
-                <p class="text-sm text-gray-500">
+                class="w-full border border-yellow-300 dark:border-yellow-700 rounded-lg shadow-inner p-3 bg-yellow-50 dark:bg-yellow-900/20">
+                <p class="text-sm text-yellow-800 dark:text-yellow-300">
                   No teachers are assigned to teach this subject yet.
                   <button @click="navigateToSubjectTeacherManagement"
-                    class="text-blue-600 hover:text-blue-800 underline ml-1">Assign Teachers to Subjects</button>
+                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline ml-1 font-medium">Assign
+                    Teachers to Subjects</button>
                 </p>
               </div>
               <div v-else-if="filteredTeachers.length > 0"
-                class="w-full border border-gray-300 rounded-md shadow-sm p-3 max-h-40 overflow-y-auto">
+                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm p-3 max-h-48 overflow-y-auto bg-gray-50 dark:bg-gray-700/50">
                 <div v-for="teacher in filteredTeachers" :key="teacher.id" class="flex items-center mb-2">
                   <input type="checkbox" :id="`teacher-${teacher.id}`" :value="teacher.id" v-model="form.teacher_ids"
-                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" />
-                  <label :for="`teacher-${teacher.id}`" class="ml-2 text-sm text-gray-700">{{ teacher.name }}</label>
+                    class="rounded border-gray-300 dark:border-gray-500 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:bg-gray-600 dark:checked:bg-indigo-500" />
+                  <label :for="`teacher-${teacher.id}`"
+                    class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ teacher.name }}</label>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">{{ form.teacher_ids.length }} of {{ filteredTeachers.length }}
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 border-t border-gray-200 dark:border-gray-600 pt-2">
+                  {{ form.teacher_ids.length }} of {{ filteredTeachers.length }}
                   teachers selected</p>
               </div>
-              <div v-else class="w-full border border-gray-300 rounded-md shadow-sm p-3 bg-gray-50">
-                <p class="text-sm text-gray-500">Select a subject first to see available teachers</p>
+              <div v-else
+                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-inner p-3 bg-gray-50 dark:bg-gray-700/50">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Select a subject first to see available teachers</p>
               </div>
             </div>
 
-            <!-- Day -->
             <div>
-              <InputLabel value="Day of Week" />
+              <InputLabel value="Day of Week" class="text-gray-700 dark:text-gray-300 mb-1" />
               <select v-model="form.day_of_week"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
                 <option value="">Select Day</option>
                 <option value="monday">Monday</option>
                 <option value="tuesday">Tuesday</option>
@@ -655,11 +682,10 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
               </select>
             </div>
 
-            <!-- Time Slot -->
             <div>
-              <InputLabel value="Time Slot" />
+              <InputLabel value="Time Slot" class="text-gray-700 dark:text-gray-300 mb-1" />
               <select v-model="form.time_slot_id"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
                 <option value="">Select Time Slot</option>
                 <option v-for="slot in filteredTimeSlots" :key="slot.id" :value="slot.id">
                   {{ slot.name || slot.id }} ({{ slot.start_time }} - {{ slot.end_time }})
@@ -669,41 +695,52 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
 
           </div>
 
-          <!-- Selection Status Message -->
-          <div v-if="!allSelectionsComplete" class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div v-if="!allSelectionsComplete"
+            class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
             <div class="flex items-center">
               <div class="flex-shrink-0">
-                <svg class="h-4 w-4 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg class="h-5 w-5 text-blue-500 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd"
                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                     clip-rule="evenodd" />
                 </svg>
               </div>
-              <div class="ml-2">
-                <p class="text-sm text-blue-700">Please complete all required selections to create the timetable entry.
-                </p>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-blue-800 dark:text-blue-300">Please complete all required selections to
+                  create the timetable entry.</p>
               </div>
             </div>
           </div>
 
-          <div class="mt-6 flex justify-end space-x-2">
-            <SecondaryButton @click.prevent="closeModal">Cancel</SecondaryButton>
-            <PrimaryButton :disabled="form.processing || !allSelectionsComplete" @click.prevent="createOrUpdateEntry">{{
-              editingEntry ? "Update" : "Create" }}</PrimaryButton>
+          <div class="mt-8 flex justify-end space-x-3">
+            <SecondaryButton @click.prevent="closeModal"
+              class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600/50 transition duration-150 py-2 px-4 rounded-lg">
+              Cancel
+            </SecondaryButton>
+            <PrimaryButton :disabled="form.processing || !allSelectionsComplete" @click.prevent="createOrUpdateEntry"
+              class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:ring-indigo-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out">
+              {{ editingEntry ? "Update" : "Create" }}
+            </PrimaryButton>
           </div>
         </div>
       </Modal>
 
-      <!-- Delete Modal -->
       <Modal :show="showDeleteModal" @close="closeDeleteModal">
-        <div class="p-6">
-          <h2 class="text-lg font-semibold text-red-600 mb-2">Delete Timetable Entry</h2>
-          <p class="text-sm text-gray-600">Are you sure you want to delete this timetable entry? This action cannot be
-            undone.</p>
-          <div class="mt-6 flex justify-end space-x-2">
-            <SecondaryButton @click.prevent="closeDeleteModal">Cancel</SecondaryButton>
-            <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="form.processing" @click.prevent="deleteEntry">
-              Delete</PrimaryButton>
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <h2 class="text-xl font-bold text-red-600 dark:text-red-500 mb-2 border-b border-gray-200 dark:border-gray-700 pb-2">
+            Delete Timetable Entry
+          </h2>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-4">Are you sure you want to delete this timetable entry? This
+            action cannot be undone.</p>
+          <div class="mt-6 flex justify-end space-x-3">
+            <SecondaryButton @click.prevent="closeDeleteModal"
+              class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600/50 transition duration-150 py-2 px-4 rounded-lg">
+              Cancel
+            </SecondaryButton>
+            <PrimaryButton class="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out"
+              :disabled="form.processing" @click.prevent="deleteEntry">
+              Delete
+            </PrimaryButton>
           </div>
         </div>
       </Modal>

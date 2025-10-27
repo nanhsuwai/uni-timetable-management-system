@@ -237,261 +237,284 @@ const toggleSemesterStatus = (semester) => {
 
 <template>
   <LayoutAuthenticated>
-    <!-- Header -->
-    
-
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <!-- Filter -->
-       <SectionTitleLineWithButton :icon="mdiShapePlus" title="Academic Years" class="mx-auto">
-      <PrimaryButton @click.prevent="showCreateModal">
-        + Add Academic Year
-      </PrimaryButton>
-    </SectionTitleLineWithButton>
-      <div class="mb-6">
-        <InputLabel for="filterName" value="Search Academic Year" />
-        <TextInput id="filterName" v-model="filterName" type="text" placeholder="e.g., 2024-2025" class="w-full" />
+      
+      <SectionTitleLineWithButton :icon="mdiShapePlus" title="Academic Years Management" class="mx-auto text-gray-800 dark:text-white mb-6">
+        <PrimaryButton @click.prevent="showCreateModal" class="shadow-md hover:shadow-lg transition duration-200">
+          <span class="mr-1">✨</span> Add Academic Year
+        </PrimaryButton>
+      </SectionTitleLineWithButton>
+
+      <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
+        <InputLabel for="filterName" value="Search Academic Year" class="text-gray-600 dark:text-gray-300 font-medium" />
+        <TextInput 
+          id="filterName" 
+          v-model="filterName" 
+          type="text" 
+          placeholder="e.g., 2024-2025" 
+          class="w-full mt-1 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:border-cyan-500 focus:ring-cyan-500" />
       </div>
 
-      <!-- Table -->
-      <CardBox has-table>
-        <table class="w-full text-sm text-left border-collapse">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-2 text-center">#</th>
-              <th class="px-4 py-2">Name</th>
-              <th class="px-4 py-2">Start Date</th>
-              <th class="px-4 py-2">End Date</th>
-              <th class="px-4 py-2 text-center">Status</th>
-              <th class="px-4 py-2 text-center">Actions</th>
-              <th class="px-4 py-2 text-center">Semesters</th>
-              <th class="px-4 py-2 text-center">Programs</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(academicYear, index) in props.academicYears.data" :key="academicYear.id"
-              class="border-t hover:bg-gray-50">
-              <td class="px-4 py-2 text-center">
-                {{ index + 1 + (props.academicYears.per_page * (props.academicYears.current_page - 1)) }}
-              </td>
-              <td class="px-4 py-2 font-medium">{{ academicYear.name }}</td>
-              <td class="px-4 py-2">{{ academicYear.start_date }}</td>
-              <td class="px-4 py-2">{{ academicYear.end_date }}</td>
-              <td class="px-4 py-2 text-center">
-                <button @click.prevent="toggleStatus(academicYear)" :class="[
-                  'px-3 py-1 rounded-full text-xs font-semibold',
-                  academicYear.status === 'active'
-                    ? 'bg-green-100 text-green-700 border border-green-400'
-                    : 'bg-gray-200 text-gray-600 border border-gray-300'
-                ]">
-                  {{ academicYear.status === 'active' ? 'Active' : 'Inactive' }}
-                </button>
-              </td>
-              <td class="px-4 py-2 flex justify-center gap-2">
-                <button @click.prevent="showEditModal(academicYear)"
-                  class="px-2 py-1 rounded text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white text-xs">
-                  Edit
-                </button>
-                <button @click.prevent="showDeleteAcademicYearModal(academicYear)"
-                  class="px-2 py-1 rounded text-red-600 border border-red-600 hover:bg-red-600 hover:text-white text-xs">
-                  Delete
-                </button>
-              </td>
-              <td class="px-4 py-2 text-center">
-                <button @click.prevent="openSemesterModal(academicYear)"
-                  class="px-2 py-1 rounded text-green-600 border border-green-600 hover:bg-green-600 hover:text-white text-xs">
-                  Semesters ({{ academicYear.semesters ? academicYear.semesters.length : 0 }})
-                </button>
-              </td>
-              <td class="px-4 py-2 text-center">
-                <button @click.prevent="$inertia.visit(route('academic-year:programs', academicYear.id))"
-                  class="px-2 py-1 rounded text-purple-600 border border-purple-600 hover:bg-purple-600 hover:text-white text-xs">
-                  Programs ({{ academicYear.academic_programs ? academicYear.academic_programs.length : 0 }})
-                </button>
-              </td>
+      <CardBox has-table class="shadow-xl dark:shadow-2xl dark:shadow-gray-950/50">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left dark:text-gray-300">
+            <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b dark:border-gray-600">
+              <tr>
+                <th class="px-4 py-3 text-center rounded-tl-xl">#</th>
+                <th class="px-4 py-3">Name</th>
+                <th class="px-4 py-3 whitespace-nowrap">Start Date</th>
+                <th class="px-4 py-3 whitespace-nowrap">End Date</th>
+                <th class="px-4 py-3 text-center">Status</th>
+                <th class="px-4 py-3 text-center">Actions</th>
+                <th class="px-4 py-3 text-center">Semesters</th>
+                <th class="px-4 py-3 text-center rounded-tr-xl">Programs</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr 
+                v-for="(academicYear, index) in props.academicYears.data" 
+                :key="academicYear.id"
+                class="border-b dark:border-gray-700 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition duration-150 ease-in-out">
+                
+                <td class="px-4 py-3 text-center font-mono text-gray-500 dark:text-gray-400">
+                  {{ index + 1 + (props.academicYears.per_page * (props.academicYears.current_page - 1)) }}
+                </td>
+                <td class="px-4 py-3 font-semibold text-gray-900 dark:text-white">{{ academicYear.name }}</td>
+                <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ academicYear.start_date }}</td>
+                <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ academicYear.end_date }}</td>
+                
+                <td class="px-4 py-3 text-center">
+                  <button @click.prevent="toggleStatus(academicYear)" :class="[
+                    'px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 shadow-sm whitespace-nowrap',
+                    academicYear.status === 'active'
+                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/60'
+                      : 'bg-gray-200 text-gray-600 dark:bg-gray-600/50 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600/70'
+                  ]">
+                    {{ academicYear.status === 'active' ? 'Active ✅' : 'Inactive ⏸' }}
+                  </button>
+                </td>
+                
+                <td class="px-4 py-3 flex justify-center gap-3">
+                  <button @click.prevent="showEditModal(academicYear)"
+                    class="p-2 rounded-full text-blue-500 hover:bg-blue-100 dark:hover:bg-gray-700/50 transition duration-150"
+                    title="Edit">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-7-3l3-3m-3 3l-6 6"></path></svg>
+                  </button>
+                  <button @click.prevent="showDeleteAcademicYearModal(academicYear)"
+                    class="p-2 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-gray-700/50 transition duration-150"
+                    title="Delete">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.042A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.897L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  </button>
+                </td>
+                
+                <td class="px-4 py-3 text-center">
+                  <button @click.prevent="openSemesterModal(academicYear)"
+                    class="px-3 py-1 rounded-lg text-sm text-cyan-600 border border-cyan-300 dark:border-cyan-600/50 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition duration-150 whitespace-nowrap">
+                    Semesters ({{ academicYear.semesters ? academicYear.semesters.length : 0 }})
+                  </button>
+                </td>
+                
+                <td class="px-4 py-3 text-center">
+                  <button @click.prevent="$inertia.visit(route('academic-year:programs', academicYear.id))"
+                    class="px-3 py-1 rounded-lg text-sm text-indigo-600 border border-indigo-300 dark:border-indigo-600/50 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition duration-150 whitespace-nowrap">
+                    Programs ({{ academicYear.academic_programs ? academicYear.academic_programs.length : 0 }})
+                  </button>
+                </td>
 
-            </tr>
-          </tbody>
-        </table>
+              </tr>
+              <tr v-if="!props.academicYears.data || props.academicYears.data.length === 0">
+                  <td colspan="8" class="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
+                    No academic years found.
+                  </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </CardBox>
 
-      <!-- Pagination -->
-      <div class="mt-4 p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
+      <div class="mt-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
         <PaginationLinks :links="props.academicYears.links" />
       </div>
 
-      <!-- Create / Edit Modal -->
-      <Modal :show="confirmingAcademicYearCreation" @close="closeModal">
-        <div class="p-6">
-          <h2 class="text-xl font-semibold text-gray-800 border-b pb-3 mb-4">
+      <Modal :show="confirmingAcademicYearCreation" @close="closeModal" max-width="lg">
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-3 mb-6">
             {{ editingAcademicYear ? "Edit Academic Year" : "Add New Academic Year" }}
           </h2>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <InputLabel for="name" value="Name" />
-              <TextInput id="name" v-model="form.name" type="text" placeholder="e.g., Academic Year 2024-2025" />
+              <InputLabel for="name" value="Name" class="dark:text-gray-300" />
+              <TextInput id="name" v-model="form.name" type="text" placeholder="e.g., 2024-2025" 
+                class="w-full mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
               <InputError :message="form.errors.name" />
             </div>
 
             <div>
-              <InputLabel for="start_date" value="Start Date" />
-              <TextInput id="start_date" v-model="form.start_date" type="date" />
+              <InputLabel for="start_date" value="Start Date" class="dark:text-gray-300" />
+              <TextInput id="start_date" v-model="form.start_date" type="date" 
+                class="w-full mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
               <InputError :message="form.errors.start_date" />
             </div>
 
-            <div>
-              <InputLabel for="end_date" value="End Date" />
-              <TextInput id="end_date" v-model="form.end_date" type="date" />
+            <div class="md:col-span-2"> <InputLabel for="end_date" value="End Date" class="dark:text-gray-300" />
+              <TextInput id="end_date" v-model="form.end_date" type="date" 
+                class="w-full mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
               <InputError :message="form.errors.end_date" />
             </div>
           </div>
 
-          <div class="mt-6 flex justify-end gap-3 border-t pt-4">
-            <SecondaryButton @click.prevent="closeModal">Cancel</SecondaryButton>
-            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
+          <div class="mt-8 flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700 pt-4">
+            <SecondaryButton @click.prevent="closeModal" class="dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-white">Cancel</SecondaryButton>
+            <PrimaryButton :class="{ 'opacity-50': form.processing }" :disabled="form.processing"
               @click.prevent="createOrUpdateAcademicYear">
-              {{ editingAcademicYear ? "Update" : "Create" }}
+              {{ editingAcademicYear ? "Update Year" : "Create Year" }}
             </PrimaryButton>
           </div>
         </div>
       </Modal>
 
-      <!-- Delete Modal -->
-      <Modal :show="showDeleteModal" @close="closeDeleteModal">
-        <div class="p-6">
-          <h2 class="text-lg font-semibold text-red-600 mb-2">Delete Academic Year</h2>
-          <p class="text-gray-700">Are you sure you want to delete this academic year? This action cannot be undone.</p>
+      <Modal :show="showDeleteModal" @close="closeDeleteModal" max-width="sm">
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">Delete Academic Year</h2>
+          <p class="text-gray-600 dark:text-gray-400">
+            Are you sure you want to delete this academic year? This action cannot be undone and will affect related semesters and programs.
+          </p>
           <div class="mt-6 flex justify-end gap-3">
-            <SecondaryButton @click.prevent="closeDeleteModal">Cancel</SecondaryButton>
-            <PrimaryButton class="bg-red-600 hover:bg-red-700 text-white" :class="{ 'opacity-25': form.processing }"
+            <SecondaryButton @click.prevent="closeDeleteModal" class="dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-white">Cancel</SecondaryButton>
+            <PrimaryButton class="bg-red-600 hover:bg-red-700 text-white dark:bg-red-700 dark:hover:bg-red-800" :class="{ 'opacity-50': form.processing }"
               :disabled="form.processing" @click.prevent="deleteAcademicYear">
-              Delete
+              Confirm Delete
             </PrimaryButton>
           </div>
         </div>
       </Modal>
 
-      <!-- Semester Modal -->
-      <Modal :show="confirmingSemesterModal" @close="closeSemesterModal" max-width="2xl">
-        <div class="p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+      <Modal :show="confirmingSemesterModal" @close="closeSemesterModal" max-width="3xl">
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-3 mb-4">
             Semesters for {{ selectedAcademicYear?.name }}
           </h2>
 
-          <!-- Add Semester Button -->
-          <div class="mb-4">
-            <PrimaryButton @click.prevent="openEditSemesterModal(null)">
-              + Add Semester
+          <div class="mb-4 flex justify-end">
+            <PrimaryButton @click.prevent="openEditSemesterModal(null)" class="shadow-md hover:shadow-lg transition duration-200">
+              <span class="mr-1">➕</span> Add Semester
             </PrimaryButton>
           </div>
 
-          <!-- Semester List -->
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left border-collapse border border-gray-300">
-              <thead class="bg-gray-100">
+          <div class="overflow-x-auto border rounded-lg border-gray-200 dark:border-gray-700">
+            <table class="w-full text-sm text-left dark:text-gray-300">
+              <thead class="bg-gray-50 dark:bg-gray-700 text-xs uppercase dark:text-gray-400">
                 <tr>
-                  <th class="px-4 py-2 border border-gray-300">#</th>
-                  <th class="px-4 py-2 border border-gray-300">Name</th>
-                  <th class="px-4 py-2 border border-gray-300">Start Date</th>
-                  <th class="px-4 py-2 border border-gray-300">End Date</th>
-                  <th class="px-4 py-2 border border-gray-300 text-center">Status</th>
-                  <th class="px-4 py-2 border border-gray-300 text-center">Actions</th>
+                  <th class="px-4 py-3">#</th>
+                  <th class="px-4 py-3">Name</th>
+                  <th class="px-4 py-3">Start Date</th>
+                  <th class="px-4 py-3">End Date</th>
+                  <th class="px-4 py-3 text-center">Status</th>
+                  <th class="px-4 py-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(semester, index) in selectedAcademicYear?.semesters" :key="semester.id"
-                  class="border-t hover:bg-gray-50">
-                  <td class="px-4 py-2 border border-gray-300">{{ index + 1 }}</td>
-                  <td class="px-4 py-2 border border-gray-300">{{ semester.name }}</td>
-                  <td class="px-4 py-2 border border-gray-300">{{ semester.start_date }}</td>
-                  <td class="px-4 py-2 border border-gray-300">{{ semester.end_date }}</td>
-                  <td class="px-4 py-2 border border-gray-300 text-center">
+                <tr 
+                  v-for="(semester, index) in selectedAcademicYear?.semesters" 
+                  :key="semester.id"
+                  class="border-t dark:border-gray-700 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition duration-150">
+                  
+                  <td class="px-4 py-3 font-mono text-gray-500 dark:text-gray-400">{{ index + 1 }}</td>
+                  <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">{{ semester.name }}</td>
+                  <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ semester.start_date }}</td>
+                  <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ semester.end_date }}</td>
+                  
+                  <td class="px-4 py-3 text-center">
                     <button @click.prevent="toggleSemesterStatus(semester)" :class="[
-                      'px-3 py-1 rounded-full text-xs font-semibold',
+                      'px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 shadow-sm whitespace-nowrap',
                       semester.status === 'active'
-                        ? 'bg-green-100 text-green-700 border border-green-400'
-                        : 'bg-gray-200 text-gray-600 border border-gray-300'
+                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/60'
+                        : 'bg-gray-200 text-gray-600 dark:bg-gray-600/50 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600/70'
                     ]">
                       {{ semester.status === 'active' ? 'Active' : 'Inactive' }}
                     </button>
                   </td>
-                  <td class="px-4 py-2 border border-gray-300 flex justify-center gap-2">
+                  
+                  <td class="px-4 py-3 flex justify-center gap-2">
                     <button @click.prevent="openEditSemesterModal(semester)"
-                      class="px-2 py-1 rounded text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white text-xs">
-                      Edit
+                      class="p-1 rounded-full text-blue-500 hover:bg-blue-100 dark:hover:bg-gray-700/50 transition duration-150" title="Edit">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-7-3l3-3m-3 3l-6 6"></path></svg>
                     </button>
                     <button @click.prevent="confirmDeleteSemester(semester)"
-                      class="px-2 py-1 rounded text-red-600 border border-red-600 hover:bg-red-600 hover:text-white text-xs">
-                      Delete
+                      class="p-1 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-gray-700/50 transition duration-150" title="Delete">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.042A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.897L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                   </td>
                 </tr>
                 <tr v-if="!selectedAcademicYear?.semesters?.length">
-                  <td colspan="6" class="px-4 py-2 text-center text-gray-500">No semesters found.</td>
+                  <td colspan="6" class="px-4 py-4 text-center text-gray-500 dark:text-gray-400">No semesters found.</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           <div class="mt-6 flex justify-end">
-            <SecondaryButton @click.prevent="closeSemesterModal">Close</SecondaryButton>
+            <SecondaryButton @click.prevent="closeSemesterModal" class="dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-white">Close</SecondaryButton>
           </div>
         </div>
       </Modal>
 
-      <!-- Semester Create/Edit Modal -->
-      <Modal :show="showingSemesterFormModal" @close="closeEditSemesterModal">
-        <div class="p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">
-            {{ editingSemester ? "Edit Semester" : "Add Semester" }}
+      <Modal :show="showingSemesterFormModal" @close="closeEditSemesterModal" max-width="md">
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+            {{ editingSemester ? "Edit Semester" : "Add New Semester" }}
           </h2>
           <div class="space-y-4">
             <div>
-              <InputLabel for="semester_name" value="Semester Name" />
-              <select id="semester_name" v-model="semesterForm.name" class="w-full border-gray-300 rounded-md shadow-sm">
+              <InputLabel for="semester_name" value="Semester Name" class="dark:text-gray-300" />
+              <select id="semester_name" v-model="semesterForm.name" 
+                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg shadow-sm focus:border-cyan-500 focus:ring-cyan-500 mt-1">
                 <option value="" disabled>Select Semester</option>
                 <option v-for="option in props.semsesterOptions" :key="option" :value="option">{{ option }}</option>
               </select>
               <InputError :message="semesterForm.errors.name" />
             </div>
             <div>
-              <InputLabel for="semester_start_date" value="Start Date" />
-              <TextInput id="semester_start_date" v-model="semesterForm.start_date" type="date" class="w-full" />
+              <InputLabel for="semester_start_date" value="Start Date" class="dark:text-gray-300" />
+              <TextInput id="semester_start_date" v-model="semesterForm.start_date" type="date" 
+                class="w-full mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
               <InputError :message="semesterForm.errors.start_date" />
             </div>
             <div>
-              <InputLabel for="semester_end_date" value="End Date" />
-              <TextInput id="semester_end_date" v-model="semesterForm.end_date" type="date" class="w-full" />
+              <InputLabel for="semester_end_date" value="End Date" class="dark:text-gray-300" />
+              <TextInput id="semester_end_date" v-model="semesterForm.end_date" type="date" 
+                class="w-full mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
               <InputError :message="semesterForm.errors.end_date" />
             </div>
           </div>
-          <div class="mt-6 flex justify-end space-x-2">
-            <SecondaryButton @click.prevent="closeEditSemesterModal">Cancel</SecondaryButton>
+          <div class="mt-6 flex justify-end space-x-3 border-t border-gray-100 dark:border-gray-700 pt-4">
+            <SecondaryButton @click.prevent="closeEditSemesterModal" class="dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-white">Cancel</SecondaryButton>
             <PrimaryButton :disabled="semesterForm.processing" @click.prevent="saveSemester">
-              {{ editingSemester ? "Update" : "Add" }}
+              {{ editingSemester ? "Update Semester" : "Add Semester" }}
             </PrimaryButton>
           </div>
         </div>
       </Modal>
 
-      <!-- Delete Semester Modal -->
-      <Modal :show="!!deletingSemester" @close="() => (deletingSemester = null)">
-        <div class="p-6">
-          <h2 class="text-lg font-semibold text-red-600 mb-2">Delete Semester</h2>
-          <p class="text-sm text-gray-600">
-            Are you sure you want to delete this semester? This action cannot be undone.
+      <Modal :show="!!deletingSemester" @close="() => (deletingSemester = null)" max-width="sm">
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">Delete Semester</h2>
+          <p class="text-gray-600 dark:text-gray-400">
+            Are you sure you want to delete the semester **{{ deletingSemester?.name }}**? This action cannot be undone.
           </p>
-          <div class="mt-6 flex justify-end space-x-2">
-            <SecondaryButton @click.prevent="() => (deletingSemester = null)">
+          <div class="mt-6 flex justify-end space-x-3">
+            <SecondaryButton @click.prevent="() => (deletingSemester = null)" class="dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-white">
               Cancel
             </SecondaryButton>
-            <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="semesterForm.processing"
+            <PrimaryButton class="bg-red-600 hover:bg-red-700 text-white dark:bg-red-700 dark:hover:bg-red-800" :disabled="semesterForm.processing"
               @click.prevent="deleteSemester">
-              Delete
+              Confirm Delete
             </PrimaryButton>
           </div>
         </div>
       </Modal>
+
     </div>
   </LayoutAuthenticated>
 </template>

@@ -242,95 +242,161 @@ const toggleSectionStatus = (section, newStatus) => {
 
 <template>
   <LayoutAuthenticated>
-
     <Head title="Academic Levels" />
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <!-- Header -->
       <div class="flex justify-between items-center mb-6">
-        <h1 class="text-xl font-semibold text-gray-800">Academic Levels</h1>
-        <PrimaryButton @click="openCreateModal">+ Add Level</PrimaryButton>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          Academic Levels
+        </h1>
+        <PrimaryButton
+          @click="openCreateModal"
+          class="text-cyan-500 bg-white dark:bg-gray-800 dark:text-cyan-500 shadow-lg hover:shadow-xl dark:hover:shadow-xl dark:hover:bg-white transition-all duration-300 transform hover:scale-[1.02]"
+        >
+          <span class="font-semibold">+ Add Level</span>
+        </PrimaryButton>
       </div>
 
-      <!-- Filters -->
-      <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white p-4 rounded-lg shadow">
+      <div
+        class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg dark:shadow-2xl dark:shadow-indigo-900/50"
+      >
         <div>
-          <InputLabel for="filterName" value="Filter by Name" />
-          <TextInput id="filterName" v-model="filterName" type="text" placeholder="Search levels..." class="w-full" />
+          <InputLabel
+            for="filterName"
+            value="Filter by Name"
+            class="dark:text-gray-300"
+          />
+          <TextInput
+            id="filterName"
+            v-model="filterName"
+            type="text"
+            placeholder="Search levels..."
+            class="w-full transition duration-150 ease-in-out border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 rounded-lg shadow-sm"
+          />
         </div>
         <div>
-          <InputLabel for="filterProgram" value="Filter by Program" />
-          <select id="filterProgram" v-model="filterProgram"
-            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+          <InputLabel
+            for="filterProgram"
+            value="Filter by Program"
+            class="dark:text-gray-300"
+          />
+          <select
+            id="filterProgram"
+            v-model="filterProgram"
+            class="w-full transition duration-150 ease-in-out border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400"
+          >
             <option value="">All Programs</option>
-            <option v-for="program in props.academicPrograms" :key="program" :value="program">
+            <option
+              v-for="program in props.academicPrograms"
+              :key="program"
+              :value="program"
+            >
               {{ program.name }}
             </option>
           </select>
         </div>
       </div>
 
-      <!-- Table -->
-      <div class="bg-white shadow rounded-lg overflow-hidden">
-        <table class="w-full text-sm text-center">
-          <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+      <div
+        class="bg-white dark:bg-gray-800 shadow-xl rounded-xl overflow-hidden ring-1 ring-gray-200 dark:ring-gray-700"
+      >
+        <table class="min-w-full text-sm text-center">
+          <thead
+            class="bg-indigo-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 uppercase text-xs tracking-wider border-b dark:border-gray-700"
+          >
             <tr>
-              <th class="px-4 py-3">#</th>
-              <th class="px-4 py-3">Name</th>
-              <th class="px-4 py-3">Academic Program</th>
-              <th class="px-4 py-3">Actions</th>
+              <th class="px-4 py-4 font-semibold">#</th>
+              <th class="px-4 py-4 font-semibold text-left">Name</th>
+              <th class="px-4 py-4 font-semibold text-left">
+                Academic Program
+              </th>
+              <th class="px-4 py-4 font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(level, index) in props.levels.data" :key="level.id" class="hover:bg-gray-50 transition">
-              <td class="px-4 py-2 border-b">
-                {{ index + 1 + (props.levels.per_page * (props.levels.current_page - 1)) }}
+            <tr
+              v-for="(level, index) in props.levels.data"
+              :key="level.id"
+              class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition duration-150 text-gray-800 dark:text-gray-300"
+            >
+              <td class="px-4 py-3">
+                {{
+                  index +
+                  1 +
+                  props.levels.per_page * (props.levels.current_page - 1)
+                }}
               </td>
-              <td class="px-4 py-2 border-b">{{ level.name }}</td>
-              <td class="px-4 py-2 border-b">{{ level.academic_program.name }}</td>
-              <td class="px-4 py-2 border-b space-x-2">
-                <button @click.prevent="openSectionsModal(level)"
-                  class="px-3 py-1 rounded-md bg-green-500 text-white text-xs hover:bg-green-600">
+              <td class="px-4 py-3 text-left font-medium">
+                {{ level.name }}
+              </td>
+              <td class="px-4 py-3 text-left">
+                {{ level.academic_program.name }}
+              </td>
+              <td class="px-4 py-3 space-x-2 whitespace-nowrap">
+                <button
+                  @click.prevent="openSectionsModal(level)"
+                  class="px-3 py-1 rounded-full bg-teal-500 text-white text-xs font-semibold hover:bg-teal-600 transition duration-150 shadow-md"
+                  title="Manage Sections"
+                >
                   Sections ({{ level.sections.length }})
                 </button>
-                <button @click.prevent="openEditModal(level)"
-                  class="px-3 py-1 rounded-md bg-blue-500 text-white text-xs hover:bg-blue-600">
+                <button
+                  @click.prevent="openEditModal(level)"
+                  class="px-3 py-1 rounded-full bg-indigo-500 text-white text-xs font-semibold hover:bg-indigo-600 transition duration-150 shadow-md"
+                  title="Edit Academic Level"
+                >
                   Edit
                 </button>
-                <button @click.prevent="confirmDelete(level)"
-                  class="px-3 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600">
+                <button
+                  @click.prevent="confirmDelete(level)"
+                  class="px-3 py-1 rounded-full bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition duration-150 shadow-md"
+                  title="Delete Academic Level"
+                >
                   Delete
                 </button>
               </td>
             </tr>
             <tr v-if="props.levels.data.length === 0">
-              <td colspan="4" class="py-6 text-gray-500 text-sm">
-                No academic levels found.
+              <td
+                colspan="4"
+                class="py-8 text-gray-500 dark:text-gray-400 italic text-base"
+              >
+                🤷‍♂️ No academic levels found.
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Pagination -->
-      <div class="p-4 border-t bg-gray-50">
+      <div class="p-4 border-t bg-white dark:bg-gray-800 rounded-b-xl">
         <PaginationLinks :links="props.levels.links" />
       </div>
 
-      <!-- Create/Edit Modal -->
       <Modal :show="confirmingModal" @close="closeModal">
-        <div class="p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <h2
+            class="text-xl font-semibold text-gray-900 dark:text-gray-100 border-b pb-3 mb-4 dark:border-gray-700"
+          >
             {{ editingLevel ? "Edit Academic Level" : "Add Academic Level" }}
           </h2>
-          <div class="space-y-4">
-            <!-- academic_year selection option -->
+          <form @submit.prevent="saveLevel" class="space-y-5">
             <div>
-              <InputLabel for="academic_year_id" value="Academic Year" />
-              <select id="academic_year_id" v-model="form.academic_year_id"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              <InputLabel
+                for="academic_year_id"
+                value="Academic Year"
+                class="dark:text-gray-300"
+              />
+              <select
+                id="academic_year_id"
+                v-model="form.academic_year_id"
+                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400"
+              >
                 <option value="">Select Academic Year</option>
-                <option v-for="year in props.academicYears" :key="year.id" :value="year.id">
+                <option
+                  v-for="year in props.academicYears"
+                  :key="year.id"
+                  :value="year.id"
+                >
                   {{ year.name }}
                 </option>
               </select>
@@ -338,11 +404,22 @@ const toggleSectionStatus = (section, newStatus) => {
             </div>
 
             <div>
-              <InputLabel for="program_id" value="Academic Program" />
-              <select id="program_id" v-model="form.program_id"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              <InputLabel
+                for="program_id"
+                value="Academic Program"
+                class="dark:text-gray-300"
+              />
+              <select
+                id="program_id"
+                v-model="form.program_id"
+                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400"
+              >
                 <option value="">Select Program</option>
-                <option v-for="program in filteredPrograms" :key="program.id" :value="program.id">
+                <option
+                  v-for="program in filteredPrograms"
+                  :key="program.id"
+                  :value="program.id"
+                >
                   {{ program.name }}
                 </option>
               </select>
@@ -350,97 +427,160 @@ const toggleSectionStatus = (section, newStatus) => {
             </div>
 
             <div>
-              <InputLabel for="name" value="Level Name" />
-              <select id="name" v-model="form.name"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              <InputLabel
+                for="name"
+                value="Level Name"
+                class="dark:text-gray-300"
+              />
+              <select
+                id="name"
+                v-model="form.name"
+                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400"
+              >
                 <option value="">Select Level</option>
-                <option v-for="level in props.fixedLevels" :key="level" :value="level">
+                <option
+                  v-for="level in props.fixedLevels"
+                  :key="level"
+                  :value="level"
+                >
                   {{ level }}
                 </option>
               </select>
               <InputError :message="form.errors.name" />
             </div>
 
-          </div>
-          <div class="mt-6 flex justify-end space-x-2">
-            <SecondaryButton @click.prevent="closeModal">Cancel</SecondaryButton>
-            <PrimaryButton :disabled="form.processing" @click.prevent="saveLevel">
-              {{ editingLevel ? "Update" : "Add" }}
-            </PrimaryButton>
-          </div>
+            <div class="mt-6 flex justify-end space-x-3 pt-4">
+              <SecondaryButton @click.prevent="closeModal">
+                Cancel
+              </SecondaryButton>
+              <PrimaryButton :disabled="form.processing">
+                {{ editingLevel ? "Update" : "Add" }}
+              </PrimaryButton>
+            </div>
+          </form>
         </div>
       </Modal>
 
-      <!-- Delete Modal -->
       <Modal :show="!!deletingLevel" @close="() => (deletingLevel = null)">
-        <div class="p-6">
-          <h2 class="text-lg font-semibold text-red-600 mb-2">Delete Academic Level</h2>
-          <p class="text-sm text-gray-600">
-            Are you sure you want to delete this academic level? This action cannot be undone.
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <h2 class="text-xl font-semibold text-red-600 mb-2">
+            Delete Academic Level
+          </h2>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Are you sure you want to delete this academic level?
+            <strong class="font-bold text-red-500">
+              This action cannot be undone.
+            </strong>
           </p>
-          <div class="mt-6 flex justify-end space-x-2">
+          <div class="mt-6 flex justify-end space-x-3">
             <SecondaryButton @click.prevent="() => (deletingLevel = null)">
               Cancel
             </SecondaryButton>
-            <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="form.processing" @click.prevent="deleteLevel">
+            <PrimaryButton
+              class="bg-red-600 hover:bg-red-700 focus:ring-red-500 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-400"
+              :disabled="form.processing"
+              @click.prevent="deleteLevel"
+            >
               Delete
             </PrimaryButton>
           </div>
         </div>
       </Modal>
 
-      <!-- Sections List Modal -->
-      <Modal :show="showingSectionsModal" @close="closeSectionsModal" :maxWidth="'2xl'">
-        <div class="p-6">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold text-gray-900">Sections for {{ selectedLevel?.name }}</h2>
-            <PrimaryButton @click="openEditSectionModal(null)" class="ml-2">+ Add Section</PrimaryButton>
+      <Modal
+        :show="showingSectionsModal"
+        @close="closeSectionsModal"
+        :maxWidth="'2xl'"
+      >
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <div class="flex justify-between items-center mb-6 border-b pb-3 dark:border-gray-700">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              Sections for <span class="text-indigo-600 dark:text-indigo-400">{{ selectedLevel?.name }}</span>
+            </h2>
+            <PrimaryButton @click="openEditSectionModal(null)" class="ml-2 shadow-md">
+              + Add Section
+            </PrimaryButton>
           </div>
-          <div v-if="selectedLevel?.sections && selectedLevel.sections.length > 0"
-            class="bg-white shadow rounded-lg overflow-hidden">
+          
+          <div
+            v-if="selectedLevel?.sections && selectedLevel.sections.length > 0"
+            class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden ring-1 ring-gray-200 dark:ring-gray-700"
+          >
             <table class="w-full text-sm text-center">
-              <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+              <thead
+                class="bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 uppercase text-xs tracking-wider"
+              >
                 <tr>
                   <th class="px-4 py-3">#</th>
-                  <th class="px-4 py-3">Name</th>
+                  <th class="px-4 py-3 text-left">Name</th>
                   <th class="px-4 py-3">Status</th>
                   <th class="px-4 py-3">Classroom</th>
-                  <th class="px-4 py-3">Section Head Teacher</th>
+                  <th class="px-4 py-3 text-left">Section Head Teacher</th>
                   <th class="px-4 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(section, index) in selectedLevel.sections" :key="section.id"
-                  class="hover:bg-gray-50 transition">
-                  <td class="px-4 py-2 border-b">{{ index + 1 }}</td>
-                  <td class="px-4 py-2 border-b">{{ section.name }}</td>
-                  <td class="px-4 py-2 border-b">
-                    <span :class="{
-                      'bg-green-100 text-green-800': section.status === 'active',
-                      'bg-yellow-100 text-yellow-800': section.status === 'inactive',
-                      'bg-gray-100 text-gray-800': section.status === 'archived'
-                    }" class="px-2 py-1 rounded-full text-xs font-medium capitalize">
+                <tr
+                  v-for="(section, index) in selectedLevel.sections"
+                  :key="section.id"
+                  class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition duration-150 text-gray-800 dark:text-gray-300"
+                >
+                  <td class="px-4 py-3">
+                    {{ index + 1 }}
+                  </td>
+                  <td class="px-4 py-3 text-left font-medium">
+                    {{ section.name }}
+                  </td>
+                  <td class="px-4 py-3">
+                    <span
+                      :class="{
+                        'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100':
+                          section.status === 'active',
+                        'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100':
+                          section.status === 'inactive',
+                        'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300':
+                          section.status === 'archived',
+                      }"
+                      class="px-3 py-1 rounded-full text-xs font-semibold capitalize transition duration-150"
+                    >
                       {{ section.status }}
                     </span>
                   </td>
-                  <td class="px-4 py-2 border-b">
+                  <td class="px-4 py-3">
                     {{ section.classroom ? section.classroom.room_no : '-' }}
                   </td>
-                  <td class="px-4 py-2 border-b">
-                    {{ section.section_head_teacher ? section.section_head_teacher.name : '-' }}
+                  <td class="px-4 py-3 text-left">
+                    {{
+                      section.section_head_teacher
+                        ? section.section_head_teacher.name
+                        : '-'
+                    }}
                   </td>
-                  <td class="px-4 py-2 border-b space-x-2">
+                  <td class="px-4 py-3 space-x-2 whitespace-nowrap">
                     <button
-                      @click.prevent="toggleSectionStatus(section, section.status === 'active' ? 'inactive' : 'active')"
-                      class="px-2 py-1 rounded-md bg-blue-500 text-white text-xs hover:bg-blue-600">
+                      @click.prevent="
+                        toggleSectionStatus(
+                          section,
+                          section.status === 'active' ? 'inactive' : 'active'
+                        )
+                      "
+                      class="px-2 py-1 rounded-md bg-sky-500 text-white text-xs font-medium hover:bg-sky-600 transition duration-150 shadow-sm"
+                      title="Toggle Status"
+                    >
                       {{ section.status === 'active' ? 'Inactive' : 'Active' }}
                     </button>
-                    <button @click.prevent="openEditSectionModal(section)"
-                      class="px-2 py-1 rounded-md bg-indigo-500 text-white text-xs hover:bg-indigo-600">
+                    <button
+                      @click.prevent="openEditSectionModal(section)"
+                      class="px-2 py-1 rounded-md bg-indigo-500 text-white text-xs font-medium hover:bg-indigo-600 transition duration-150 shadow-sm"
+                      title="Edit Section"
+                    >
                       Edit
                     </button>
-                    <button @click.prevent="confirmDeleteSection(section)"
-                      class="px-2 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600">
+                    <button
+                      @click.prevent="confirmDeleteSection(section)"
+                      class="px-2 py-1 rounded-md bg-red-500 text-white text-xs font-medium hover:bg-red-600 transition duration-150 shadow-sm"
+                      title="Delete Section"
+                    >
                       Delete
                     </button>
                   </td>
@@ -448,34 +588,62 @@ const toggleSectionStatus = (section, newStatus) => {
               </tbody>
             </table>
           </div>
-          <div v-else class="text-center py-8 text-gray-500">
-            No sections found for this level.
+          <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400 italic">
+            No sections found for this level. Start by adding one!
           </div>
           <div class="mt-6 flex justify-end">
-            <SecondaryButton @click.prevent="closeSectionsModal">Close</SecondaryButton>
+            <SecondaryButton @click.prevent="closeSectionsModal">
+              Close
+            </SecondaryButton>
           </div>
         </div>
       </Modal>
 
-      <!-- Section Form Modal -->
-      <Modal :show="showingSectionFormModal" @close="closeEditSectionModal" class="z-10">
-        <div class="p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">
-            {{ editingSection ? "Edit Section" : "Add Section" }} - {{ selectedLevel?.name }}
+      <Modal
+        :show="showingSectionFormModal"
+        @close="closeEditSectionModal"
+        class="z-20"
+      >
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <h2
+            class="text-xl font-semibold text-gray-900 dark:text-gray-100 border-b pb-3 mb-4 dark:border-gray-700"
+          >
+            {{ editingSection ? "Edit Section" : "Add Section" }} -
+            <span class="text-indigo-600 dark:text-indigo-400">{{ selectedLevel?.name }}</span>
           </h2>
-          <div class="space-y-4">
+          <form @submit.prevent="saveSection" class="space-y-5">
             <div>
-              <InputLabel for="section_name" value="Section Name" />
-              <TextInput id="section_name" v-model="sectionForm.name" type="text" class="w-full"
-                placeholder="Enter section name" />
+              <InputLabel
+                for="section_name"
+                value="Section Name"
+                class="dark:text-gray-300"
+              />
+              <TextInput
+                id="section_name"
+                v-model="sectionForm.name"
+                type="text"
+                class="w-full transition duration-150 ease-in-out border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 rounded-lg shadow-sm"
+                placeholder="e.g., A, Beta, or Science"
+              />
               <InputError :message="sectionForm.errors.name" />
             </div>
             <div>
-              <InputLabel for="classroom_id" value="Classroom" />
-              <select id="classroom_id" v-model="sectionForm.classroom_id"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              <InputLabel
+                for="classroom_id"
+                value="Classroom"
+                class="dark:text-gray-300"
+              />
+              <select
+                id="classroom_id"
+                v-model="sectionForm.classroom_id"
+                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400"
+              >
                 <option value="">Select Classroom</option>
-                <option v-for="classroom in propsAvailableClassrooms" :key="classroom.id" :value="classroom.id">
+                <option
+                  v-for="classroom in propsAvailableClassrooms"
+                  :key="classroom.id"
+                  :value="classroom.id"
+                >
                   {{ classroom.room_no }}
                 </option>
               </select>
@@ -483,41 +651,61 @@ const toggleSectionStatus = (section, newStatus) => {
             </div>
 
             <div>
-              <InputLabel for="section_head_teacher_id" value="Section Head Teacher" />
-              <select id="section_head_teacher_id" v-model="sectionForm.section_head_teacher_id"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              <InputLabel
+                for="section_head_teacher_id"
+                value="Section Head Teacher"
+                class="dark:text-gray-300"
+              />
+              <select
+                id="section_head_teacher_id"
+                v-model="sectionForm.section_head_teacher_id"
+                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400"
+              >
                 <option value="">Select Teacher</option>
-                <option v-for="teacher in propsAvailableTeachers" :key="teacher.id" :value="String(teacher.id)">
+                <option
+                  v-for="teacher in propsAvailableTeachers"
+                  :key="teacher.id"
+                  :value="String(teacher.id)"
+                >
                   {{ teacher.name }}
                 </option>
               </select>
               <InputError :message="sectionForm.errors.section_head_teacher_id" />
             </div>
-           
 
-          </div>
-          <div class="mt-6 flex justify-end space-x-2">
-            <SecondaryButton @click.prevent="closeEditSectionModal">Cancel</SecondaryButton>
-            <PrimaryButton :disabled="sectionForm.processing" @click.prevent="saveSection">
-              {{ editingSection ? "Update" : "Add" }}
-            </PrimaryButton>
-          </div>
+            <div class="mt-6 flex justify-end space-x-3 pt-4">
+              <SecondaryButton @click.prevent="closeEditSectionModal">
+                Cancel
+              </SecondaryButton>
+              <PrimaryButton :disabled="sectionForm.processing">
+                {{ editingSection ? "Update" : "Add" }}
+              </PrimaryButton>
+            </div>
+          </form>
         </div>
       </Modal>
 
-      <!-- Delete Section Modal -->
       <Modal :show="!!deletingSection" @close="() => (deletingSection = null)">
-        <div class="p-6">
-          <h2 class="text-lg font-semibold text-red-600 mb-2">Delete Section</h2>
-          <p class="text-sm text-gray-600">
-            Are you sure you want to delete "{{ deletingSection?.name }}"?
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+          <h2 class="text-xl font-semibold text-red-600 mb-2">
+            Delete Section
+          </h2>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Are you sure you want to delete
+            <strong class="font-bold text-gray-900 dark:text-gray-100">
+              "{{ deletingSection?.name }}"
+            </strong>
+            from <span class="text-indigo-600 dark:text-indigo-400">{{ selectedLevel?.name }}</span>?
           </p>
-          <div class="mt-6 flex justify-end space-x-2">
+          <div class="mt-6 flex justify-end space-x-3">
             <SecondaryButton @click.prevent="() => (deletingSection = null)">
               Cancel
             </SecondaryButton>
-            <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="sectionForm.processing"
-              @click.prevent="deleteSection">
+            <PrimaryButton
+              class="bg-red-600 hover:bg-red-700 focus:ring-red-500 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-400"
+              :disabled="sectionForm.processing"
+              @click.prevent="deleteSection"
+            >
               Delete
             </PrimaryButton>
           </div>
