@@ -208,7 +208,7 @@ class TimetableTemplate
 
         // ✍️ Footer Signature
         $html .= '
-<div style="width:100%; text-align:right; font-size:12px; margin-top:190px;">
+<div style="width:100%; text-align:right; font-size:12px; margin-top:160px;">
     Date: ' . date('d/m/Y') . '
 </div>
 

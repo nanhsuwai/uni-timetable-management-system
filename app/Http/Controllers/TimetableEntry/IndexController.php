@@ -40,6 +40,7 @@ class IndexController extends Controller
             'filterLevel' => 'level_id',
             'filterSection' => 'section_id',
             'filterClassroom' => 'classroom_id',
+            'filterSubject' => 'subject_id',
             'filterDay' => 'day_of_week',
         ];
 
