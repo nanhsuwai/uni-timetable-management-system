@@ -22,7 +22,7 @@ class StatusController extends Controller
         if ($request->status === 'approved') {
 
             // Update teacher status to active
-            // $teacher->update(['status' => 'approved']);
+            $teacher->update(['status' => 'approved']);
 
             // Create user account if not exists
             if (!$teacher->user_id) {
