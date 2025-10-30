@@ -18,38 +18,38 @@ class TeacherSeeder extends Seeder
         // List of teachers
         $teachers = [
             [
-                
-                'name' => 'Daw Win Theigi Myint', 
-                'email' => 'wintheigimyint@ucsh.edu.mm', 
-                'phone' => '+959123456789', 
-                'status' => 'active', 
-                'department' => DepartmentOption::FCS, 
+                'code' => 'T2025001',
+                'name' => 'Daw Win Theigi Myint',
+                'email' => 'wintheigimyint@ucsh.edu.mm',
+                'phone' => '+959123456789',
+                'status' => 'pending',
+                'department' => DepartmentOption::FCS,
                 'head_of_department' => true
             ],
             [
-                 
-                'name' => 'Dr. Khin Theint Theint Soe', 
-                'email' => 'khintheinttheintsoe@ucsh.edu.mm', 
-                'phone' => '+959123456790', 
-                'status' => 'active', 
-                'department' => DepartmentOption::FCS, 
+                'code' => 'T2025002',
+                'name' => 'Dr. Khin Theint Theint Soe',
+                'email' => 'khintheinttheintsoe@ucsh.edu.mm',
+                'phone' => '+959123456790',
+                'status' => 'pending',
+                'department' => DepartmentOption::FCS,
                 'head_of_department' => false
             ],
             [
-                
+                'code' => 'T2025003',
                 'name' => 'Dr. Thidar Win',
                 'email' => 'thidarwin@ucsh.edu.mm',
                 'phone' => '+959123456792',
-                'status' => 'active',
+                'status' => 'pending',
                 'department' => DepartmentOption::FCST,
                 'head_of_department' => true
             ],
              [
-                
+                'code' => 'T2025004',
                 'name' => 'ဒေါက်တာချယ်ရီထွန်း',
                 'email' => ' ',
                 'phone' => '+959123456792',
-                'status' => 'active',
+                'status' => 'pending',
                 'department' => DepartmentOption::FCST,
                 'head_of_department' => true
             ],

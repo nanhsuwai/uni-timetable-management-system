@@ -50,3 +50,25 @@ if (! function_exists('_getActiveAcademicYearId')) {
     }
 }
 
+if (! function_exists('_generateTeacherCode')) {
+    function _generateTeacherCode() {
+        $year = date('Y');
+        $prefix = 'T' . $year;
+
+        // Find the last teacher code for this year
+        $lastTeacher = \App\Models\Teacher::where('code', 'like', $prefix . '%')
+            ->orderBy('code', 'desc')
+            ->first();
+
+        if ($lastTeacher) {
+            // Extract the number part and increment
+            $lastNumber = (int) substr($lastTeacher->code, strlen($prefix));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+
+        // Format with leading zeros (e.g., T2025001)
+        return $prefix . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+    }
+}
