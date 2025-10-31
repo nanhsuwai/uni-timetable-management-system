@@ -187,7 +187,10 @@ const rejectTeacher = () => {
 <template>
   <LayoutAuthenticated>
     <Head title="Teachers" />
-
+     <SectionMain v-if="
+      $page.props.auth.user.user_type == 'admin' ||
+      hasPermission
+    ">
     <div class="p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <!-- Header and Add Button -->
       <div class="flex justify-between items-center mb-6">
@@ -531,6 +534,9 @@ const rejectTeacher = () => {
         </div>
       </div>
     </Modal>
-    
+     </SectionMain>
+        <SectionMain v-else>
+          <h2>No Permissions</h2>
+        </SectionMain>
   </LayoutAuthenticated>
 </template>

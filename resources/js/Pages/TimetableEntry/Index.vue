@@ -365,6 +365,9 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
   <LayoutAuthenticated>
 
     <Head title="Timetable Entries" />
+    <SectionMain
+  v-if="['teacher', 'admin'].includes($page.props.auth.user.user_type) || hasPermission"
+>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <!-- Page Header -->
@@ -682,5 +685,9 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
         </div>
       </Modal>
     </div>
+    </SectionMain>
+    <SectionMain v-else>
+      <h2>No Permissions</h2>
+    </SectionMain>
   </LayoutAuthenticated>
 </template>

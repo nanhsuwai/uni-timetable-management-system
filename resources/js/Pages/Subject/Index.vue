@@ -136,6 +136,9 @@ const assignTeachers = (subject) => {
   <LayoutAuthenticated>
 
     <Head title="Subjects" />
+   <SectionMain
+  v-if="['teacher', 'admin'].includes($page.props.auth.user.user_type) || hasPermission"
+>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <!-- Header -->
@@ -296,5 +299,9 @@ const assignTeachers = (subject) => {
         </div>
       </Modal>
     </div>
+    </SectionMain>
+    <SectionMain v-else>
+      <h2>No Permissions</h2>
+    </SectionMain>
   </LayoutAuthenticated>
 </template>

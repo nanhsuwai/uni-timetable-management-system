@@ -38,8 +38,8 @@ class AuthenticatedSessionController extends Controller
 
         $user = User::where('email', $request->email)->first();
         abort_if(! $user, 404, 'No user !');
-        abort_if($user->user_type == 'teacher', 403, 'Access Denied');
-        abort_if($user->user_type == 'student', 403, 'Access Denied');
+       /*  abort_if($user->user_type == 'teacher', 403, 'Access Denied');
+        abort_if($user->user_type == 'student', 403, 'Access Denied'); */
 
         $request->authenticate();
 
