@@ -19,6 +19,8 @@ class PermissionSeeder extends Seeder
             ['name' => 'subject:manage', 'code' => 'subject_manage', 'module_name' => 'Subject', 'description' => 'Manage subjects'],
             ['name' => 'teacher:manage', 'code' => 'teacher_manage', 'module_name' => 'Teacher', 'description' => 'Manage teachers'],
             ['name' => 'user:manage', 'code' => 'user_manage', 'module_name' => 'User', 'description' => 'Manage users'],
+            ['name' => 'academic_program:manage', 'code' => 'academic_program_manage', 'module_name' => 'Academic Program', 'description' => 'Manage academic programs'],
+            ['name' => 'teacher_assign:manage', 'code' => 'teacher_assign_manage', 'module_name' => 'Teacher Assignment', 'description' => 'Manage teacher assignments'],
         ];
 
         foreach ($permissions as $permission) {

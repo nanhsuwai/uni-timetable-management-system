@@ -84,7 +84,7 @@ const goBack = () => {
   router.visit(route('subject:all'));
 };
 
-let hasPermission = ref(checkPermissionComposable("subject_manage"));
+let hasPermission = ref(checkPermissionComposable("teacher_assign_manage"));
 </script>
 
 <template>
