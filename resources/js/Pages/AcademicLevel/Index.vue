@@ -244,7 +244,10 @@ const toggleSectionStatus = (section, newStatus) => {
   <LayoutAuthenticated>
 
     <Head title="Academic Levels" />
-
+     <SectionMain v-if="
+          $page.props.auth.user.user_type == 'admin' ||
+          hasPermission
+        ">
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="flex justify-between items-center mb-6">
@@ -524,5 +527,9 @@ const toggleSectionStatus = (section, newStatus) => {
         </div>
       </Modal>
     </div>
+     </SectionMain>
+    <SectionMain v-else>
+      <h2>No Permissions</h2>
+    </SectionMain>
   </LayoutAuthenticated>
 </template>
