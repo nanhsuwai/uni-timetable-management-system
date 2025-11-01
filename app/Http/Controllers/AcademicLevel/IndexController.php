@@ -34,7 +34,7 @@ class IndexController extends Controller
         $levels = $query->whereIn('program_id', $academicPrograms->pluck('id'))->orderBy('name')->paginate(10)->withQueryString();
         $classrooms = Classroom::orderBy('room_no')->get();
         $assignClassrooms = Classroom::where('is_available', false)->orderBy('room_no')->get();
-        $teachers = Teacher::where('status', 'active')->orderBy('name')->get();
+        $teachers = Teacher::where('status', 'approved')->orderBy('name')->get();
         $assignTeachers = Teacher::whereIn('id', function ($query) {
             $query->select('section_head_teacher_id')
                 ->from('sections')

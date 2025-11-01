@@ -164,7 +164,7 @@ const submit = () => {
                             />
                             <span class="text-gray-700">Remember me</span>
                         </label>
-                        <div v-if="canResetPassword" class="text-sm">
+                        <div class="text-sm">
                             <a href="#" @click.prevent="$inertia.visit(route('password.request'))" class="text-teal-600 hover:text-teal-500 font-medium transition-colors duration-300">
                                 Forgot password?
                             </a>
