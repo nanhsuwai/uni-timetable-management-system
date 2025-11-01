@@ -38,13 +38,12 @@ class AuthenticatedSessionController extends Controller
 
         $user = User::where('email', $request->email)->first();
         abort_if(! $user, 404, 'No user !');
-        
         $request->authenticate();
 
         $request->session()->regenerate();
 
           return match ($user->user_type) {
-            'teacher' => redirect()->route('timetable_entry:all'),
+            'teacher' => Inertia::location(route('timetable_entry:all')),
             'admin' => redirect()->route('dashboard'),
             default => redirect(RouteServiceProvider::HOME),
         };

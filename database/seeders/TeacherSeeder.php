@@ -20,7 +20,7 @@ class TeacherSeeder extends Seeder
             [
                 'code' => 'T2025001',
                 'name' => 'Daw Win Theigi Myint',
-                'email' => 'wintheigimyint@ucsh.edu.mm',
+                'email' => 'teacher1@ucsh.edu.mm',
                 'phone' => '+959123456789',
                 'status' => 'pending',
                 'department' => DepartmentOption::FCS,
@@ -29,7 +29,7 @@ class TeacherSeeder extends Seeder
             [
                 'code' => 'T2025002',
                 'name' => 'Dr. Khin Theint Theint Soe',
-                'email' => 'khintheinttheintsoe@ucsh.edu.mm',
+                'email' => 'teacher2@ucsh.edu.mm',
                 'phone' => '+959123456790',
                 'status' => 'pending',
                 'department' => DepartmentOption::FCS,
@@ -38,7 +38,7 @@ class TeacherSeeder extends Seeder
             [
                 'code' => 'T2025003',
                 'name' => 'Dr. Thidar Win',
-                'email' => 'thidarwin@ucsh.edu.mm',
+                'email' => 'teacher3@ucsh.edu.mm',
                 'phone' => '+959123456792',
                 'status' => 'pending',
                 'department' => DepartmentOption::FCST,
@@ -47,7 +47,7 @@ class TeacherSeeder extends Seeder
              [
                 'code' => 'T2025004',
                 'name' => 'ဒေါက်တာချယ်ရီထွန်း',
-                'email' => ' ',
+                'email' => 'teacher4@ucsh.edu.mm',
                 'phone' => '+959123456792',
                 'status' => 'pending',
                 'department' => DepartmentOption::FCST,
