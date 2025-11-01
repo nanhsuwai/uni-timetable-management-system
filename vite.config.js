@@ -5,15 +5,15 @@ import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
     plugins: [
-        
+
         laravel({
             input: 'resources/js/app.js',
-            refresh: true, 
+            refresh: true,
         }),
-      
+
         vue({
             template: {
-                
+
                 transformAssetUrls: {
                     base: null,
                     includeAbsolute: false,
@@ -21,15 +21,10 @@ export default defineConfig({
             },
         }),
     ],
-    /*
-   
-    server: {
-        // Allows access from outside the host (e.g., inside Docker)
-        host: '0.0.0.0', 
-        port: 5173,
-        cors: true,                   
-    },
-    
-    base: '/build/',
-    */
+    // server: {
+    //     host: '0.0.0.0',  
+    //     port: 5173,
+    //     cors: true,                   
+    //   },
+    // base: '/build/',
 });

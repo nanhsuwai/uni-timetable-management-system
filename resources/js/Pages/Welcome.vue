@@ -4,6 +4,7 @@ import { ref, computed, watch, onMounted } from 'vue';
 /* import { router } from '@inertiajs/vue3'; */
 import Login from '@/Pages/Auth/Login.vue';
 import Register from '@/Pages/Auth/Register.vue';
+import TeacherRegister from '@/Pages/Auth/TeacherRegister.vue';
 import SectionTitleLineWithButton from '@/Components/SectionTitleLineWithButton.vue';
 import CardBox from '@/Components/CardBox.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -67,6 +68,7 @@ const switchTab = (tabName) => {
 // Tab switching functions with animation
 const switchToLogin = () => switchTab('login');
 const switchToRegister = () => switchTab('register');
+const switchToTeacherRegister = () => switchTab('teacher-register');
 const switchToWelcome = () => switchTab('welcome');
 const switchToTimetable = () => switchTab('timetable');
 const switchToSignUp = () => switchTab('signup');
@@ -447,33 +449,49 @@ const exportExcel = () => {
                                 }" style="transition: all 0.8s ease-out 0.4s;">
 
                                     <div
-                                        class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start px-2 mt-8 sm:px-0">
+                                        class="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center lg:justify-start px-2 sm:px-0">
                                         <!-- View Timetable Button -->
                                         <button @click="switchToTimetable" class="inline-flex items-center justify-center px-6 sm:px-8 py-3 border border-transparent 
            text-sm sm:text-base font-medium rounded-xl text-white 
-           bg-gradient-to-r from-sky-600 to-sky-700 
-           hover:from-sky-700 hover:to-sky-800 
+           bg-gradient-to-r from-teal-600 to-teal-700 
+           hover:from-teal-700 hover:to-teal-800 
            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 
            transition-all duration-300 transform hover:scale-105 
            shadow-lg hover:shadow-xl backdrop-blur-md">
-                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0
          00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
 
                                             View Timetable
                                         </button>
 
+                                        <!-- Teacher Register Button -->
+                                        <button @click="switchToTeacherRegister" class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 lg:px-8 py-2 sm:py-3
+           border border-purple-600 text-xs sm:text-sm lg:text-base font-medium
+           rounded-xl text-purple-700 bg-white/80
+           hover:bg-purple-50
+           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500
+           transition-all duration-300 transform hover:scale-105
+           shadow-md hover:shadow-lg backdrop-blur-md">
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                            </svg>
+                                            Join as Teacher
+                                        </button>
+
                                         <!-- Admin Sign In Button -->
                                         <button @click="switchToLogin" class="inline-flex items-center justify-center px-6 sm:px-8 py-3 
            border border-teal-600 text-sm sm:text-base font-medium 
-           rounded-xl text-sky-700 bg-white/80 
-           hover:bg-sky-50 
+           rounded-xl text-teal-700 bg-white/80 
+           hover:bg-teal-50 
            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 
            transition-all duration-300 transform hover:scale-105 
            shadow-md hover:shadow-lg backdrop-blur-md">
-                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M13 8l4 4m0 0l-4 4m4-4H3m5-4v-1a3 3 0 013-3h7a3 3 0 013 3v10a3 3 0 01-3 3h-7a3 3 0 01-3-3v-1" />
@@ -482,26 +500,7 @@ const exportExcel = () => {
                                             Admin Sign In
                                         </button>
 
-                                        <!--Teacher sign in button-->
-                                        <button @click="switchToSignUp" class="inline-flex items-center justify-center px-6 sm:px-8 py-3 
-         border border-transparent text-sm sm:text-base font-semibold rounded-xl 
-         text-white bg-gradient-to-r from-cyan-600 via-sky-600 to-teal-700 
-         hover:from-cyan-700 hover:via-sky-700 hover:to-teal-800 
-         focus:outline-none focus:ring-4 focus:ring-sky-300/60 
-         transition-all duration-300 transform hover:scale-105 
-         shadow-md hover:shadow-xl backdrop-blur-md">
-
-                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm-7 8a7 7 0 0114 0H5zM3 6a9 9 0 0118 0v12a9 9 0 01-18 0V6z" />
-                                            </svg>
-
-
-
-                                            Teacher Sign Up
-                                        </button>
-
+                                        
                                     </div>
 
                                 </div>
@@ -750,6 +749,9 @@ const exportExcel = () => {
                     </div>
                 </div>
             </div>
+            <div v-if="activeTab === 'teacher-register'">
+  <TeacherRegister />
+</div>
                 <!-- Login Tab -->
                 <div v-else-if="activeTab === 'login'">
 
@@ -761,6 +763,16 @@ const exportExcel = () => {
                         </button>
                     </div>
                 </div>
+
+                <!-- Register Tab -->
+                <!-- <div v-else-if="activeTab === 'register'">
+                <div class="mb-4 text-center">
+                    <button @click="switchToWelcome" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-all duration-300 hover:bg-blue-50 px-3 py-2 rounded-md transform hover:scale-105">
+                        ← Back to Home
+                    </button>
+                </div>
+                <Register />
+            </div> -->
             </div>
         </div>
     </main>

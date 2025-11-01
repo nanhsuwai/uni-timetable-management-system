@@ -11,7 +11,7 @@ class CreateController extends Controller
     public function __invoke(Request $request)
     {
         $request->validate([
-            
+
             'name' => 'required|string',
             'email' => 'nullable|email|unique:teachers,email',
             'phone' => 'nullable|string',
@@ -20,7 +20,7 @@ class CreateController extends Controller
         ]);
 
         Teacher::create([
-           /*  'code' => $request->code, */
+            'code' => _generateTeacherCode(),
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,

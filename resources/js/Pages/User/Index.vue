@@ -349,13 +349,7 @@ const clear = () => {
             :icon="mdiShapePlus"
             title="Users Management"
           >
-             <BaseButton
-              label="Add"
-              color="contrast"
-              small
-              rounded-full
-              @click.prevent="showAddUserModal"
-            />
+             
           </SectionTitleLineWithButton>
           <div
             class="grid gap-2 py-6 border border-gray-500 px-3 mb-4 text-xs rounded sm:grid-cols-1 md:grid-cols-2"

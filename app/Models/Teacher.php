@@ -11,12 +11,14 @@ class Teacher extends Model
     use HasFactory;
 
     protected $fillable = [
+        'code',
         'name',
         'email',
         'phone',
         'status',
         'department',
         'head_of_department',
+        'user_id',
     ];
 
     /**
@@ -24,7 +26,7 @@ class Teacher extends Model
      */
     protected $casts = [
         'head_of_department' => 'boolean',
-        // 'department' => DepartmentOption::class, // Use enum casting
+        'department' => DepartmentOption::class, // Use enum casting
     ];
 
     /**
@@ -49,6 +51,38 @@ class Teacher extends Model
     public function timetableEntries()
     {
         return $this->belongsToMany(TimetableEntry::class, 'timetable_entry_teacher');
+    }
+
+    /**
+     * Get the user account associated with this teacher.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Scope for pending teachers
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    /**
+     * Scope for active teachers
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    /**
+     * Scope for rejected teachers
+     */
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
     }
 
     /**

@@ -25,7 +25,12 @@ class IndexController extends Controller
 
         $sections = $query->orderBy('name')->paginate(10)->withQueryString();
         $academicLevels = AcademicLevel::where('status', 'active')->orderBy('name')->get();
-        $teachers = Teacher::where('status', 'active')->orderBy('name')->get();
+        $teachers = Teacher::select('id', 'name')
+    ->where('status', 'approved')
+    ->orderBy('name')
+    ->get();
+
+       /*  $teachers = Teacher::where('status', 'active')->orderBy('name')->get(); */
         return Inertia::render('Section/Index', [
             'sections' => $sections,
             'academicLevels' => $academicLevels,

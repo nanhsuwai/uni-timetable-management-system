@@ -21,21 +21,21 @@ export default [
     route: "dashboard",
     icon: mdiMonitorDashboard,
     label: "Dashboard",
-    permission_code: "manage_dashboard",
+    permission_code: "dashboard_access",
     show: true
   },
   {
     route: "academic-year:all",
     icon: mdiCalendarBadge,
     label: "Academic Years",
-    permission_code: "manage_academic_year",
+    permission_code: "academic_year_manage",
     show: true
   },
   {
     route: "time-slot:all",
     icon: mdiClockTimeFour,
     label: "Time Slots",
-    permission_code: "manage_time_slot",
+    permission_code: "time_slot_manage",
     show: true
   },
   // {
@@ -56,35 +56,29 @@ export default [
     route: "academic_level:all",
     icon: mdiFileChart,
     label: "Academic Levels",
-    permission_code: "manage_academic_level",
+    permission_code: "academic_level_manage",
     show: true
   },
-  // {
-  //   route: "section:all",
-  //   icon: mdiAccountSchool,
-  //   label: "Sections",
-  //   permission_code: "manage_section",
-  //   show: false
-  // },
+
   {
     route: "classroom:all",
     icon: mdiShape,
     label: "Classrooms",
-    permission_code: "manage_classroom",
+    permission_code: "classroom_manage",
     show: true
   },
   {
     route: "timetable_entry:all",
     icon: mdiFileAccount,
     label: "Timetable Entries",
-    permission_code: "manage_timetable_entry",
+    permission_code: "timetable_entry_manage",
     show: true
   },
   {
   route: "timetable_entry:grid",
   icon: mdiGrid,
   label: "Timetable Grid View",
-  permission_code: "manage_timetable_entry",
+  permission_code: "timetable_entry_manage",
   show: true
 }
 ,
@@ -92,21 +86,21 @@ export default [
     route: "subject:all",
     icon: mdiAccountPlus,
     label: "Subjects",
-    permission_code: "manage_subject",
+    permission_code: "subject_manage",
     show: true
   },
   {
     route: "teacher:all",
     icon: mdiAccountArrowRight,
     label: "Teachers",
-    permission_code: "manage_teacher",
+    permission_code: "teacher_manage",
     show: true  
   },
   {
     route: "users:all",
     label: "Users Management",
     icon: mdiAccountGroup,
-    permission_code: "manage_users_management",
+    permission_code: "user_manage",
     show: true
   },
 ]
