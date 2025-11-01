@@ -10,6 +10,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
+import checkPermissionComposable from "@/Composables/Permission/checkPermission";
+import SectionMain from "../../Components/SectionMain.vue";
 
 const props = defineProps({
   programs: { type: Object, default: () => ({ data: [], meta: {} }) },
@@ -17,6 +19,8 @@ const props = defineProps({
   programOptions: { type: Array, default: () => [] },
   academicYear: { type: Object, default: () => ({}) },
 });
+
+let hasPermission = ref(checkPermissionComposable("academic_program_manage"));
 
 const filterName = ref(props.filters.filterName || "");
 
@@ -129,7 +133,7 @@ const toggleStatus = (program) => {
   <LayoutAuthenticated>
 
     <Head title="Academic Programs" />
-
+    <SectionMain v-if="['admin'].includes($page.props.auth.user.user_type) || hasPermission">
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
 
       <!-- Header with Academic Year Info -->
@@ -274,5 +278,14 @@ const toggleStatus = (program) => {
       </Modal>
 
     </div>
+    </SectionMain>
+    <SectionMain v-else>
+      <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white p-6 rounded-lg shadow text-center">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Access Denied</h2>
+          <p class="text-gray-600">You do not have permission to view this page.</p>
+        </div>
+      </div>
+    </SectionMain>
   </LayoutAuthenticated>
 </template>

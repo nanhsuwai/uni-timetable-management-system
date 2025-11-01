@@ -10,6 +10,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
+import SectionMain from "../../Components/SectionMain.vue";
+import checkPermissionComposable from "../../Composables/Permission/checkPermission";
 
 const props = defineProps({
   levels: { type: Object, default: () => ({ data: [], meta: {} }) },
@@ -23,6 +25,8 @@ const props = defineProps({
   assignClassrooms: { type: Array, default: () => [] }
 });
 // Filters
+
+let hasPermission = ref(checkPermissionComposable("academic_level_manage"));
 const filterName = ref(props.filters.filterName || "");
 const filterProgram = ref(props.filters.filterProgram || "");
 

@@ -2,6 +2,7 @@
 import { Head, useForm, router } from "@inertiajs/vue3";
 import { ref, watch, computed } from "vue";
 import toast from "@/Stores/toast";
+import checkPermissionComposable from "@/Composables/Permission/checkPermission";
 
 // Components
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
@@ -12,6 +13,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import SectionMain from "../../Components/SectionMain.vue";
 
 // Props from Laravel
 const props = defineProps({
@@ -27,6 +29,8 @@ const props = defineProps({
   semesters: Array,
   timeSlots: Array, // assume this contains all timeslots (with academic_year_id, semester, day_of_week, start_time, end_time, name)
 });
+
+let hasPermission = ref(checkPermissionComposable("timetable_entry_manage"));
 
 // Filters
 const filterYear = ref(props.filters.filterYear || "");
@@ -366,7 +370,7 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("subject:ass
 
     <Head title="Timetable Entries" />
     <SectionMain
-  v-if="['teacher', 'admin'].includes($page.props.auth.user.user_type) || hasPermission"
+  v-if="['admin'].includes($page.props.auth.user.user_type) || hasPermission"
 >
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
