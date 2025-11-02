@@ -10,6 +10,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
+import checkPermissionComposable from "@/Composables/Permission/checkPermission";
+import SectionMain from "../../Components/SectionMain.vue";
 
 const props = defineProps({
   subjects: {
@@ -24,6 +26,8 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+
+let hasPermission = ref(checkPermissionComposable("subject_manage"));
 
 // Filters
 const filterCode = ref(props.filters.filterCode || "");
@@ -135,6 +139,7 @@ const assignTeachers = (subject) => {
 <template>
   <LayoutAuthenticated>
     <Head title="Subjects" />
+    <SectionMain v-if="['teacher', 'admin'].includes($page.props.auth.user.user_type) || hasPermission">
 
     <div class="py-8 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div
@@ -433,26 +438,28 @@ const assignTeachers = (subject) => {
         </div>
       </Modal>
 
-      <Modal :show="showDeleteModal" @close="closeDeleteModal">
-        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
-          <h2 class="text-xl font-bold text-red-600 mb-3">Confirm Deletion</h2>
-          <p class="text-sm text-gray-700 dark:text-gray-300">
-            Are you sure you want to delete the subject
-            <strong class="font-extrabold text-red-700 dark:text-red-500"
-              >{{ deletingSubject?.code }} - {{ deletingSubject?.name }}</strong
-            >? This action cannot be undone.
-          </p>
-          <div class="mt-6 flex justify-end space-x-3">
-            <SecondaryButton @click.prevent="closeDeleteModal">Cancel</SecondaryButton>
-            <PrimaryButton
-              class="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
-              :disabled="form.processing"
-              @click.prevent="deleteSubject"
-              >Delete</PrimaryButton
-            >
+        <!-- Delete Modal -->
+        <Modal :show="showDeleteModal" @close="closeDeleteModal">
+          <div class="p-6">
+            <h2 class="text-lg font-semibold text-red-600 mb-2">Delete Subject</h2>
+            <p class="text-sm text-gray-600">Are you sure you want to delete this subject? This action cannot be undone.
+            </p>
+            <div class="mt-6 flex justify-end space-x-2">
+              <SecondaryButton @click.prevent="closeDeleteModal">Cancel</SecondaryButton>
+              <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="form.processing"
+                @click.prevent="deleteSubject">Delete</PrimaryButton>
+            </div>
           </div>
+        </Modal>
+      </div>
+    </SectionMain>
+    <SectionMain v-else>
+      <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white p-6 rounded-lg shadow text-center">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Access Denied</h2>
+          <p class="text-gray-600">You do not have permission to view this page.</p>
         </div>
-      </Modal>
-    </div>
+      </div>
+    </SectionMain>
   </LayoutAuthenticated>
 </template>

@@ -22,6 +22,7 @@ import RecentActivities from "@/Components/RecentActivities.vue";
 import QuickActions from "@/Components/QuickActions.vue";
 import DashboardCharts from "@/Components/DashboardCharts.vue";
 import SectionTimetables from "@/Components/SectionTimetables.vue";
+import checkPermissionComposable from "../Composables/Permission/checkPermission";
 
 const props = defineProps({
   stats: { type: Object, default: () => ({}) },
@@ -94,13 +95,15 @@ const currentAcademicInfo = computed(() => [
   { title: "Active Academic Year", value: props.stats.active_academic_year || 'None', icon: mdiCalendarBadge, color: "info" },
   { title: "Active Semester", value: props.stats.active_semester || 'None', icon: mdiClockTimeFour, color: "success" },
 ]);
+
+let hasPermission = ref(checkPermissionComposable("dashboard_access"));
 </script>
 
 <template>
   <LayoutAuthenticated>
     <Head title="Dashboard" />
 
-    <SectionMain>
+    <SectionMain v-if="['admin'].includes($page.props.auth.user.user_type) || hasPermission">
       <SectionTitleLineWithButton :icon="mdiChartTimelineVariant" title="Dashboard" main />
 
       <!-- Current Academic Information -->
@@ -180,6 +183,14 @@ const currentAcademicInfo = computed(() => [
       <!-- <div class="mt-8">
         <SectionTimetables :section-timetables="filteredSectionTimetables" />
       </div> -->
+    </SectionMain>
+    <SectionMain v-else>
+      <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white p-6 rounded-lg shadow text-center">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Access Denied</h2>
+          <p class="text-gray-600">You do not have permission to view this page.</p>
+        </div>
+      </div>
     </SectionMain>
   </LayoutAuthenticated>
 </template>

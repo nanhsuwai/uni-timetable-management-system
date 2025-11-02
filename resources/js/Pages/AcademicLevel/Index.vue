@@ -10,6 +10,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
+import SectionMain from "../../Components/SectionMain.vue";
+import checkPermissionComposable from "../../Composables/Permission/checkPermission";
 
 const props = defineProps({
   levels: { type: Object, default: () => ({ data: [], meta: {} }) },
@@ -23,6 +25,8 @@ const props = defineProps({
   assignClassrooms: { type: Array, default: () => [] }
 });
 // Filters
+
+let hasPermission = ref(checkPermissionComposable("academic_level_manage"));
 const filterName = ref(props.filters.filterName || "");
 const filterProgram = ref(props.filters.filterProgram || "");
 
@@ -243,7 +247,10 @@ const toggleSectionStatus = (section, newStatus) => {
 <template>
   <LayoutAuthenticated>
     <Head title="Academic Levels" />
-
+     <SectionMain v-if="
+          $page.props.auth.user.user_type == 'admin' ||
+          hasPermission
+        ">
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
@@ -712,5 +719,9 @@ const toggleSectionStatus = (section, newStatus) => {
         </div>
       </Modal>
     </div>
+     </SectionMain>
+    <SectionMain v-else>
+      <h2>No Permissions</h2>
+    </SectionMain>
   </LayoutAuthenticated>
 </template>

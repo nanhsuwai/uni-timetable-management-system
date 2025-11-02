@@ -2,6 +2,7 @@
 import { ref, computed, watch } from "vue";
 import { useForm, router } from "@inertiajs/vue3";
 import toast from "@/Stores/toast";
+import checkPermissionComposable from "@/Composables/Permission/checkPermission";
 
 // Components
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
@@ -27,6 +28,8 @@ const props = defineProps({
   timeSlots: Array,
   filters: Object,
 });
+
+let hasPermission = ref(checkPermissionComposable("timetable_entry_manage"));
 
 // Filters
 const filterYear = ref(props.filters.filterYear || "");

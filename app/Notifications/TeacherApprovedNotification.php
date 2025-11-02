@@ -46,7 +46,7 @@ class TeacherApprovedNotification extends Notification implements ShouldQueue
                     ->line('**Username:** ' . $notifiable->username)
                     ->line('**Password:** ' . $this->password)
                     ->line('**Email:** ' . $notifiable->email)
-                    ->action('Login to Your Account', url('/login'))
+                    ->action('Login to Your Account', url('/'))
                     ->line('Please change your password after first login for security.')
                     ->line('Welcome to the UCSH Timetable Management System!')
                     ->salutation('Best regards, UCSH Administration');

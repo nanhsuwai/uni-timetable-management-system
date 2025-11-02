@@ -2,6 +2,7 @@
 import { Head, useForm, router } from "@inertiajs/vue3";
 import { ref, watch, computed } from "vue";
 import toast from "@/Stores/toast";
+import checkPermissionComposable from "@/Composables/Permission/checkPermission";
 
 // Components (kept as is)
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
@@ -12,6 +13,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import SectionMain from "../../Components/SectionMain.vue";
 
 // Props from Laravel (kept as is)
 const props = defineProps({
@@ -27,6 +29,11 @@ const props = defineProps({
   semesters: Array,
   timeSlots: Array,
 });
+
+let hasPermission = ref(checkPermissionComposable("timetable_entry_manage"));
+
+
+let hasPermission = ref(checkPermissionComposable("timetable_entry_manage"));
 
 // Filters (Initialization - kept as is)
 const filterYear = ref(props.filters.filterYear || "");
@@ -419,6 +426,9 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("{subject}/a
   <LayoutAuthenticated>
 
     <Head title="Timetable Entries" />
+    <SectionMain
+  v-if="['admin'].includes($page.props.auth.user.user_type) || hasPermission"
+>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div class="flex justify-between items-center mb-6">
@@ -810,5 +820,9 @@ const navigateToSubjectTeacherManagement = () => router.visit(route("{subject}/a
         </div>
       </Modal>
     </div>
+    </SectionMain>
+    <SectionMain v-else>
+      <h2>No Permissions</h2>
+    </SectionMain>
   </LayoutAuthenticated>
 </template>

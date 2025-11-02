@@ -38,18 +38,15 @@ class AuthenticatedSessionController extends Controller
 
         $user = User::where('email', $request->email)->first();
         abort_if(! $user, 404, 'No user !');
-        abort_if($user->user_type == 'teacher', 403, 'Access Denied');
-        abort_if($user->user_type == 'student', 403, 'Access Denied');
-
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        if ($request->session()->has('url.intended')) {
-            return Inertia::location(session('url.intended'));
-        }
-
-        return redirect()->intended(RouteServiceProvider::HOME);
+          return match ($user->user_type) {
+            'teacher' => Inertia::location(route('timetable_entry:all')),
+            'admin' => redirect()->route('dashboard'),
+            default => redirect(RouteServiceProvider::HOME),
+        };
     }
 
     /**

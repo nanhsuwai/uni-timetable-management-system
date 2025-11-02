@@ -16,6 +16,8 @@ import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { mdiShapePlus, mdiClockOutline, mdiFood } from "@mdi/js";
+import SectionMain from "../../Components/SectionMain.vue";
+import checkPermissionComposable from "../../Composables/Permission/checkPermission";
 
 // Props
 const props = defineProps({
@@ -285,11 +287,17 @@ const isLunchPeriod = (timeSlot) => {
 const getTemplateDisplayName = (template) => {
     return template.name;
 };
+
+let hasPermission = ref(checkPermissionComposable("time_slot_manage"));
+
 </script>
 
 <template>
     <LayoutAuthenticated>
-
+         <SectionMain v-if="
+          $page.props.auth.user.user_type == 'admin' ||
+          hasPermission
+        ">
         <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
             <SectionTitleLineWithButton :icon="mdiClockOutline" title="Time Slot Management" 
                 class="border-b-2 border-teal-400 pb-2" />
@@ -713,5 +721,16 @@ const getTemplateDisplayName = (template) => {
                 </div>
             </Modal>
         </div>
+         </SectionMain>
+         <SectionMain v-else>
+           <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+             <CardBox>
+               <div class="text-center py-10">
+                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">Access Denied</h2>
+                 <p class="text-gray-600">You do not have permission to view this page.</p>
+               </div>
+             </CardBox>
+           </div>
+         </SectionMain>
     </LayoutAuthenticated>
 </template>

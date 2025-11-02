@@ -10,12 +10,14 @@ import InputError from "@/Components/InputError.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
-
+import checkPermissionComposable from "@/Composables/Permission/checkPermission";
+import SectionMain from "../../Components/SectionMain.vue";
 const props = defineProps({
   classrooms: { type: Object, default: () => ({ data: [], meta: {}, links: [] }) },
   filters: { type: Object, default: () => ({}) },
 });
 
+let hasPermission = ref(checkPermissionComposable("classroom_manage"));
 // Filter
 const filterRoomNo = ref(props.filters.filterRoomNo || "");
 watch(
@@ -116,13 +118,10 @@ const toggleAvailability = (classroom) => {
         </PrimaryButton>
       </div>
 
-      <div class="mb-8">
-        <TextInput
-          v-model="filterRoomNo"
-          placeholder="Search by Room No (e.g., 101)..."
-          class="w-full md:w-1/3 p-2.5 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 rounded-lg shadow-sm"
-        />
-      </div>
+        <!-- Filter -->
+        <div class="mb-6">
+          <TextInput v-model="filterRoomNo" placeholder="Search by Room No..." class="w-full md:w-1/3" />
+        </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         <div
@@ -256,30 +255,26 @@ const toggleAvailability = (classroom) => {
         </div>
       </Modal>
 
-      <Modal :show="!!deletingClassroom" @close="closeDeleteModal">
-        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
-          <h2 class="text-xl font-semibold text-red-600 mb-3">
-            Delete Classroom
-          </h2>
-          <p class="text-gray-600 dark:text-gray-400 mb-6">
-            Are you sure you want to delete classroom
-            <strong class="font-bold text-gray-900 dark:text-gray-100"
-              >{{ deletingClassroom?.room_no }}</strong
-            >? This action cannot be undone.
-          </p>
-          <div class="flex justify-end gap-3">
-            <SecondaryButton @click.prevent="closeDeleteModal">
-              Cancel
-            </SecondaryButton>
-            <PrimaryButton
-              class="bg-red-600 hover:bg-red-700 focus:ring-red-500 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-400"
-              @click.prevent="deleteClassroom"
-            >
-              Delete
-            </PrimaryButton>
+        <!-- Delete Modal -->
+        <Modal :show="!!deletingClassroom" @close="closeDeleteModal">
+          <div class="p-6 rounded-lg">
+            <h2 class="text-lg font-semibold text-red-600 mb-2">Delete Classroom</h2>
+            <p class="text-gray-700 mb-4">Are you sure you want to delete this classroom?</p>
+            <div class="flex justify-end gap-2">
+              <SecondaryButton @click.prevent="closeDeleteModal">Cancel</SecondaryButton>
+              <PrimaryButton class="bg-red-500 hover:bg-red-600" @click.prevent="deleteClassroom">Delete</PrimaryButton>
+            </div>
           </div>
+        </Modal>
+      </div>
+    </SectionMain>
+    <SectionMain v-else>
+      <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white p-6 rounded-lg shadow text-center">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Access Denied</h2>
+          <p class="text-gray-600">You do not have permission to view this page.</p>
         </div>
-      </Modal>
-    </div>
+      </div>
+    </SectionMain>
   </LayoutAuthenticated>
 </template>
