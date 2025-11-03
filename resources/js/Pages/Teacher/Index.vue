@@ -1,4 +1,7 @@
 <script setup>
+/* ---------------------------------------
+| ✅ Imports
+---------------------------------------- */
 import { Head, useForm, router } from "@inertiajs/vue3";
 import { ref, watch } from "vue";
 import PaginationLinks from "@/Components/PaginationLinks.vue";
@@ -11,11 +14,11 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
 import checkPermissionComposable from "@/Composables/Permission/checkPermission";
-import SectionMain from "../../Components/SectionMain.vue";
+import SectionMain from "@/Components/SectionMain.vue";
 
-/*---------------------------------------
+/* ---------------------------------------
 | ✅ Department Options
-----------------------------------------*/
+---------------------------------------- */
 const DepartmentOption = {
   ITSM: "ITSM",
   FCST: "Faculty of Computer Technology",
@@ -28,9 +31,9 @@ const DepartmentOption = {
 };
 const departmentOptions = Object.values(DepartmentOption);
 
-/*---------------------------------------
-| ✅ Props & Filters
-----------------------------------------*/
+/* ---------------------------------------
+| ✅ Props
+---------------------------------------- */
 const props = defineProps({
   teachers: {
     type: Object,
@@ -42,18 +45,21 @@ const props = defineProps({
   },
 });
 
-let hasPermission = ref(checkPermissionComposable("teacher_manage"));
+/* ---------------------------------------
+| ✅ Permission
+---------------------------------------- */
+const hasPermission = ref(checkPermissionComposable("teacher_manage"));
 
-const filterName = ref(initialFilterName);
-const filterEmail = ref(initialFilterEmail);
-const filterDepartment = ref(initialFilterDepartment);
-const filterStatus = ref(initialFilterStatus);
+/* ---------------------------------------
+| ✅ Filters
+---------------------------------------- */
+const filterName = ref(props.filters.filterName || "");
+const filterEmail = ref(props.filters.filterEmail || "");
+const filterDepartment = ref(props.filters.filterDepartment || "");
+const filterStatus = ref(props.filters.filterStatus || "");
 
-/*---------------------------------------
-| 🔍 Watch Filters & Update List
-----------------------------------------*/
-watch(
-  [filterName, filterEmail, filterDepartment, filterStatus],
+/* Auto-fetch filtered results */
+watch([filterName, filterEmail, filterDepartment, filterStatus], 
   ([name, email, department, status]) => {
     router.get(
       route("teacher:all"),
@@ -61,16 +67,15 @@ watch(
         filterName: name,
         filterEmail: email,
         filterDepartment: department,
-        filterStatus: status.toLowerCase(), // normalize to lowercase for server
+        filterStatus: status?.toLowerCase() || "",
       },
       { preserveState: true, replace: true }
     );
-  }
-);
+});
 
-/*---------------------------------------
-| ✏️ Form & Modal Handling
-----------------------------------------*/
+/* ---------------------------------------
+| ✅ Form & Modal
+---------------------------------------- */
 const form = useForm({
   name: "",
   email: "",
@@ -82,58 +87,54 @@ const form = useForm({
 const confirmingTeacherModal = ref(false);
 const editingTeacher = ref(null);
 
-/** Open Create Modal */
+/* Create Modal */
 const showCreateModal = () => {
   editingTeacher.value = null;
   form.reset();
   confirmingTeacherModal.value = true;
 };
 
-/** Open Edit Modal */
+/* Edit Modal */
 const showEditModal = (teacher) => {
   editingTeacher.value = teacher;
-
   form.name = teacher.name;
   form.email = teacher.email;
   form.phone = teacher.phone;
   form.department = teacher.department;
   form.head_of_department = teacher.head_of_department;
-  confirmingTeacherCreation.value = true;
+  confirmingTeacherModal.value = true;
 };
 
-/** Close Modal */
+/* Close Modal */
 const closeModal = () => {
   confirmingTeacherModal.value = false;
   editingTeacher.value = null;
   form.reset();
 };
 
+/* Submit Form */
 const createOrUpdateTeacher = () => {
-  const isEditing = !!editingTeacher.value; // store state before it resets
+  const isEditing = !!editingTeacher.value;
 
   const submitRoute = isEditing
     ? route("teacher:update", { teacher: editingTeacher.value.id })
     : route("teacher:create");
 
-  const httpMethod = isEditing ? "put" : "post";
-
-  form[httpMethod](submitRoute, {
+  form[isEditing ? "put" : "post"](submitRoute, {
     preserveScroll: true,
     onSuccess: () => {
       closeModal();
-      toast.add({ message: `✅ Teacher ${isEditing ? 'updated' : 'created'} successfully!` });
+      toast.add({ message: `✅ Teacher ${isEditing ? "updated" : "created"} successfully!` });
     },
-    onError: (errors) => {
-      console.error(errors);
-      toast.add({ message: "⚠️ Something went wrong. Please check input fields." });
+    onError: () => {
+      toast.add({ message: "⚠️ Please check the input fields." });
     },
   });
 };
 
-
-/*---------------------------------------
-| ❌ Status Modals & Actions
-----------------------------------------*/
+/* ---------------------------------------
+| ✅ Delete / Approve / Reject Logic
+---------------------------------------- */
 const showDeleteModal = ref(false);
 const deletingTeacher = ref(null);
 const showApproveModal = ref(false);
@@ -142,49 +143,25 @@ const showRejectModal = ref(false);
 const rejectingTeacher = ref(null);
 
 const setModalState = (type, teacher = null) => {
-  switch (type) {
-    case "delete":
-      showDeleteModal.value = !!teacher;
-      deletingTeacher.value = teacher;
-      break;
-    case "approve":
-      showApproveModal.value = !!teacher;
-      approvingTeacher.value = teacher;
-      break;
-    case "reject":
-      showRejectModal.value = !!teacher;
-      rejectingTeacher.value = teacher;
-      break;
-  }
+  if (type === "delete") { showDeleteModal.value = !!teacher; deletingTeacher.value = teacher; }
+  else if (type === "approve") { showApproveModal.value = !!teacher; approvingTeacher.value = teacher; }
+  else if (type === "reject") { showRejectModal.value = !!teacher; rejectingTeacher.value = teacher; }
 };
-
-const showDeleteTeacherModal = (teacher) => setModalState("delete", teacher);
-const closeDeleteModal = () => setModalState("delete");
-const showApproveTeacherModal = (teacher) => setModalState("approve", teacher);
-const closeApproveModal = () => setModalState("approve");
-const showRejectTeacherModal = (teacher) => setModalState("reject", teacher);
-const closeRejectModal = () => setModalState("reject");
 
 const deleteTeacher = () => {
   if (!deletingTeacher.value) return;
   router.delete(route("teacher:delete", deletingTeacher.value.id), {
     preserveScroll: true,
-    onFinish: () => {
-      closeDeleteModal();
-    },
     onSuccess: () => {
-      // Check if the server redirected with an error message (like a foreign key violation)
-      if (!router.page.props.flash.toast || !router.page.props.flash.toast.includes('❌')) {
-        // If no error flash message is present, assume successful deletion and add a generic success toast
-        toast.add({ message: "🗑️ Teacher deleted!" });
-      }
+      showDeleteModal.value = false;
+      toast.add({ message: "🗑️ Teacher deleted!" });
     },
   });
 };
 
 const updateTeacherStatus = (status) => {
   const teacher = status === "approved" ? approvingTeacher.value : rejectingTeacher.value;
-  const closeModalFn = status === "approved" ? closeApproveModal : closeRejectModal;
+  const closeModalFn = status === "approved" ? () => (showApproveModal.value = false) : () => (showRejectModal.value = false);
   if (!teacher) return;
 
   router.put(route("teacher:status", teacher.id), { status }, {
@@ -199,6 +176,7 @@ const updateTeacherStatus = (status) => {
 const approveTeacher = () => updateTeacherStatus("approved");
 const rejectTeacher = () => updateTeacherStatus("rejected");
 </script>
+
 
 
 <template>
@@ -245,7 +223,7 @@ const rejectTeacher = () => updateTeacherStatus("rejected");
               class="w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm dark:bg-gray-900 dark:text-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
               <option value="">All Status</option>
               <option value="pending">Pending</option>
-              <option value="active">Active</option>
+              <option value="approved">Approved</option>
               <option value="rejected">Rejected</option>
             </select>
           </div>
@@ -317,7 +295,7 @@ const rejectTeacher = () => updateTeacherStatus("rejected");
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <SecondaryButton @click="showEditModal(teacher)" v-if="teacher.status === 'active'">
+                    <SecondaryButton @click="showEditModal(teacher)" v-if="teacher.status === 'approved'">
                       Edit
                     </SecondaryButton>
 

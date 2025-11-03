@@ -303,16 +303,24 @@ let hasPermission = ref(checkPermissionComposable("time_slot_manage"));
                 class="border-b-2 border-teal-400 pb-2" />
 
             <div class="mb-6 flex flex-wrap gap-4">
-                <PrimaryButton @click.prevent="showCreateModal" 
-                    class="ml-0 bg-teal-600 hover:bg-teal-700 text-white">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        Add Time Slot
-                    </span>
-                </PrimaryButton>
+                <PrimaryButton
+    @click.prevent="showCreateModal"
+    class="ml-0 bg-teal-600 hover:bg-teal-700 text-white"
+    title="Add a new time slot for a day"
+>
+    <span class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+            </path>
+        </svg>
+        Add Time Slot
+    </span>
+</PrimaryButton>
+
                 <PrimaryButton @click.prevent="showCreateTemplateModal" class="bg-cyan-600 hover:bg-cyan-700 text-white">
                     <span class="flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -323,16 +331,24 @@ let hasPermission = ref(checkPermissionComposable("time_slot_manage"));
                         Manage Templates
                     </span>
                 </PrimaryButton>
-                <PrimaryButton @click.prevent="showGenerateTimeSlotsModal" class="bg-sky-600 hover:bg-sky-700 text-white">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                        Generate Slots
-                    </span>
-                </PrimaryButton>
+                <PrimaryButton
+    @click.prevent="showGenerateTimeSlotsModal"
+    class="bg-sky-600 hover:bg-sky-700 text-white"
+    title="Generate time slots for a week"
+>
+    <span class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+            </path>
+        </svg>
+        Generate Slots
+    </span>
+</PrimaryButton>
+
             </div>
 
             <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">

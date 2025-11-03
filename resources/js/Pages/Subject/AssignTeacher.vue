@@ -92,7 +92,7 @@ let hasPermission = ref(checkPermissionComposable("teacher_assign_manage"));
 
     <Head :title="`Assign Teachers - ${subject.name}`" />
     <SectionMain v-if="['admin'].includes($page.props.auth.user.user_type) || hasPermission">
-      <SectionTitleLineWithButton :icon="mdiArrowLeft" title="Assign Teachers"
+      <SectionTitleLineWithButton title="Assign Teachers"
         :subtitle="`Manage teachers for ${subject.name} (${subject.code})`">
         <BaseButton @click="goBack" color="info" label="Back to Subjects" />
       </SectionTitleLineWithButton>
@@ -102,7 +102,7 @@ let hasPermission = ref(checkPermissionComposable("teacher_assign_manage"));
           <!-- Available Teachers -->
           <CardBox title="Available Teachers" icon="mdiAccountPlus">
             <div class="mb-4">
-              <input v-model="searchQuery" type="text" placeholder="Search teachers by name or code..."
+              <input v-model="searchQuery" type="text" placeholder="Search teachers by name..."
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div v-if="filteredAvailableTeachers.length === 0" class="text-gray-500 text-center py-4">

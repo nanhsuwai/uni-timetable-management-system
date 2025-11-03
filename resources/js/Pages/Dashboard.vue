@@ -103,7 +103,8 @@ let hasPermission = ref(checkPermissionComposable("dashboard_access"));
   <LayoutAuthenticated>
     <Head title="Dashboard" />
 
-    <SectionMain v-if="['admin'].includes($page.props.auth.user.user_type) || hasPermission">
+       <SectionMain v-if="['teacher', 'admin'].includes($page.props.auth.user.user_type) || hasPermission">
+
       <SectionTitleLineWithButton :icon="mdiChartTimelineVariant" title="Dashboard" main />
 
       <!-- Current Academic Information -->

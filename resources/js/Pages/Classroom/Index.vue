@@ -92,6 +92,7 @@ const toggleAvailability = (classroom) => {
 <template>
   <LayoutAuthenticated>
     <Head title="Classrooms" />
+    <SectionMain v-if="['teacher', 'admin'].includes($page.props.auth.user.user_type) || hasPermission">
 
     <div class="py-8 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div class="flex justify-between items-center mb-8">
@@ -236,7 +237,7 @@ const toggleAvailability = (classroom) => {
           <TextInput
             id="room_no"
             v-model="form.room_no"
-            placeholder="e.g., 101, Lab A, Room 205"
+            placeholder="Enter Room Number"
             autofocus
             class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 rounded-lg"
           />

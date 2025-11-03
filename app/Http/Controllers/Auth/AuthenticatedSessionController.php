@@ -43,7 +43,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
           return match ($user->user_type) {
-            'teacher' => Inertia::location(route('timetable_entry:all')),
+            'teacher' => Inertia::location(route('dashboard')),
             'admin' => redirect()->route('dashboard'),
             default => redirect(RouteServiceProvider::HOME),
         };

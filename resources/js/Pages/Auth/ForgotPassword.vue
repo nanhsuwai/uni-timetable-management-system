@@ -16,27 +16,33 @@ const form = useForm({
 const submit = () => {
   form.post(route('password.email'))
 }
+const switchToWelcome = () => switchTab('welcome');
 </script>
 
 <template>
   <Head title="Forgot Password" />
 
   <!-- Header -->
-  <header class="bg-teal-900 border-b border-cyan-500 shadow-xl transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-4">
-      <div class="flex items-center py-3 sm:py-4 space-x-3 sm:space-x-4">
-        <img src="/images/logo.png" alt="UCSh Logo" class="w-20 h-14 object-contain sm:w-20 sm:h-13" />
-        <div class="min-w-0">
-          <h1 class="text-lg sm:text-xl lg:text-2xl font-extrabold text-white truncate">
-            University of Computer Studies, Hinthada
-          </h1>
-          <p class="text-sm sm:text-base text-cyan-300 truncate">
-            ကွန်ပျူတာတက္ကသိုလ်(ဟင်္သာတ)
-          </p>
+  <header class="bg-sky-700 border-b border-cyan-500 shadow-xl transition-all duration-300">
+        <div class="mx-auto px-1 sm:px-4 lg:px-4">
+            <div class="flex items-center py-3 sm:py-4 space-x-2 sm:space-x-4">
+
+
+                <img src="/images/logo.png" alt="UCSh Logo" class="w-20 h-14 object-contain sm:w-20 sm:h-13" />
+
+
+                <div class="min-w-0">
+                    <h1 class="text-lg sm:text-xl lg:text-2xl font-extrabold text-white truncate">
+                        University Timetable Management System
+                    </h1>
+                    <p class="text-sm sm:text-base text-cyan-300 truncate">
+                        ကွန်ပျူတာတက္ကသိုလ်(ဟင်္သာတ)
+                    </p>
+                </div>
+
+            </div>
         </div>
-      </div>
-    </div>
-  </header>
+    </header>
 
   <!-- Main Content -->
   <main class="min-h-screen relative">
@@ -90,8 +96,14 @@ const submit = () => {
                 </button>
               </div>
 
+             <!--  <div class="mb-4 text-center">
+                        <button @click="switchToWelcome"
+                            class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-all duration-300 hover:bg-blue-50 px-3 py-2 rounded-md transform hover:scale-105">
+                            ← Back to Home
+                        </button>
+                    </div> -->
               <div class="mt-4 text-center">
-                <button @click="$inertia.visit(route('welcome'))" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-all duration-300 hover:bg-blue-50 px-3 py-2 rounded-md transform hover:scale-105">
+                <button @click="$inertia.visit(route('login'))" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-all duration-300 hover:bg-blue-50 px-3 py-2 rounded-md transform hover:scale-105">
                   ← Back to Login
                 </button>
               </div>
@@ -103,9 +115,9 @@ const submit = () => {
   </main>
 
   <!-- Footer -->
-  <footer class="bg-gray-800 text-gray-300 border-t border-gray-700">
-    <div class="text-center text-sm text-gray-500 py-3">
-      © 2025 University of Computer Studies, Hinthada. All rights reserved.
-    </div>
-  </footer>
+   <footer class="bg-sky-800 text-gray-50 border-t border-gray-700">
+        <div class="text-center text-sm text-gray-50 py-3">
+            © 2025 University of Computer Studies, Hinthada. All rights reserved.
+        </div>
+    </footer>
 </template>

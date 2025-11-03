@@ -251,7 +251,7 @@ const toggleSemesterStatus = (semester) => {
           id="filterName" 
           v-model="filterName" 
           type="text" 
-          placeholder="e.g., 2024-2025" 
+          placeholder="Enter academic year name to search..." 
           class="w-full mt-1 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:border-cyan-500 focus:ring-cyan-500" />
       </div>
 

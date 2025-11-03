@@ -1,152 +1,231 @@
 <script setup>
-import { useForm, Head } from '@inertiajs/vue3'
-import { mdiEmail, mdiFormTextboxPassword } from '@mdi/js'
+import { ref, computed, watch } from "vue";
+import { useForm, router } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 
 const props = defineProps({
-  email: {
-    type: String,
-    default: null
-  },
-  token: {
-    type: String,
-    default: null
-  }
-})
+  email: String,
+  token: String,
+});
 
 const form = useForm({
-  token: props.token,
-  email: props.email,
+  email: props.email || '',
+  token: props.token || '',
   password: '',
   password_confirmation: '',
-})
+});
+
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
+const toastMessages = ref([]);
+
+// Toast helper
+const addToast = (type, message) => {
+  const id = Date.now();
+  toastMessages.value.push({ id, type, message });
+  setTimeout(() => {
+    toastMessages.value = toastMessages.value.filter(t => t.id !== id);
+  }, 4000);
+};
+
+// Password strength computation
+const passwordStrength = computed(() => {
+  const pass = form.password;
+  if (pass.length === 0) return { score: 0, label: '', color: '' };
+
+  let score = 0;
+  if (pass.length >= 8) score++;
+  if (/[A-Z]/.test(pass)) score++;
+  if (/[0-9]/.test(pass)) score++;
+  if (/[^A-Za-z0-9]/.test(pass)) score++;
+
+  let label = '';
+  let color = '';
+  switch (score) {
+    case 0: case 1:
+      label = 'Weak'; color = 'bg-red-500'; break;
+    case 2: 
+      label = 'Fair'; color = 'bg-yellow-500'; break;
+    case 3: 
+      label = 'Good'; color = 'bg-blue-500'; break;
+    case 4:
+      label = 'Strong'; color = 'bg-green-500'; break;
+  }
+  return { score, label, color };
+});
+
+// Validate password before submit
+const validatePassword = () => {
+  if (form.password.length < 8) {
+    addToast('error', '❌ Password must be at least 8 characters!');
+    return false;
+  }
+  if (form.password !== form.password_confirmation) {
+    addToast('error', '❌ Password and Confirm Password do not match!');
+    return false;
+  }
+  return true;
+};
 
 const submit = () => {
-  form
-    .post(route('password.store'), {
-      onFinish: () => form.reset('password', 'password_confirmation'),
-    })
-}
+  if (!validatePassword()) return;
+
+  form.post(route('password.store'), {
+    onSuccess: () => {
+      addToast('success', '✅ Password reset successful! Redirecting to login...');
+      setTimeout(() => {
+        router.visit(route('login'));
+      }, 1500);
+    },
+    onError: (errors) => {
+      if (errors.email) addToast('error', errors.email[0]);
+      else if (errors.password) addToast('error', errors.password[0]);
+      else addToast('error', '❌ Failed to reset password. Please try again.');
+    }
+  });
+};
 </script>
+
 
 <template>
   <Head title="Reset Password" />
 
+ 
+
   <!-- Header -->
-  <header class="bg-teal-900 border-b border-cyan-500 shadow-xl transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-4">
-      <div class="flex items-center py-3 sm:py-4 space-x-3 sm:space-x-4">
-        <img src="/images/logo.png" alt="UCSh Logo" class="w-20 h-14 object-contain sm:w-20 sm:h-13" />
-        <div class="min-w-0">
-          <h1 class="text-lg sm:text-xl lg:text-2xl font-extrabold text-white truncate">
-            University of Computer Studies, Hinthada
-          </h1>
-          <p class="text-sm sm:text-base text-cyan-300 truncate">
-            ကွန်ပျူတာတက္ကသိုလ်(ဟင်္သာတ)
-          </p>
-        </div>
+  <header class="bg-sky-600 border-b border-cyan-500 shadow-xl">
+    <div class="mx-auto px-4 flex items-center py-4 space-x-4">
+      <img src="/images/logo.png" alt="UCSh Logo" class="w-20 h-14 object-contain" />
+      <div class="min-w-0">
+        <h1 class="text-2xl font-extrabold text-white truncate">
+          University Timetable Management System
+        </h1>
+        <p class="text-sm text-cyan-300 truncate">
+          ကွန်ပျူတာတက္ကသိုလ်(ဟင်္သာတ)
+        </p>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="min-h-screen relative">
-    <div class="absolute inset-0 bg-transparent">
-      <img src="/images/background2.jpg" alt="Background" class="w-full h-full object-cover filter" />
-      <div class="absolute inset-0 bg-transparent"></div>
+   <!-- Toast Notifications -->
+  <div class="fixed top-5 right-5 z-50 flex flex-col gap-2">
+    <div
+      v-for="toast in toastMessages"
+      :key="toast.id"
+      :class="[
+        'px-4 py-2 rounded shadow text-white font-medium',
+        toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+      ]"
+    >
+      {{ toast.message }}
     </div>
-    <div class="relative z-40 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-6 sm:py-8 lg:py-12">
-      <div class="flex items-center justify-center min-h-[60vh]">
-        <div class="w-full max-w-md">
-          <div class="bg-white/90 dark:bg-gray-800/80 backdrop-blur-lg shadow-xl rounded-lg p-6">
-            <div class="text-center mb-6">
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Reset Password</h2>
-              <p class="text-gray-600 dark:text-gray-400 mt-2">
-                Please enter your new password below.
-              </p>
-            </div>
+  </div>
+  <!-- Main Form -->
+  <main class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="w-full max-w-md p-6 bg-white/90 dark:bg-gray-800/80 backdrop-blur-lg shadow-xl rounded-lg">
+      <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-4">
+        Reset Your Password
+      </h2>
+      <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
+        Enter your email, new password, and confirm password.
+      </p>
 
-            <form @submit.prevent="submit">
-              <div class="mb-4">
-                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Email
-                </label>
-                <div class="relative">
-                  <input
-                    v-model="form.email"
-                    type="email"
-                    id="email"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
-                    placeholder="Enter your email"
-                    required
-                    autocomplete="email"
-                  />
-                  <svg class="absolute right-3 top-2.5 h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                  </svg>
-                </div>
-              </div>
+      <form @submit.prevent="submit">
+        <!-- Hidden Token -->
+        <input type="hidden" v-model="form.token" />
 
-              <div class="mb-4">
-                <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Password
-                </label>
-                <div class="relative">
-                  <input
-                    v-model="form.password"
-                    type="password"
-                    id="password"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
-                    placeholder="Enter new password"
-                    required
-                    autocomplete="new-password"
-                  />
-                  <svg class="absolute right-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                  </svg>
-                </div>
-              </div>
-
-              <div class="mb-4">
-                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Confirm Password
-                </label>
-                <div class="relative">
-                  <input
-                    v-model="form.password_confirmation"
-                    type="password"
-                    id="password_confirmation"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
-                    placeholder="Confirm new password"
-                    required
-                    autocomplete="new-password"
-                  />
-                  <svg class="absolute right-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                  </svg>
-                </div>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <button
-                  type="submit"
-                  class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
-                  :disabled="form.processing"
-                >
-                  <span v-if="form.processing">Resetting...</span>
-                  <span v-else>Reset Password</span>
-                </button>
-              </div>
-            </form>
-          </div>
+        <!-- Email -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+          <input
+            v-model="form.email"
+            type="email"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+            placeholder="Enter your email"
+            required
+            autocomplete="email"
+            readonly
+          />
         </div>
-      </div>
+
+        <!-- Password -->
+        <div class="mb-4 relative">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+          <input
+            v-model="form.password"
+            :type="showPassword ? 'text' : 'password'"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+            placeholder="Enter new password"
+            required
+            autocomplete="new-password"
+          />
+          <button type="button" @click="showPassword = !showPassword" class="absolute right-3 top-2.5 text-gray-500">
+            <span v-if="!showPassword">👁️</span>
+            <span v-else>🙈</span>
+          </button>
+          <!-- Password Strength Indicator -->
+<div v-if="form.password.length > 0" class="mt-1 h-2 w-full rounded bg-gray-200">
+  <div
+    class="h-2 rounded transition-all duration-300"
+    :class="passwordStrength.color"
+    :style="{ width: `${passwordStrength.score * 25}%` }"
+  ></div>
+</div>
+<p v-if="form.password.length > 0" class="text-sm mt-1 text-gray-600 dark:text-gray-300">
+  Strength: <span :class="passwordStrength.color">{{ passwordStrength.label }}</span>
+</p>
+
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-4 relative">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password</label>
+          <input
+            v-model="form.password_confirmation"
+            :type="showConfirmPassword ? 'text' : 'password'"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+            placeholder="Confirm new password"
+            required
+            autocomplete="new-password"
+          />
+          <button type="button" @click="showConfirmPassword = !showConfirmPassword" class="absolute right-3 top-2.5 text-gray-500">
+            <span v-if="!showConfirmPassword">👁️</span>
+            <span v-else>🙈</span>
+          </button>
+          <!-- Password Strength Indicator -->
+<div v-if="form.password.length > 0" class="mt-1 h-2 w-full rounded bg-gray-200">
+  <div
+    class="h-2 rounded transition-all duration-300"
+    :class="passwordStrength.color"
+    :style="{ width: `${passwordStrength.score * 25}%` }"
+  ></div>
+</div>
+<p v-if="form.password.length > 0" class="text-sm mt-1 text-gray-600 dark:text-gray-300">
+  Strength: <span :class="passwordStrength.color">{{ passwordStrength.label }}</span>
+</p>
+
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 rounded-md focus:ring-2 focus:ring-teal-500"
+          :disabled="form.processing"
+        >
+          <span v-if="form.processing">Resetting...</span>
+          <span v-else>Reset Password</span>
+        </button>
+
+        <div class="mt-4 text-center">
+          <button @click="$inertia.visit(route('login'))" class="text-blue-600 hover:text-blue-800 text-sm">
+            ← Back to Login
+          </button>
+        </div>
+      </form>
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-gray-300 border-t border-gray-700">
-    <div class="text-center text-sm text-gray-500 py-3">
-      © 2025 University of Computer Studies, Hinthada. All rights reserved.
-    </div>
+  <footer class="bg-sky-600 text-gray-50 text-center py-3 border-t border-gray-700">
+    © 2025 University of Computer Studies, Hinthada. All rights reserved.
   </footer>
 </template>
