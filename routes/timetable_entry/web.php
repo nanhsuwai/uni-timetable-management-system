@@ -14,7 +14,7 @@ Route::prefix('timetable-entry')->name('timetable_entry:')->group(function () {
     Route::get('/', IndexController::class)->name('all');
     Route::get('/grid', GridViewController::class)->name('grid');
     Route::post('/create', CreateController::class)->name('create');
-    Route::post('/update/{timetableEntry}', UpdateController::class)->name('update');
+    Route::put('/update/{timetableEntry}', UpdateController::class)->name('update');
     Route::delete('/delete/{timetableEntry}', DeleteController::class)->name('delete');
     Route::get('/generate', GenerateTimetableController::class)->name('generate');
     Route::get('/export', [ExportController::class, 'exportExcel'])

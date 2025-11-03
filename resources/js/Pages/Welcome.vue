@@ -705,8 +705,8 @@ const exportExcel = () => {
                                             :class="{ 'bg-orange-50': isLunch(slot) }">
 
                                             <div class="font-medium text-gray-700 w-1/4 flex-shrink-0 pr-2">
-                                                <span class="text-xs text-gray-500 block">Period</span>
-                                                <span class="text-sm font-semibold">{{ slot.label }}</span>
+                                                
+                                                <span class="text-sm font-semibold"> {{ slot.name || slot.id }} {{ slot.label }}</span>
                                             </div>
 
                                             <div class="text-right w-3/4">
@@ -717,9 +717,10 @@ const exportExcel = () => {
                                                 <span v-else-if="getEntry(day.key, slot)"
                                                     class="text-lg font-extrabold text-teal-700 block leading-tight">
                                                     {{ getSubjectDisplay(getEntry(day.key, slot)) }}
+                                                   
                                                 </span>
-                                                <span v-else class="text-gray-400 italic text-sm block">
-                                                    Free Period
+                                                <span v-else class="italic text-sm block">
+                                                     Library/Lab<br>အားကစား/ဂီတ 
                                                 </span>
                                             </div>
                                         </div>

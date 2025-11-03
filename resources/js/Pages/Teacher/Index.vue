@@ -232,7 +232,7 @@ const rejectTeacher = () => {
               class="w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm dark:bg-gray-900 dark:text-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
               <option value="">All Status</option>
               <option value="pending">Pending</option>
-              <option value="active">Active</option>
+              <option value="approved">Approved</option>
               <option value="rejected">Rejected</option>
             </select>
           </div>
@@ -241,112 +241,127 @@ const rejectTeacher = () => {
         <!-- Teachers Table -->
         <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
           <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead class="bg-gray-100 dark:bg-gray-700">
-                <tr>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">
-                    #</th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">
-                    Name</th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">
-                    Email</th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">
-                    Phone</th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">
-                    Department</th>
-                  <th
-                    class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">
-                    Status</th>
-                  <th
-                    class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">
-                    HOD</th>
-                  <th
-                    class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">
-                    Actions</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                <tr v-for="(teacher, index) in teachers.data" :key="teacher.id"
-                  class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                    {{ index + 1 + (props.teachers.per_page * (props.teachers.current_page - 1)) || index + 1 }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{
-                    teacher.name }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ teacher.email }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ teacher.phone }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ teacher.department
-                    }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-300">
-                    <span :class="[
-                      'inline-flex px-3 py-1 text-xs font-semibold leading-5 rounded-full',
-                      teacher.status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' :
-                        teacher.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100' :
-                          'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
-                    ]">
-                      {{ teacher.status === 'approved' ? 'Approved' : teacher.status === 'pending' ? 'Pending' :
-                      'Rejected' }}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-300">
-                    <span :class="[
-                      'inline-flex px-3 py-1 text-xs font-semibold leading-5 rounded-full',
-                      teacher.head_of_department ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
-                    ]">
-                      {{ teacher.head_of_department ? 'HOD' : 'Staff' }}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <SecondaryButton @click="showEditModal(teacher)" v-if="teacher.status === 'active'">
-                      Edit
-                    </SecondaryButton>
+           <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+  <thead class="bg-gray-100 dark:bg-gray-700">
+    <tr>
+      <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">#</th>
+      <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">Name</th>
+      <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">Email</th>
+      <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">Phone</th>
+      <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">Department</th>
+      <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">Status</th>
+      <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">HOD</th>
+      <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider dark:text-gray-300">Actions</th>
+    </tr>
+  </thead>
 
-                    <!-- Approve Button: Green -->
-                    <button @click.prevent="showApproveTeacherModal(teacher)" v-if="teacher.status === 'pending'"
-                      class="px-3 py-1 rounded-md bg-green-500 text-white text-xs hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 flex items-center space-x-1"
-                      :disabled="router.pending">
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Approve</span>
-                    </button>
+  <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+    <tr v-for="(teacher, index) in teachers.data" :key="teacher.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+      
+      <!-- Index -->
+      <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+        {{ index + 1 + (props.teachers.per_page * (props.teachers.current_page - 1)) || index + 1 }}
+      </td>
 
-                    <!-- Reject Button: Red -->
-                    <button @click.prevent="showRejectTeacherModal(teacher)" v-if="teacher.status === 'pending'"
-                      class="px-3 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 flex items-center space-x-1"
-                      :disabled="router.pending">
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                      <span>Reject</span>
-                    </button>
+      <!-- Name -->
+      <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ teacher.name }}</td>
 
-                    <!-- Optimized Delete Button: Disabled when a router request is pending -->
-                    <button @click.prevent="showDeleteTeacherModal(teacher)"
-                      class="px-3 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 flex items-center space-x-1"
-                      :disabled="router.pending">
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                      <span>Delete</span>
-                    </button>
-                  </td>
-                </tr>
-                <tr v-if="teachers.data.length === 0">
-                  <td colspan="8" class="px-6 py-8 text-center text-lg text-gray-500 dark:text-gray-400 font-medium">No
-                    teachers found matching the criteria.</td>
-                </tr>
-              </tbody>
-            </table>
+      <!-- Email -->
+      <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ teacher.email }}</td>
+
+      <!-- Phone -->
+      <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ teacher.phone }}</td>
+
+      <!-- Department -->
+      <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ teacher.department }}</td>
+
+      <!-- Status -->
+      <td class="px-3 py-2 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-300">
+        <span :class="[
+          'inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full',
+          teacher.status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' :
+          teacher.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100' :
+          'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
+        ]">
+          {{ teacher.status === 'approved' ? 'Approved' : teacher.status === 'pending' ? 'Pending' : 'Rejected' }}
+        </span>
+      </td>
+
+      <!-- HOD -->
+      <td class="px-3 py-2 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-300">
+        <span :class="[
+          'inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full',
+          teacher.head_of_department ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' :
+          'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
+        ]">
+          {{ teacher.head_of_department ? 'HOD' : 'Staff' }}
+        </span>
+      </td>
+
+      <!-- Actions -->
+      <td class="px-3 py-2 whitespace-nowrap text-sm font-medium">
+        <!-- Approve & Reject (first line) -->
+        <div class="flex items-center gap-1 mb-1 flex-wrap">
+          <button 
+            @click.prevent="showApproveTeacherModal(teacher)" 
+            v-if="teacher.status === 'pending'"
+            class="px-2 py-1 rounded-md bg-green-500 text-white text-xs hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 transition"
+            :disabled="router.pending"
+          >
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Approve</span>
+          </button>
+
+          <button 
+            @click.prevent="showRejectTeacherModal(teacher)" 
+            v-if="teacher.status === 'pending'"
+            class="px-2 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 transition"
+            :disabled="router.pending"
+          >
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span>Reject</span>
+          </button>
+        </div>
+
+        <!-- Delete & Edit (second line, below) -->
+        <div class="flex items-center gap-1 flex-wrap">
+          <SecondaryButton 
+            @click="showEditModal(teacher)" 
+            v-if="teacher.status === 'approved'"
+            class="px-2 py-1 text-xs"
+          >
+            Edit
+          </SecondaryButton>
+
+          <button 
+            @click.prevent="showDeleteTeacherModal(teacher)"
+            class="px-2 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 transition"
+            :disabled="router.pending"
+          >
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span>Delete</span>
+          </button>
+        </div>
+      </td>
+
+    </tr>
+
+    <!-- No teachers message -->
+    <tr v-if="teachers.data.length === 0">
+      <td colspan="8" class="px-3 py-6 text-center text-sm text-gray-500 dark:text-gray-400 font-medium">
+        No teachers found matching the criteria.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
           </div>
 
           <!-- Pagination -->
