@@ -497,12 +497,9 @@ const exportExcel = () => {
                                                     d="M13 8l4 4m0 0l-4 4m4-4H3m5-4v-1a3 3 0 013-3h7a3 3 0 013 3v10a3 3 0 01-3 3h-7a3 3 0 01-3-3v-1" />
                                             </svg>
 
-                                            Admin Sign In
+                                            Login to your account
                                         </button>
-
-
                                     </div>
-
                                 </div>
                             </div>
 
@@ -772,7 +769,7 @@ const exportExcel = () => {
                                             class="border border-gray-200 rounded-lg shadow-sm p-4 bg-white hover:bg-teal-50 transition-colors">
                                             <div class="text-base font-extrabold text-teal-700 mb-1 leading-tight">
                                                 <span class="font-mono text-sm text-gray-500 mr-2">{{ subject.code
-                                                    }}</span> {{ subject.name }}
+                                                }}</span> {{ subject.name }}
                                             </div>
                                             <div class="text-sm text-gray-600 mt-2">
                                                 <span class="font-bold text-gray-800">Teacher:</span>

@@ -1,7 +1,4 @@
 <script setup>
-/* ---------------------------------------
-| ✅ Imports
----------------------------------------- */
 import { Head, useForm, router } from "@inertiajs/vue3";
 import { ref, watch } from "vue";
 import PaginationLinks from "@/Components/PaginationLinks.vue";
@@ -14,11 +11,9 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import LayoutAuthenticated from "@/Layouts/LayoutAuthenticated.vue";
 import checkPermissionComposable from "@/Composables/Permission/checkPermission";
-import SectionMain from "@/Components/SectionMain.vue";
+import SectionMain from "../../Components/SectionMain.vue";
 
-/* ---------------------------------------
-| ✅ Department Options
----------------------------------------- */
+// Department enum options
 const DepartmentOption = {
   ITSM: "ITSM",
   FCST: "Faculty of Computer Technology",
@@ -29,11 +24,9 @@ const DepartmentOption = {
   English: "English Department",
   Myanmar: "မြန်မာစာဌာန",
 };
+
 const departmentOptions = Object.values(DepartmentOption);
 
-/* ---------------------------------------
-| ✅ Props
----------------------------------------- */
 const props = defineProps({
   teachers: {
     type: Object,
@@ -45,37 +38,21 @@ const props = defineProps({
   },
 });
 
-/* ---------------------------------------
-| ✅ Permission
----------------------------------------- */
-const hasPermission = ref(checkPermissionComposable("teacher_manage"));
+let hasPermission = ref(checkPermissionComposable("teacher_manage"));
 
-/* ---------------------------------------
-| ✅ Filters
----------------------------------------- */
 const filterName = ref(props.filters.filterName || "");
 const filterEmail = ref(props.filters.filterEmail || "");
 const filterDepartment = ref(props.filters.filterDepartment || "");
 const filterStatus = ref(props.filters.filterStatus || "");
 
-/* Auto-fetch filtered results */
-watch([filterName, filterEmail, filterDepartment, filterStatus], 
-  ([name, email, department, status]) => {
-    router.get(
-      route("teacher:all"),
-      {
-        filterName: name,
-        filterEmail: email,
-        filterDepartment: department,
-        filterStatus: status?.toLowerCase() || "",
-      },
-      { preserveState: true, replace: true }
-    );
+watch([filterName, filterEmail, filterDepartment, filterStatus], ([newName, newEmail, newDepartment, newStatus]) => {
+  router.get(
+    route("teacher:all"),
+    { filterName: newName, filterEmail: newEmail, filterDepartment: newDepartment, filterStatus: newStatus },
+    { preserveState: true, replace: true }
+  );
 });
 
-/* ---------------------------------------
-| ✅ Form & Modal
----------------------------------------- */
 const form = useForm({
   name: "",
   email: "",
@@ -84,57 +61,8 @@ const form = useForm({
   head_of_department: false,
 });
 
-const confirmingTeacherModal = ref(false);
+const confirmingTeacherCreation = ref(false);
 const editingTeacher = ref(null);
-
-/* Create Modal */
-const showCreateModal = () => {
-  editingTeacher.value = null;
-  form.reset();
-  confirmingTeacherModal.value = true;
-};
-
-/* Edit Modal */
-const showEditModal = (teacher) => {
-  editingTeacher.value = teacher;
-  form.name = teacher.name;
-  form.email = teacher.email;
-  form.phone = teacher.phone;
-  form.department = teacher.department;
-  form.head_of_department = teacher.head_of_department;
-  confirmingTeacherModal.value = true;
-};
-
-/* Close Modal */
-const closeModal = () => {
-  confirmingTeacherModal.value = false;
-  editingTeacher.value = null;
-  form.reset();
-};
-
-/* Submit Form */
-const createOrUpdateTeacher = () => {
-  const isEditing = !!editingTeacher.value;
-
-  const submitRoute = isEditing
-    ? route("teacher:update", { teacher: editingTeacher.value.id })
-    : route("teacher:create");
-
-  form[isEditing ? "put" : "post"](submitRoute, {
-    preserveScroll: true,
-    onSuccess: () => {
-      closeModal();
-      toast.add({ message: `✅ Teacher ${isEditing ? "updated" : "created"} successfully!` });
-    },
-    onError: () => {
-      toast.add({ message: "⚠️ Please check the input fields." });
-    },
-  });
-};
-
-/* ---------------------------------------
-| ✅ Delete / Approve / Reject Logic
----------------------------------------- */
 const showDeleteModal = ref(false);
 const deletingTeacher = ref(null);
 const showApproveModal = ref(false);
@@ -142,42 +70,123 @@ const approvingTeacher = ref(null);
 const showRejectModal = ref(false);
 const rejectingTeacher = ref(null);
 
-const setModalState = (type, teacher = null) => {
-  if (type === "delete") { showDeleteModal.value = !!teacher; deletingTeacher.value = teacher; }
-  else if (type === "approve") { showApproveModal.value = !!teacher; approvingTeacher.value = teacher; }
-  else if (type === "reject") { showRejectModal.value = !!teacher; rejectingTeacher.value = teacher; }
+const showCreateModal = () => {
+  confirmingTeacherCreation.value = true;
+  form.reset();
+  editingTeacher.value = null;
 };
 
+const showEditModal = (teacher) => {
+  editingTeacher.value = teacher;
+
+  form.name = teacher.name;
+  form.email = teacher.email;
+  form.phone = teacher.phone;
+  form.department = teacher.department;
+  form.head_of_department = teacher.head_of_department;
+  confirmingTeacherCreation.value = true;
+};
+
+const closeModal = () => {
+  confirmingTeacherCreation.value = false;
+  form.reset();
+  editingTeacher.value = null;
+};
+
+const createOrUpdateTeacher = () => {
+  if (editingTeacher.value) {
+    form.post(
+      route("teacher:update", { teacher: editingTeacher.value.id }),
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          closeModal();
+          toast.add({ message: "✅ Teacher updated!" });
+        },
+        onError: () => form.reset(),
+      }
+    );
+  } else {
+    form.post(route("teacher:create"), {
+      preserveScroll: true,
+      onSuccess: () => {
+        closeModal();
+        toast.add({ message: "✅ Teacher created!" });
+      },
+      onError: () => form.reset(),
+    });
+  }
+};
+
+const showDeleteTeacherModal = (teacher) => {
+  showDeleteModal.value = true;
+  deletingTeacher.value = teacher;
+};
+
+const closeDeleteModal = () => {
+  showDeleteModal.value = false;
+  deletingTeacher.value = null;
+};
+
+const showApproveTeacherModal = (teacher) => {
+  showApproveModal.value = true;
+  approvingTeacher.value = teacher;
+};
+
+const closeApproveModal = () => {
+  showApproveModal.value = false;
+  approvingTeacher.value = null;
+};
+
+const showRejectTeacherModal = (teacher) => {
+  showRejectModal.value = true;
+  rejectingTeacher.value = teacher;
+};
+
+const closeRejectModal = () => {
+  showRejectModal.value = false;
+  rejectingTeacher.value = null;
+};
+
+// Deletion logic: sends Inertia delete request
 const deleteTeacher = () => {
-  if (!deletingTeacher.value) return;
-  router.delete(route("teacher:delete", deletingTeacher.value.id), {
+  router.delete(route("teacher:delete", deletingTeacher.value), {
     preserveScroll: true,
+    onFinish: () => {
+      closeDeleteModal();
+    },
     onSuccess: () => {
-      showDeleteModal.value = false;
-      toast.add({ message: "🗑️ Teacher deleted!" });
+      // Check if the server redirected with an error message (like a foreign key violation)
+      if (!router.page.props.flash.toast || !router.page.props.flash.toast.includes('❌')) {
+        // If no error flash message is present, assume successful deletion and add a generic success toast
+        toast.add({ message: "🗑️ Teacher deleted!" });
+      }
     },
   });
 };
 
-const updateTeacherStatus = (status) => {
-  const teacher = status === "approved" ? approvingTeacher.value : rejectingTeacher.value;
-  const closeModalFn = status === "approved" ? () => (showApproveModal.value = false) : () => (showRejectModal.value = false);
-  if (!teacher) return;
+const menuOpen = ref(null);
 
-  router.put(route("teacher:status", teacher.id), { status }, {
+const approveTeacher = () => {
+  router.put(route("teacher:status", approvingTeacher.value.id), { status: 'approved' }, {
     preserveScroll: true,
     onSuccess: () => {
-      closeModalFn();
-      toast.add({ message: status === "approved" ? "✅ Teacher approved!" : "❌ Teacher rejected!" });
+      closeApproveModal();
+      toast.add({ message: "✅ Teacher approved!" });
     },
   });
 };
 
-const approveTeacher = () => updateTeacherStatus("approved");
-const rejectTeacher = () => updateTeacherStatus("rejected");
+const rejectTeacher = () => {
+  router.put(route("teacher:status", rejectingTeacher.value.id), { status: 'rejected' }, {
+    preserveScroll: true,
+    onSuccess: () => {
+      closeRejectModal();
+      toast.add({ message: "❌ Teacher rejected!" });
+    },
+  });
+};
 </script>
-
-
 
 <template>
   <LayoutAuthenticated>
@@ -223,7 +232,7 @@ const rejectTeacher = () => updateTeacherStatus("rejected");
               class="w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm dark:bg-gray-900 dark:text-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
               <option value="">All Status</option>
               <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
+              <option value="active">Active</option>
               <option value="rejected">Rejected</option>
             </select>
           </div>
@@ -295,7 +304,7 @@ const rejectTeacher = () => updateTeacherStatus("rejected");
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <SecondaryButton @click="showEditModal(teacher)" v-if="teacher.status === 'approved'">
+                    <SecondaryButton @click="showEditModal(teacher)" v-if="teacher.status === 'active'">
                       Edit
                     </SecondaryButton>
 
