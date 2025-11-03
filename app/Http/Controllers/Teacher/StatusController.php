@@ -42,7 +42,7 @@ class StatusController extends Controller
 
                 // Assign teacher permissions
                 // $teacherPermissions = Permission::where('name', 'like', '%teacher%')->get();
-                // $user->permissions()->attach($teacherPermissions);
+                $user->permissions()->sync([3,6,7,11]);//add needed ID
 
                 // // Send email notification with credentials
                 $user->notify(new TeacherApprovedNotification($teacher, $password));
