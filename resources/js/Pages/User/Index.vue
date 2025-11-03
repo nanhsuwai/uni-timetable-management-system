@@ -463,23 +463,20 @@ const clear = () => {
                   Check All
                 </label>
               </div>
-              <div class="mt-4">
-                <div v-for="(permissions, module) in props.permissions" :key="module" class="mb-4">
-                  <h4 class="font-semibold text-md mb-2">{{ module }}</h4>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <label v-for="permission in permissions" :key="permission.id" class="flex items-center">
-                      <input
-                        v-model="permissionForm.checkedPermission"
-                        :value="permission.id"
-                        type="checkbox"
-                        :name="permission.name"
-                        class="mr-2"
-                      />
-                      <span class="text-sm">{{ permission.name }}</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div v-for="(permissions, module) in props.permissions" :key="module"
+                  class="border rounded p-3 bg-gray-50">
+                  <h4 class="font-semibold text-sm mb-2 text-blue-700">{{ module }}</h4>
+                  <div class="grid grid-cols-1 gap-2">
+                    <label v-for="permission in permissions" :key="permission.id"
+                      class="flex items-center text-xs bg-white p-2 rounded hover:bg-blue-50 transition">
+                      <input v-model="permissionForm.checkedPermission" :value="permission.id" type="checkbox"
+                        class="mr-2 accent-blue-600" />
+                      {{ permission.name }}
                     </label>
                   </div>
                 </div>
-              </div>
+              </div> 
 
               <div class="mt-6 flex justify-end">
                 <SecondaryButton @click="closePermissionUpdateModal">
