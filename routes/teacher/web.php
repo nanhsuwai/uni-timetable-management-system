@@ -10,7 +10,7 @@ use App\Http\Controllers\Teacher\StatusController;
 Route::prefix('teacher')->name('teacher:')->group(function () {
     Route::get('/', IndexController::class)->name('all');
     Route::post('/create', CreateController::class)->name('create');
-   /*  Route::post('/update/{teacher}', UpdateController::class)->name('update'); */
+   
    Route::put('/update/{teacher}', UpdateController::class)->name('update');
 
     Route::put('/status/{teacher}', [StatusController::class, '__invoke'])->name('status');

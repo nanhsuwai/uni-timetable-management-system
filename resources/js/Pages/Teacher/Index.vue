@@ -95,7 +95,7 @@ const closeModal = () => {
 
 const createOrUpdateTeacher = () => {
   if (editingTeacher.value) {
-    form.post(
+    form.put(
       route("teacher:update", { teacher: editingTeacher.value.id }),
       {
         preserveScroll: true,
