@@ -20,9 +20,7 @@ background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0
       <div class="px-6 py-4">
         <div class="font-bold text-xl mb-2">Successfully verified !</div>
         <p class="text-gray-500 text-base mb-2">your account have been Verify</p>
-        <p class="text-gray-700 text-base">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
-        </p>
+        
       </div>
       <div class="px-6 pt-4 pb-2 mb-4">
         <button class="bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
