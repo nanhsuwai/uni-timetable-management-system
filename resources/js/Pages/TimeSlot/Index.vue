@@ -717,7 +717,7 @@ let hasPermission = ref(checkPermissionComposable("time_slot_manage"));
                                 <div>• Period 6: 15:30 - 16:30</div>
                             </div>
                             <div class="text-xs text-gray-500 mt-2">
-                                * Will be created for all 7 days (Monday-Sunday)
+                                * Will be created for all 7 days (Monday to Friday)
                             </div>
                         </div>
                     </div>

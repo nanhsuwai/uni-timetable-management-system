@@ -630,7 +630,7 @@ const toggleSectionStatus = (section, newStatus) => {
                 v-model="sectionForm.name"
                 type="text"
                 class="w-full transition duration-150 ease-in-out border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 rounded-lg shadow-sm"
-                placeholder="e.g., A, Beta, or Science"
+                placeholder="Enter Section name (A or B)"
               />
               <InputError :message="sectionForm.errors.name" />
             </div>
