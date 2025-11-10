@@ -35,7 +35,7 @@ class IndexController extends Controller
         // Get the default academic year for frontend
         $defaultAcademicYear = $filters['filterAcademicYear'] ? AcademicYear::find($filters['filterAcademicYear']) : $activeAcademicYear;
 
-        $programOptions = ['Computer Foundation', 'Computer Technology', 'Computer Science', 'Master'];
+        $programOptions = ['CST', 'Computer Technology', 'Computer Science'];
 
         return Inertia::render('AcademicProgram/Index', [
             'programs' => $programs,

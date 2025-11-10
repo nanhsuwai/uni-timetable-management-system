@@ -10,6 +10,7 @@ class AcademicYear extends Model
 {
     use HasFactory;
 
+    
     protected $fillable = [
         'name',
         'start_date',
@@ -17,72 +18,38 @@ class AcademicYear extends Model
         'status',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
+   
+    protected $casts = [
+        
+        'status' => 'string', 
+    ];
 
-        // When setting an academic year as active, deactivate all others
-        static::updating(function ($academicYear) {
-            if ($academicYear->status === 'active' && $academicYear->isDirty('status')) {
-                static::where('id', '!=', $academicYear->id)
-                      ->where('status', 'active')
-                      ->update(['status' => 'inactive']);
-            }
-        });
-
-        static::creating(function ($academicYear) {
-            if ($academicYear->status === 'active') {
-                // If creating as active, deactivate all existing active ones
-                static::where('status', 'active')->update(['status' => 'inactive']);
-            }
-        });
-    }
-
-    /**
-     * Get the status as numeric value for frontend compatibility
-     */
+   
     public function getStatusNumericAttribute()
     {
+       
         return $this->status === 'active' ? 1 : 0;
     }
 
-    /**
-     * Scope to get only active academic years
-     */
-    public function scopeActive(Builder $query)
+    
+    
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 'active');
     }
 
-    /**
-     * Get the currently active academic year
-     */
-    public static function getActive()
+    public static function getActiveYears()
     {
-        return static::active()->first();
+        return static::active()->get();
     }
-
-    /**
-     * Set this academic year as active
-     */
-    public function setAsActive()
-    {
-        // Deactivate all other academic years
-        static::where('status', 'active')->update(['status' => 'inactive']);
-
-        // Set this one as active
-        $this->update(['status' => 'active']);
-
-        return $this;
-    }
-
-    /**
-     * Check if this academic year is active
-     */
-    public function isActive()
+    
+   
+    public function isActive(): bool
     {
         return $this->status === 'active';
     }
+
+    // --- Relationships ---
 
     public function academicPrograms()
     {

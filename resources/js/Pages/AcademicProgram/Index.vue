@@ -123,6 +123,7 @@ const toggleStatus = (program) => {
 
 <template>
   <LayoutAuthenticated>
+
     <Head title="Academic Programs" />
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -133,32 +134,18 @@ const toggleStatus = (program) => {
       </div>
 
       <!-- Filters -->
-      <div
-        class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-lg shadow"
-      >
+      <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-lg shadow">
         <div>
           <InputLabel for="filterName" value="Search by Name" />
-          <TextInput
-            id="filterName"
-            v-model="filterName"
-            type="text"
-            placeholder="Search academic programs..."
-            class="w-full"
-          />
+          <TextInput id="filterName" v-model="filterName" type="text" placeholder="Search academic programs..."
+            class="w-full" />
         </div>
         <div>
           <InputLabel for="filterAcademicYear" value="Filter by Academic Year" />
-          <select
-            id="filterAcademicYear"
-            v-model="filterAcademicYear"
-            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          >
+          <select id="filterAcademicYear" v-model="filterAcademicYear"
+            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             <option value="">All Years</option>
-            <option
-              v-for="year in props.academicYears"
-              :key="year.id"
-              :value="year.id"
-            >
+            <option v-for="year in props.academicYears" :key="year.id" :value="year.id">
               {{ year.name }}
               <span v-if="year.status === 'active'" class="ml-1 text-xs text-green-600">(Active)</span>
             </option>
@@ -179,11 +166,7 @@ const toggleStatus = (program) => {
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(program, index) in props.programs.data"
-              :key="program.id"
-              class="hover:bg-gray-50 transition"
-            >
+            <tr v-for="(program, index) in props.programs.data" :key="program.id" class="hover:bg-gray-50 transition">
               <td class="px-4 py-2 border-b">
                 {{ index + 1 + (props.programs.per_page * (props.programs.current_page - 1)) }}
               </td>
@@ -200,27 +183,20 @@ const toggleStatus = (program) => {
                 </span>
               </td>
               <td class="px-4 py-2 border-b space-x-2">
-                <button
-                  @click.prevent="toggleStatus(program)"
-                  :class="[
-                    'px-3 py-1 rounded-full text-xs font-semibold',
-                    program.status === 'active'
-                      ? 'bg-green-100 text-green-700 border border-green-400'
-                      : 'bg-gray-200 text-gray-600 border border-gray-300'
-                  ]"
-                >
+                <button @click.prevent="toggleStatus(program)" :class="[
+                  'px-3 py-1 rounded-full text-xs font-semibold',
+                  program.status === 'active'
+                    ? 'bg-green-100 text-green-700 border border-green-400'
+                    : 'bg-gray-200 text-gray-600 border border-gray-300'
+                ]">
                   {{ program.status === 'active' ? 'Active' : 'Inactive' }}
                 </button>
-                <button
-                  @click.prevent="showEditModal(program)"
-                  class="px-3 py-1 rounded-md bg-blue-500 text-white text-xs hover:bg-blue-600"
-                >
+                <button @click.prevent="showEditModal(program)"
+                  class="px-3 py-1 rounded-md bg-blue-500 text-white text-xs hover:bg-blue-600">
                   Edit
                 </button>
-                <button
-                  @click.prevent="showDeleteProgramModal(program)"
-                  class="px-3 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600"
-                >
+                <button @click.prevent="showDeleteProgramModal(program)"
+                  class="px-3 py-1 rounded-md bg-red-500 text-white text-xs hover:bg-red-600">
                   Delete
                 </button>
               </td>
@@ -248,17 +224,10 @@ const toggleStatus = (program) => {
           <div class="space-y-4">
             <div>
               <InputLabel for="academic_year_id" value="Academic Year" />
-              <select
-                id="academic_year_id"
-                v-model="form.academic_year_id"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              >
+              <select id="academic_year_id" v-model="form.academic_year_id"
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <option value="">Select Year</option>
-                <option
-                  v-for="year in props.academicYears"
-                  :key="year.id"
-                  :value="year.id"
-                >
+                <option v-for="year in props.academicYears" :key="year.id" :value="year.id">
                   {{ year.name }}
                   <span v-if="year.status === 'active'" class="ml-1 text-xs text-green-600">(Active)</span>
                 </option>
@@ -267,18 +236,10 @@ const toggleStatus = (program) => {
             </div>
             <div>
               <InputLabel for="names" value="Program Names" />
-              <select
-                id="names"
-                v-model="form.names"
-                multiple
+              <select id="names" v-model="form.names" multiple
                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                style="min-height: 120px;"
-              >
-                <option
-                  v-for="option in props.programOptions"
-                  :key="option"
-                  :value="option"
-                >
+                style="min-height: 120px;">
+                <option v-for="option in props.programOptions" :key="option" :value="option">
                   {{ option }}
                 </option>
               </select>
@@ -287,11 +248,8 @@ const toggleStatus = (program) => {
             </div>
             <div>
               <InputLabel for="status" value="Status" />
-              <select
-                id="status"
-                v-model="form.status"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              >
+              <select id="status" v-model="form.status"
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
@@ -301,10 +259,7 @@ const toggleStatus = (program) => {
           </div>
           <div class="mt-6 flex justify-end space-x-2">
             <SecondaryButton @click.prevent="closeModal">Cancel</SecondaryButton>
-            <PrimaryButton
-              :disabled="form.processing"
-              @click.prevent="createOrUpdateProgram"
-            >
+            <PrimaryButton :disabled="form.processing" @click.prevent="createOrUpdateProgram">
               {{ editingProgram ? "Update" : "Create" }}
             </PrimaryButton>
           </div>
@@ -323,11 +278,8 @@ const toggleStatus = (program) => {
           </p>
           <div class="mt-6 flex justify-end space-x-2">
             <SecondaryButton @click.prevent="closeDeleteModal">Cancel</SecondaryButton>
-            <PrimaryButton
-              class="bg-red-500 hover:bg-red-600"
-              :disabled="form.processing"
-              @click.prevent="deleteProgram"
-            >
+            <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="form.processing"
+              @click.prevent="deleteProgram">
               Delete
             </PrimaryButton>
           </div>

@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE academic_programs MODIFY COLUMN program_type ENUM('CST', 'CS', 'CT', 'Diploma', 'Master') NOT NULL");
+        DB::statement("ALTER TABLE academic_programs MODIFY COLUMN program_type ENUM('CST', 'CS', 'CT') NOT NULL");
     }
 
     /**
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down()
     {
-        DB::statement("ALTER TABLE academic_programs MODIFY COLUMN program_type ENUM('CST', 'CS', 'CT', 'Master') NOT NULL");
+        DB::statement("ALTER TABLE academic_programs MODIFY COLUMN program_type ENUM('CST', 'CS', 'CT') NOT NULL");
     }
 };

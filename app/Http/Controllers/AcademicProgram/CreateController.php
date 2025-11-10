@@ -26,10 +26,10 @@ class CreateController extends Controller
                     'name' => $name,
                     'status' => $request->status,
                     'program_type' => match ($name) {
-                        'Computer Foundation' => 'CST',
+                        'CST' => 'CST',
                         'Computer Technology' => 'CT',
                         'Computer Science' => 'CS',
-                        /* 'Master' => 'Master' */
+                       
                     },
                 ]);
                 $createdCount++;
