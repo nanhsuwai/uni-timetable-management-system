@@ -25,7 +25,8 @@ class IndexController extends Controller
     public function __invoke(Request $request)
     {
         // Get current active academic year and semester
-        $currentAcademicYear = _getActiveAcademicYear();
+        $currentAcademicYears = AcademicYear::getActiveYears();
+        /* $currentAcademicYear = _getActiveAcademicYear(); */
         $currentSemester = Semester::where('status', 'active')->first();
 
         // Get statistics data
@@ -40,7 +41,7 @@ class IndexController extends Controller
             'total_teachers' => Teacher::count(),
             'total_timetable_entries' => TimetableEntry::count(),
             'total_users' => User::count(),
-            'active_academic_year' => $currentAcademicYear ? $currentAcademicYear->name : 'None',
+            'active_academic_years' => $currentAcademicYears->pluck('name')->implode(', '),
             'active_semester' => $currentSemester ? $currentSemester->name : 'None',
         ];
 

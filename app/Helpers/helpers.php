@@ -39,7 +39,7 @@ if (! function_exists('_randomElements')) {
 
 if (! function_exists('_getActiveAcademicYear')) {
     function _getActiveAcademicYear() {
-        return AcademicYear::getActive();
+        return AcademicYear::getActiveYears();
     }
 }
 
