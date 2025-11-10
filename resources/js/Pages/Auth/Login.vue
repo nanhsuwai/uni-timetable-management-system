@@ -116,7 +116,7 @@ const submit = () => {
                 <!-- Email Field -->
                 <FormField label="Email Address" label-for="email" help="Enter your registered email">
                     <FormControl v-model="form.email" :icon="mdiAccount" id="email" autocomplete="email" type="email"
-                        placeholder="example@email.com" required
+                        placeholder="Enter your email" required
                         class="rounded-xl border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition duration-300" />
                 </FormField>
 
@@ -125,7 +125,7 @@ const submit = () => {
                     <div class="relative">
                         <FormControl v-model="form.password" :icon="mdiAsterisk"
                             :type="showPassword ? 'text' : 'password'" id="password" autocomplete="current-password"
-                            placeholder="••••••••" required
+                            placeholder="Enter your password" required
                             class="rounded-xl border-gray-200 pr-12 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition duration-300" />
                         <button type="button" @click="togglePasswordVisibility"
                             class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-teal-600 transition-colors duration-300">

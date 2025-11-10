@@ -4,12 +4,12 @@ namespace App\Enums;
 
 enum DepartmentOption: string
 {
-    case ITSM = 'ITSM';
-    case FCST = 'Faculty of Computer Technology';
+    case ITSM = 'Department of Information Technology Supporting and Maintenance';
+    case FCST = 'Faculty of Computer System and Technology';
     case FCS = 'Faculty of Computer Science';
-    case IS = 'သုတသိပ္ပံမဟာဌာန';
-    case Physics = 'Physics Department';
-    case Mathematics = 'တွက်ချက်ရေးမဟာဌာန';
-    case English = 'English Department';
-    case Myanmar = 'မြန်မာစာဌာန';
+    case IS = 'Faculty of Information Science';
+    case Physics = 'Natural Science Department';
+    case Mathematics = 'Faculty of Computing';
+    case English = 'Language Department(English)';
+    case Myanmar = 'Language Department(Myanmar)';
 }

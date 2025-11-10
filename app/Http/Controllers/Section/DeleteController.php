@@ -12,7 +12,7 @@ class DeleteController extends Controller
     {
         // Ensure the section belongs to the academic level
         if ($section->level_id !== $academicLevel->id) {
-            abort(404);
+           
         }
 
         $section->delete();

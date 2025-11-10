@@ -15,14 +15,14 @@ import SectionMain from "../../Components/SectionMain.vue";
 
 // Department enum options
 const DepartmentOption = {
-  ITSM: "ITSM",
-  FCST: "Faculty of Computer Technology",
+  ITSM: "Department of Information Technology Supporting and Maintenance",
+  FCST: "Faculty of Computer System and Technology",
   FCS: "Faculty of Computer Science",
-  IS: "သုတသိပ္ပံမဟာဌာန",
-  Physics: "Physics Department",
-  Mathematics: "တွက်ချက်ရေးမဟာဌာန",
-  English: "English Department",
-  Myanmar: "မြန်မာစာဌာန",
+  IS: "Faculty of Information Science",
+  Physics: "Natural Science Department",
+  Mathematics: "Faculty of Computing",
+  English: "Language Department(English)",
+  Myanmar: "Language Department(Myanmar)",
 };
 
 const departmentOptions = Object.values(DepartmentOption);

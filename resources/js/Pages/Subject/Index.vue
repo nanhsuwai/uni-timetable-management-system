@@ -20,7 +20,6 @@ const props = defineProps({
   },
   semesters: Array,
   levels: Array,
-  programs: Array,
   filters: {
     type: Object,
     default: () => ({}),
@@ -33,17 +32,15 @@ let hasPermission = ref(checkPermissionComposable("subject_manage"));
 const filterCode = ref(props.filters.filterCode || "");
 const filterName = ref(props.filters.filterName || "");
 const filterLevel = ref(props.filters.filterLevel || "");
-const filterProgram = ref(props.filters.filterProgram || "");
 const filterSemester = ref(props.filters.filterSemester || "");
 
-watch([filterCode, filterName, filterLevel, filterProgram, filterSemester], () => {
+watch([filterCode, filterName, filterLevel, filterSemester], () => {
   router.get(
     route("subject:all"),
     {
       filterCode: filterCode.value,
       filterName: filterName.value,
       filterLevel: filterLevel.value,
-      filterProgram: filterProgram.value,
       filterSemester: filterSemester.value,
     },
     { preserveState: true, replace: true }
@@ -55,7 +52,6 @@ const form = useForm({
   code: "",
   name: "",
   level: "",
-  program: "",
   semester: "",
   status: "active",
 });
@@ -76,7 +72,6 @@ const showEditModal = (subject) => {
   form.code = subject.code;
   form.name = subject.name;
   form.level = subject.level;
-  form.program = subject.program;
   form.semester = subject.semester;
   form.status = subject.status;
   confirmingSubjectCreation.value = true;
@@ -181,16 +176,17 @@ const assignTeachers = (subject) => {
             </select>
           </div>
           <div>
-            <InputLabel for="filterProgram" value="Academic Program" class="dark:text-gray-300" />
-            <select id="filterProgram" v-model="filterProgram"
+            <InputLabel for="filterSemester" value="Semester" class="dark:text-gray-300" />
+            <select id="filterSemester" v-model="filterSemester"
               class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-3 py-2.5 shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-              <option value="">All Programs</option>
-              <option v-for="program in props.programs" :key="program" :value="program">
-                {{ program }}
+              <option value="">All Semesters</option>
+              <option v-for="sem in props.semesters" :key="sem" :value="sem">
+                {{ sem }}
               </option>
             </select>
           </div>
         </div>
+
 
         <div
           class="bg-white dark:bg-gray-800 shadow-xl dark:shadow-2xl dark:shadow-indigo-900/20 rounded-xl overflow-hidden ring-1 ring-gray-200 dark:ring-gray-700">
@@ -211,9 +207,9 @@ const assignTeachers = (subject) => {
                   <th class="px-4 py-3 border-b dark:border-gray-600 font-bold">
                     Level
                   </th>
-                  <th class="px-4 py-3 border-b dark:border-gray-600 font-bold">
+                  <!-- <th class="px-4 py-3 border-b dark:border-gray-600 font-bold">
                     Program
-                  </th>
+                  </th> -->
                   <th class="px-4 py-3 border-b dark:border-gray-600 font-bold">
                     Semester
                   </th>
@@ -242,7 +238,7 @@ const assignTeachers = (subject) => {
                     {{ subject.name }}
                   </td>
                   <td class="px-4 py-3">{{ subject.level }}</td>
-                  <td class="px-4 py-3">{{ subject.program }}</td>
+                  <!-- <td class="px-4 py-3">{{ subject.program }}</td> -->
                   <td class="px-4 py-3">{{ subject.semester }}</td>
                   <td class="px-4 py-3 capitalize">
                     <span :class="[
