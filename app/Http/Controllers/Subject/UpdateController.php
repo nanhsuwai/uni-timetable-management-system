@@ -18,7 +18,7 @@ class UpdateController extends Controller
             'name' => 'required|string',
             'status' => 'required|in:active,inactive',
             'level' => 'required|in:First Year,Second Year,Third Year,Fourth Year,Fifth Year',
-            'program' => 'required|in:CST,Computer Technology,Computer Science',
+            /* 'program' => 'required|in:CST,Computer Technology,Computer Science', */
             'semester' => 'required|in:First Semester,Second Semester',
         ]);
 
@@ -27,7 +27,7 @@ class UpdateController extends Controller
             'name' => $request->name,
             'status' => $request->status,
             'level' => $request->level,
-            'program' => $request->program,
+           /*  'program' => $request->program, */
             'semester' => $request->semester,
         ]);
 

@@ -33,9 +33,9 @@ class IndexController extends Controller
             $query->where('level', $request->filterLevel);
         }
 
-        if ($request->filled('filterProgram')) {
+       /*  if ($request->filled('filterProgram')) {
             $query->where('program', $request->filterProgram);
-        }
+        } */
 
         $subjects = $query->orderBy('name')->paginate(10)->withQueryString();
 

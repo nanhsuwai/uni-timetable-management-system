@@ -16,7 +16,7 @@ class Subject extends Model
         'name',
         'status',
         'level',
-        'program', // This is now a simple string containing CSV
+       
         'semester',
     ];
     

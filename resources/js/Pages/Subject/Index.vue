@@ -213,9 +213,9 @@ const assignTeachers = (subject) => {
                   <th class="px-4 py-3 border-b dark:border-gray-600 font-bold">
                     Semester
                   </th>
-                  <th class="px-4 py-3 w-48 border-b dark:border-gray-600 font-bold">
+                  <!--  <th class="px-4 py-3 w-48 border-b dark:border-gray-600 font-bold">
                     Status
-                  </th>
+                  </th>-->
                   <th class="px-4 py-3 w-56 border-b dark:border-gray-600 font-bold">
                     Actions
                   </th>
@@ -240,7 +240,7 @@ const assignTeachers = (subject) => {
                   <td class="px-4 py-3">{{ subject.level }}</td>
                   <!-- <td class="px-4 py-3">{{ subject.program }}</td> -->
                   <td class="px-4 py-3">{{ subject.semester }}</td>
-                  <td class="px-4 py-3 capitalize">
+                  <!-- <td class="px-4 py-3 capitalize">
                     <span :class="[
                       'px-3 py-1 text-xs rounded-full font-semibold shadow-sm',
                       subject.status === 'active'
@@ -249,7 +249,7 @@ const assignTeachers = (subject) => {
                     ]">
                       {{ subject.status }}
                     </span>
-                  </td>
+                  </td> -->
                   <td class="px-4 py-3 space-x-2 flex justify-center items-center">
                     <button @click.prevent="assignTeachers(subject)"
                       class="px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition shadow-md dark:bg-green-700 dark:hover:bg-green-600">
@@ -310,7 +310,7 @@ const assignTeachers = (subject) => {
                 </select>
                 <InputError :message="form.errors.level" />
               </div>
-              <div>
+              <!--  <div>
                 <InputLabel for="program" value="Program" class="dark:text-gray-300" />
                 <select v-model="form.program"
                   class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-3 py-2.5 shadow-sm">
@@ -320,7 +320,7 @@ const assignTeachers = (subject) => {
                   </option>
                 </select>
                 <InputError :message="form.errors.program" />
-              </div>
+              </div> -->
               <div>
                 <InputLabel for="semester" value="Semester" class="dark:text-gray-300" />
                 <select v-model="form.semester"
@@ -332,7 +332,7 @@ const assignTeachers = (subject) => {
                 </select>
                 <InputError :message="form.errors.semester" />
               </div>
-              <div>
+              <!-- <div>
                 <InputLabel for="status" value="Status" class="dark:text-gray-300" />
                 <select v-model="form.status"
                   class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg px-3 py-2.5 shadow-sm">
@@ -340,7 +340,7 @@ const assignTeachers = (subject) => {
                   <option value="inactive">Inactive</option>
                 </select>
                 <InputError :message="form.errors.status" />
-              </div>
+              </div> -->
               <div class="mt-6 flex justify-end space-x-3 pt-4 border-t dark:border-gray-700">
                 <SecondaryButton @click.prevent="closeModal">Cancel</SecondaryButton>
                 <PrimaryButton :disabled="form.processing" type="submit">
