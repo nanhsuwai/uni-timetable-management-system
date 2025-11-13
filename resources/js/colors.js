@@ -65,7 +65,7 @@ export const getButtonColor = (
       whiteDark: "bg-white text-black dark:bg-slate-900 dark:text-white",
       lightDark: "bg-gray-100 text-black dark:bg-slate-800 dark:text-white",
       contrast: "bg-gray-800 text-white dark:bg-white dark:text-black",
-      success: "bg-emerald-600 dark:bg-emerald-500 text-white",
+      success: "bg-cyan-600 dark:bg-cyan-500 text-white",
       danger: "bg-red-600 dark:bg-red-500 text-white",
       warning: "bg-yellow-600 dark:bg-yellow-500 text-white",
       info: "bg-blue-600 dark:bg-blue-500 text-white",
@@ -104,7 +104,7 @@ export const getButtonColor = (
       contrast:
         "hover:bg-gray-800 hover:text-gray-100 hover:dark:bg-slate-100 hover:dark:text-black",
       success:
-        "hover:bg-emerald-600 hover:text-white hover:text-white hover:dark:text-white hover:dark:border-emerald-600",
+        "hover:bg-cyan-600 hover:text-white hover:text-white hover:dark:text-white hover:dark:border-emerald-600",
       danger:
         "hover:bg-red-600 hover:text-white hover:text-white hover:dark:text-white hover:dark:border-red-600",
       warning:

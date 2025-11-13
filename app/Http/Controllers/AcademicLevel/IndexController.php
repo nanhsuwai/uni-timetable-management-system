@@ -27,7 +27,7 @@ class IndexController extends Controller
         }
 
         // Filter academic programs to only those in active academic year
-        $activeAcademicYear = AcademicYear::getActive();
+        $activeAcademicYear = AcademicYear::getActiveYears()->first();
         $academicPrograms =  AcademicProgram::where('academic_year_id', $activeAcademicYear?->id)->orderBy('name')->get()
 ;
 

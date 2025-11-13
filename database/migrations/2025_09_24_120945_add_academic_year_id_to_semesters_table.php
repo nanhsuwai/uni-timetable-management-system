@@ -19,7 +19,7 @@ return new class extends Migration
         });
 
         // Update existing semesters to have a default academic year
-        $defaultAcademicYear = \App\Models\AcademicYear::getActive();
+        $defaultAcademicYear = \App\Models\AcademicYear::getActiveYears()->first();
         if ($defaultAcademicYear) {
             \Illuminate\Support\Facades\DB::table('semesters')->whereNull('academic_year_id')->update(['academic_year_id' => $defaultAcademicYear->id]);
         }

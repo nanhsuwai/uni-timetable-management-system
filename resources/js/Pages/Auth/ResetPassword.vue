@@ -44,9 +44,9 @@ const passwordStrength = computed(() => {
   switch (score) {
     case 0: case 1:
       label = 'Weak'; color = 'bg-red-500'; break;
-    case 2: 
+    case 2:
       label = 'Fair'; color = 'bg-yellow-500'; break;
-    case 3: 
+    case 3:
       label = 'Good'; color = 'bg-blue-500'; break;
     case 4:
       label = 'Strong'; color = 'bg-green-500'; break;
@@ -88,9 +88,10 @@ const submit = () => {
 
 
 <template>
+
   <Head title="Reset Password" />
 
- 
+
 
   <!-- Header -->
   <header class="bg-sky-600 border-b border-cyan-500 shadow-xl">
@@ -107,16 +108,12 @@ const submit = () => {
     </div>
   </header>
 
-   <!-- Toast Notifications -->
+  <!-- Toast Notifications -->
   <div class="fixed top-5 right-5 z-50 flex flex-col gap-2">
-    <div
-      v-for="toast in toastMessages"
-      :key="toast.id"
-      :class="[
-        'px-4 py-2 rounded shadow text-white font-medium',
-        toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-      ]"
-    >
+    <div v-for="toast in toastMessages" :key="toast.id" :class="[
+      'px-4 py-2 rounded shadow text-white font-medium',
+      toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    ]">
       {{ toast.message }}
     </div>
   </div>
@@ -137,81 +134,53 @@ const submit = () => {
         <!-- Email -->
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-          <input
-            v-model="form.email"
-            type="email"
+          <input v-model="form.email" type="email"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
-            placeholder="Enter your email"
-            required
-            autocomplete="email"
-            readonly
-          />
+            placeholder="Enter your email" required autocomplete="email" readonly />
         </div>
 
         <!-- Password -->
-        <div class="mb-4 relative">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-          <input
-            v-model="form.password"
-            :type="showPassword ? 'text' : 'password'"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
-            placeholder="Enter new password"
-            required
-            autocomplete="new-password"
-          />
-          <button type="button" @click="showPassword = !showPassword" class="absolute right-3 top-2.5 text-gray-500">
+        <div class="mb-4">
+          <div class="relative">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+          <input v-model="form.password" :type="showPassword ? 'text' : 'password'"
+            class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+            placeholder="Enter new password" required autocomplete="new-password" />
+          <button type="button" @click="showPassword = !showPassword"
+            class="absolute right-2 top-11 transform -translate-y-1/2 text-gray-500">
             <span v-if="!showPassword">👁️</span>
             <span v-else>🙈</span>
           </button>
-          <!-- Password Strength Indicator -->
-<div v-if="form.password.length > 0" class="mt-1 h-2 w-full rounded bg-gray-200">
-  <div
-    class="h-2 rounded transition-all duration-300"
-    :class="passwordStrength.color"
-    :style="{ width: `${passwordStrength.score * 25}%` }"
-  ></div>
-</div>
-<p v-if="form.password.length > 0" class="text-sm mt-1 text-gray-600 dark:text-gray-300">
-  Strength: <span :class="passwordStrength.color">{{ passwordStrength.label }}</span>
-</p>
 
+          </div>
+          
+          <!-- Password Strength Indicator -->
+          <div v-if="form.password.length > 0" class="mt-1 h-2 w-full rounded bg-gray-200">
+            <div class="h-2 rounded transition-all duration-300" :class="passwordStrength.color"
+              :style="{ width: `${passwordStrength.score * 25}%` }"></div>
+          </div>
+          <p v-if="form.password.length > 0" class="text-sm mt-1 text-gray-600 dark:text-gray-300">
+            Strength: <span :class="passwordStrength.color">{{ passwordStrength.label }}</span>
+          </p>
         </div>
 
         <!-- Confirm Password -->
         <div class="mb-4 relative">
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password</label>
-          <input
-            v-model="form.password_confirmation"
-            :type="showConfirmPassword ? 'text' : 'password'"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
-            placeholder="Confirm new password"
-            required
-            autocomplete="new-password"
-          />
-          <button type="button" @click="showConfirmPassword = !showConfirmPassword" class="absolute right-3 top-2.5 text-gray-500">
+          <input v-model="form.password_confirmation" :type="showConfirmPassword ? 'text' : 'password'"
+            class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+            placeholder="Confirm new password" required autocomplete="new-password" />
+          <button type="button" @click="showConfirmPassword = !showConfirmPassword"
+            class="absolute right-2 top-11 transform -translate-y-1/2 text-gray-500">
             <span v-if="!showConfirmPassword">👁️</span>
             <span v-else>🙈</span>
           </button>
-          <!-- Password Strength Indicator -->
-<div v-if="form.password.length > 0" class="mt-1 h-2 w-full rounded bg-gray-200">
-  <div
-    class="h-2 rounded transition-all duration-300"
-    :class="passwordStrength.color"
-    :style="{ width: `${passwordStrength.score * 25}%` }"
-  ></div>
-</div>
-<p v-if="form.password.length > 0" class="text-sm mt-1 text-gray-600 dark:text-gray-300">
-  Strength: <span :class="passwordStrength.color">{{ passwordStrength.label }}</span>
-</p>
-
         </div>
 
         <!-- Submit -->
-        <button
-          type="submit"
+        <button type="submit"
           class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 rounded-md focus:ring-2 focus:ring-teal-500"
-          :disabled="form.processing"
-        >
+          :disabled="form.processing">
           <span v-if="form.processing">Resetting...</span>
           <span v-else>Reset Password</span>
         </button>

@@ -790,23 +790,15 @@ const exportExcel = () => {
                 <!-- Login Tab -->
                 <div v-else-if="activeTab === 'login'">
                     <Login />
-                    <div class="mb-4 text-center">
+                    <!-- <div class="mb-4 text-center">
                         <button @click="switchToWelcome"
                             class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-all duration-300 hover:bg-blue-50 px-3 py-2 rounded-md transform hover:scale-105">
                             ← Back to Home
                         </button>
-                    </div>
+                    </div> -->
                 </div>
 
-                <!-- Register Tab -->
-                <!-- <div v-else-if="activeTab === 'register'">
-                <div class="mb-4 text-center">
-                    <button @click="switchToWelcome" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-all duration-300 hover:bg-blue-50 px-3 py-2 rounded-md transform hover:scale-105">
-                        ← Back to Home
-                    </button>
-                </div>
-                <Register />
-            </div> -->
+               
             </div>
         </div>
     </main>

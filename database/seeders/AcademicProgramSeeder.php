@@ -46,13 +46,13 @@ class AcademicProgramSeeder extends Seeder
 
                     ]
                 ],
-                [
+               /*  [
                     'name' => 'Diploma',
                     'program_type' => 'Diploma',
                     'levels' => [
                         \App\Enums\LevelName::Diploma->value, 
                     ]
-                ],
+                ], */
                
             ];
 
