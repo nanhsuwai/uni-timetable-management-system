@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\AcademicProgram;
 use App\Models\AcademicLevel;
+use App\Models\AcademicYear;
 use App\Enums\LevelName;
 
 class AcademicLevelSeeder extends Seeder
@@ -13,41 +14,50 @@ class AcademicLevelSeeder extends Seeder
     {
         $programs = AcademicProgram::all();
 
+        $activeYear = AcademicYear::getActiveYears()->first();
+
+
         foreach ($programs as $program) {
-            if($program->program_type === 'CST') {
+
+            // Helper function (now receives $activeYear)
+            $createYear = function ($programId, $levelName) use ($activeYear) {
                 AcademicLevel::create([
-                    'program_id' => $program->id,
-                    'name' => LevelName::FirstYear->value,
+                    'academic_year_id' => $activeYear->id,
+                    'program_id'        => $programId,
+                    'name'              => $levelName,
+                    'semester'          => 'First Semester',
                 ]);
-            } elseif (in_array($program->program_type, ['CT', 'CS'])) {
+
                 AcademicLevel::create([
-                    'program_id' => $program->id,
-                    'name' => LevelName::SecondYear->value,
+                    'academic_year_id' => $activeYear->id,
+                    'program_id'        => $programId,
+                    'name'              => $levelName,
+                    'semester'          => 'Second Semester',
                 ]);
-                AcademicLevel::create([
-                    'program_id' => $program->id,
-                    'name' => LevelName::ThirdYear->value,
-                ]);
-                AcademicLevel::create([
-                    'program_id' => $program->id,
-                    'name' => LevelName::FourthYear->value,
-                ]);
-            } /* elseif ($program->program_type === 'Master') {
-                AcademicLevel::create([
-                    'program_id' => $program->id,
-                    'name' => LevelName::Coursework->value,
-                ]);
-                AcademicLevel::create([
-                    'program_id' => $program->id,
-                    'name' => LevelName::Thesis->value,
-                ]); 
-            }*/ elseif ($program->program_type === 'Diploma') {
-                AcademicLevel::create([
-                    'program_id' => $program->id,
-                    'name' => LevelName::Diploma->value,
-                ]);
+            };
+
+            // CST → only First Year
+            if ($program->program_type === 'CST') {
+                $createYear($program->id, LevelName::FirstYear->value);
             }
-            // Add more conditions for other program types if needed
+
+            // CT / CS → Second–Fourth Year
+            elseif (in_array($program->program_type, ['CT', 'CS'])) {
+                $years = [
+                    LevelName::SecondYear->value,
+                    LevelName::ThirdYear->value,
+                    LevelName::FourthYear->value,
+                ];
+
+                foreach ($years as $year) {
+                    $createYear($program->id, $year);
+                }
+            }
+
+            // Diploma → 1 year
+            elseif ($program->program_type === 'Diploma') {
+                $createYear($program->id, LevelName::Diploma->value);
+            }
         }
     }
 }

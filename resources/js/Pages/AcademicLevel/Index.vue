@@ -43,6 +43,7 @@ const form = useForm({
   academic_year_id: "",
   program_id: "",
   name: "",
+  semester: "",
 });
 
 // Section Form
@@ -108,6 +109,7 @@ const openEditModal = (level) => {
   form.academic_year_id = level.academic_year_id;
   form.program_id = level.program_id;
   form.name = level.name;
+  form.semester = level.semester;
   confirmingModal.value = true;
 };
 
@@ -293,6 +295,9 @@ const toggleSectionStatus = (section, newStatus) => {
                 <th class="px-4 py-4 font-semibold text-left">
                   Academic Program
                 </th>
+                <th class="px-4 py-4 font-semibold text-left">
+                  Semester
+                </th>
                 <th class="px-4 py-4 font-semibold">Actions</th>
               </tr>
             </thead>
@@ -312,6 +317,10 @@ const toggleSectionStatus = (section, newStatus) => {
                 <td class="px-4 py-3 text-left">
                   {{ level.academic_program.name }}
                 </td>
+                <td class="px-4 py-3 text-left">
+                  {{ level.semester }}
+                </td>
+
                 <td class="px-4 py-3 space-x-2 whitespace-nowrap">
                   <button @click.prevent="openSectionsModal(level)"
                     class="px-3 py-1 rounded-full bg-teal-500 text-white text-xs font-semibold hover:bg-teal-600 transition duration-150 shadow-md"
@@ -384,6 +393,19 @@ const toggleSectionStatus = (section, newStatus) => {
                 </select>
                 <InputError :message="form.errors.name" />
               </div>
+
+              <div>
+                <InputLabel for="semester" value="Semester" class="dark:text-gray-300" />
+                <select id="semester" v-model="form.semester" class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg shadow-sm
+    focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400">
+                  <option value="">Select Semester</option>
+                  <option value="First Semester">First Semester</option>
+                  <option value="Second Semester">Second Semester</option>
+
+                </select>
+                <InputError :message="form.errors.semester" />
+              </div>
+
 
               <div class="mt-6 flex justify-end space-x-3 pt-4">
                 <SecondaryButton @click.prevent="closeModal">
@@ -483,7 +505,8 @@ const toggleSectionStatus = (section, newStatus) => {
                           section,
                           section.status === 'active' ? 'inactive' : 'active'
                         )
-                        " class="px-2 py-1 rounded-md bg-sky-500 text-white text-xs font-medium hover:bg-sky-600 transition duration-150 shadow-sm"
+                        "
+                        class="px-2 py-1 rounded-md bg-sky-500 text-white text-xs font-medium hover:bg-sky-600 transition duration-150 shadow-sm"
                         title="Toggle Status">
                         {{ section.status === 'active' ? 'Inactive' : 'Active' }}
                       </button>

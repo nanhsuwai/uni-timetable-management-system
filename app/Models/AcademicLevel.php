@@ -12,10 +12,13 @@ class AcademicLevel extends Model
     use HasFactory;
 
     protected $fillable = [
+        'academic_year_id',
         'program_id',
         'name',
+        'semester',
         'status',
     ];
+
 
     public function academicProgram()
     {
@@ -33,10 +36,13 @@ class AcademicLevel extends Model
     public static function getValidationRules()
     {
         return [
+            'academic_year_id' => 'required|exists:academic_years,id',
             'program_id' => 'required|exists:academic_programs,id',
-            'name' => 'required|in:First Year,Second Year,Third Year,Fourth Year,Fifth Year,Coursework,Thesis'
+            'name' => 'required|in:First Year,Second Year,Third Year,Fourth Year,Fifth Year,Coursework,Thesis',
+            'semester' => 'required|in:First Semester,Second Semester',
         ];
     }
+
 
     /**
      * Validate if the level is allowed for the program's type
@@ -73,5 +79,9 @@ class AcademicLevel extends Model
             return $allLevels; // Full lels for specialized programs
         }
         return ['First Year']; // Default to First Year
+    }
+    public static function getAllowedSemesters()
+    {
+        return ['First Semester', 'Second Semester'];
     }
 }

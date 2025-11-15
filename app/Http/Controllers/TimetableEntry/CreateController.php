@@ -45,10 +45,10 @@ class CreateController extends Controller
                 },
             ],
             'semester_id'    => ['required', Rule::exists('semesters', 'id')],
-            'program_id'     => ['sometimes', Rule::exists('academic_programs', 'id')],
-            'level_id'       => ['sometimes', Rule::exists('academic_levels', 'id')],
+            'program_id'     => ['required', Rule::exists('academic_programs', 'id')],
+            'level_id'       => ['required', Rule::exists('academic_levels', 'id')],
             'section_id'     => ['nullable', Rule::exists('sections', 'id')],
-            'classroom_id'   => ['sometimes', Rule::exists('classrooms', 'id')],
+            'classroom_id'   => ['required', Rule::exists('classrooms', 'id')],
             'subject_id'     => [
                 'required',
                 Rule::exists('subjects', 'id'),
@@ -108,7 +108,7 @@ class CreateController extends Controller
                 $query->whereIn('teachers.id', $validated['teacher_ids']);
             })
             ->exists();
-
+            
         if ($teacherConflict) {
             return back()->withErrors([
                 'teacher_ids' => 'One or more selected teachers are already assigned for this period and day.',

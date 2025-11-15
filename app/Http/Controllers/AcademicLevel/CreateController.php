@@ -5,41 +5,40 @@ namespace App\Http\Controllers\AcademicLevel;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicLevel;
 use App\Models\AcademicYear;
+use App\Models\AcademicProgram;
+
 use Illuminate\Http\Request;
 
 class CreateController extends Controller
 {
     public function __invoke(Request $request)
     {
+        // Validate including semester
         $request->validate(AcademicLevel::getValidationRules());
-        // Get active academic year
-        $activeAcademicYear = AcademicYear::getActive();
+        $activeAcademicYear = AcademicYear::getActiveYears()->first();
+        $academicPrograms = AcademicProgram::where('academic_year_id', $activeAcademicYear?->id)
+            ->orderBy('name')
+            ->get();
+        // Check if level already exists for the given program, semester, and name
+        $exists = AcademicLevel::where('program_id', $request->program_id)
+            ->where('name', $request->name)
+            ->where('semester', $request->semester)
+            ->exists();
 
-        // Validate that the program belongs to the active academic year
-        $program = \App\Models\AcademicProgram::find($request->program_id);
-        /* if (!$program || ($activeAcademicYear && $program->academic_year_id != $activeAcademicYear->id)) {
-            return back()->withErrors(['program_id' => 'The selected program does not belong to the active academic year.']);
-        } */
-
-        // Create level instance to validate
-        $level = new AcademicLevel([
-            'program_id' => $request->program_id,
-            'name' => $request->name,
-        ]);
-
-        /* if (!$level->validateLevelForProgramType()) {
-            return back()->withErrors(['name' => 'This level is not allowed for the selected program type.']);
-        } */
-
-        try {
-            $level->save();
-        } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->getCode() === '23000') {
-                return back()->withErrors(['name' => 'This level already exists for the selected program.']);
-            }
-            throw $e;
+        if ($exists) {
+            return back()->withErrors([
+                'name' => 'This level with the selected semester already exists for this program.',
+            ])->withInput();
         }
 
-        return to_route('academic_level:all')->with('toast', 'Academic Level created successfully!');
+        // Create new level
+        $level = AcademicLevel::create([
+            'program_id' => $request->program_id,
+            'name'       => $request->name,
+            'semester'   => $request->semester,
+        ]);
+
+        return to_route('academic_level:all')
+            ->with('toast', 'Academic Level created successfully!');
     }
 }
