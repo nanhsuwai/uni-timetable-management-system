@@ -13,7 +13,7 @@ class CreateController extends Controller
     {
         $request->validate(AcademicLevel::getValidationRules());
         // Get active academic year
-        $activeAcademicYear = AcademicYear::getActive();
+        $activeAcademicYear = AcademicYear::getActiveYears();
 
         // Validate that the program belongs to the active academic year
         $program = \App\Models\AcademicProgram::find($request->program_id);

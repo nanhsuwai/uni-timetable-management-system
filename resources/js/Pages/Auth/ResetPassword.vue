@@ -143,17 +143,35 @@ const submit = () => {
         <div class="mb-4">
           <div class="relative">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-          <input v-model="form.password" :type="showPassword ? 'text' : 'password'"
-            class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
-            placeholder="Enter new password" required autocomplete="new-password" />
-          <button type="button" @click="showPassword = !showPassword"
+            <input v-model="form.password" :type="showPassword ? 'text' : 'password'"
+              class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+              placeholder="Enter new password" required autocomplete="new-password" />
+            <!-- <button type="button" @click="showPassword = !showPassword"
             class="absolute right-2 top-11 transform -translate-y-1/2 text-gray-500">
             <span v-if="!showPassword">👁️</span>
             <span v-else>🙈</span>
-          </button>
+          </button> -->
+            <!-- Toggle Icon -->
+            <button type="button" @click="showPassword = !showPassword" class="absolute right-3 top-9">
+              <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" class="w-5 h-5">
+                <!-- Eye Icon -->
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+
+              <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                class="w-5 h-5">
+                <!-- Eye Off Icon -->
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 013.642-5.105M9.88 9.88A3 3 0 0114.12 14.12M6.225 6.225A9.97 9.97 0 015.17 7.048M9.88 9.88l4.24 4.24M3 3l18 18" />
+              </svg>
+            </button>
 
           </div>
-          
+
           <!-- Password Strength Indicator -->
           <div v-if="form.password.length > 0" class="mt-1 h-2 w-full rounded bg-gray-200">
             <div class="h-2 rounded transition-all duration-300" :class="passwordStrength.color"
@@ -172,9 +190,25 @@ const submit = () => {
             placeholder="Confirm new password" required autocomplete="new-password" />
           <button type="button" @click="showConfirmPassword = !showConfirmPassword"
             class="absolute right-2 top-11 transform -translate-y-1/2 text-gray-500">
-            <span v-if="!showConfirmPassword">👁️</span>
-            <span v-else>🙈</span>
+
+            <!-- Show Icon -->
+            <svg v-if="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+
+            <!-- Hide Icon -->
+            <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 013.642-5.105M9.88 9.88A3 3 0 0114.12 14.12M6.225 6.225A9.97 9.97 0 015.17 7.048M9.88 9.88l4.24 4.24M3 3l18 18" />
+            </svg>
+
           </button>
+
         </div>
 
         <!-- Submit -->

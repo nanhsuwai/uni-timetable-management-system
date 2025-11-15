@@ -42,31 +42,31 @@ const form = useForm({
 });
 
 const showPermissionModal = (permission) => {
-    let data = [];
-    showPermissionUpdate.value = true;
-    selectedPermission.value = permission;
+  let data = [];
+  showPermissionUpdate.value = true;
+  selectedPermission.value = permission;
 
-    permission.permissions.map(permission => {
-      return data.push(permission.id);
-    });
+  permission.permissions.map(permission => {
+    return data.push(permission.id);
+  });
 
-    form.type_id = selectedPermission.value.id;
-    form.checkedPermission = data;
+  form.type_id = selectedPermission.value.id;
+  form.checkedPermission = data;
 };
 
 
 const updatePermission = () => {
-    form.post(route('permissions:create'), {
-        preserveScroll: true,
-        onSuccess: () => {
-          closePermissionModal()
-            toast.add({
-                message: "Permission Update !"
-            })
-        },
-        onError: () => form.reset(),
-        onFinish: () => form.reset(),
-    });
+  form.post(route('permissions:create'), {
+    preserveScroll: true,
+    onSuccess: () => {
+      closePermissionModal()
+      toast.add({
+        message: "Permission Update !"
+      })
+    },
+    onError: () => form.reset(),
+    onFinish: () => form.reset(),
+  });
 };
 
 const closePermissionModal = () => {
@@ -78,12 +78,13 @@ const allChecked = computed({
     form.checkedPermission.length == props.granted_systems.length
   },
   set(value) {
-     form.checkedPermission = value ? props.granted_systems.map(granted_system => granted_system.id) : [];
+    form.checkedPermission = value ? props.granted_systems.map(granted_system => granted_system.id) : [];
   }
 })
 </script>
 
 <template>
+
   <Head title="Permissions" />
 
   <LayoutAuthenticated>
@@ -93,19 +94,14 @@ const allChecked = computed({
       </h2>
     </template>
 
-    <SectionMain
-      v-if="
-        $page.props.auth.user.user_type == 'admin' ||
-        $page.props.auth.user.user_type == 'course_manager' ||
-        hasPermission
-      "
-    >
+    <SectionMain v-if="
+      $page.props.auth.user.user_type == 'admin' ||
+      $page.props.auth.user.user_type == 'course_manager' ||
+      hasPermission
+    ">
       <div class="py-6">
         <div class="min-w-full max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <SectionTitleLineWithButton
-            :icon="mdiShape"
-            title="User Type Permissions"
-          >
+          <SectionTitleLineWithButton :icon="mdiShape" title="User Type Permissions">
             <!-- <BaseButton
                             label="Add"
                             color="contrast"
@@ -135,15 +131,11 @@ const allChecked = computed({
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(permission, index) in props.permission_types.data"
-                    class="text-xs"
-                    :key="index"
-                  >
+                  <tr v-for="(permission, index) in props.permission_types.data" class="text-xs" :key="index">
                     <td class="text-center w-40" data-label="ID">
                       {{
                         props.permission_types.meta.per_page *
-                          (props.permission_types.meta.current_page - 1) +
+                        (props.permission_types.meta.current_page - 1) +
                         index +
                         1
                       }}
@@ -156,10 +148,8 @@ const allChecked = computed({
                     </td>
                     <td class="text-center">
                       <div>
-                        <button
-                          @click="showPermissionModal(permission)"
-                          class="border-2 outline-none hover:bg-yellow-600 border-yellow-600 rounded mx-2 px-2 hover:text-white text-xs"
-                        >
+                        <button @click="showPermissionModal(permission)"
+                          class="border-2 outline-none hover:bg-yellow-600 border-yellow-600 rounded mx-2 px-2 hover:text-white text-xs">
                           Edit
                         </button>
                       </div>
@@ -188,23 +178,13 @@ const allChecked = computed({
             </div>
             <div class="">
               <ul>
-                <li
-                  v-for="granted_system in props.granted_systems"
-                  :key="granted_system.id"
-                  class="grid grid-cols-2 gap-2"
-                >
+                <li v-for="granted_system in props.granted_systems" :key="granted_system.id"
+                  class="grid grid-cols-2 gap-2">
                   Granted System : {{ granted_system.name }} <br />
-                  <ul
-                    v-for="granted_permission in granted_system.permissions"
-                    :key="granted_permission.id"
-                  >
+                  <ul v-for="granted_permission in granted_system.permissions" :key="granted_permission.id">
                     <li>
-                      <input
-                        v-model="form.checkedPermission"
-                        :value="granted_permission.id"
-                        type="checkbox"
-                        :name="granted_permission.name"
-                      />
+                      <input v-model="form.checkedPermission" :value="granted_permission.id" type="checkbox"
+                        :name="granted_permission.name" />
                       &nbsp;
                       <span>{{ granted_permission.name }}</span>
                     </li>
@@ -219,12 +199,8 @@ const allChecked = computed({
                 Cancel
               </SecondaryButton>
 
-              <PrimaryButton
-                class="ml-3"
-                :class="{ 'opacity-25': form.processing }"
-                :disabled="form.processing"
-                @click="updatePermission"
-              >
+              <PrimaryButton class="ml-3" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
+                @click="updatePermission">
                 Update
               </PrimaryButton>
             </div>

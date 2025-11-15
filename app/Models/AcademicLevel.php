@@ -74,4 +74,10 @@ class AcademicLevel extends Model
         }
         return ['First Year']; // Default to First Year
     }
+    public function scopeIsFirstYear($query, $levelId)
+    {
+        return $query->where('id', $levelId)
+            ->where('name', 'First Year') // or whatever column indicates first year
+            ->exists(); // Returns boolean
+    }
 }

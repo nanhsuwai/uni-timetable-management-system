@@ -83,7 +83,7 @@ const form = useForm({
   classroom_id: "",
   subject_id: "",
   teacher_ids: [],
-  time_slot_id: "",
+  time_slot_ids: [],
   day_of_week: "",
   start_time: "",
   end_time: "",
@@ -227,22 +227,29 @@ const filteredTimeSlots = computed(() => {
   });
 });
 
+/* watch(filteredTimeSlots, (newSlots) => {
+  if (form.time_slot_ids && !newSlots.some((s) => s.id == form.time_slot_ids))
+    form.time_slot_ids = [];
+}); */
 watch(filteredTimeSlots, (newSlots) => {
-  if (form.time_slot_id && !newSlots.some((s) => s.id == form.time_slot_id))
-    form.time_slot_id = "";
+  // Keep only the IDs that still exist in filtered slots
+  form.time_slot_ids = form.time_slot_ids.filter(id =>
+    newSlots.some(s => s.id === id)
+  );
 });
+
 
 // === Helpers ===
 const allSelectionsComplete = computed(() =>
   Boolean(
     selectedYear.value &&
-      selectedProgram.value &&
-      selectedLevel.value &&
-      selectedSection.value &&
-      form.semester_id &&
-      form.subject_id &&
-      form.day_of_week &&
-      form.time_slot_id
+    selectedProgram.value &&
+    selectedLevel.value &&
+    selectedSection.value &&
+    form.semester_id &&
+    form.subject_id &&
+    form.day_of_week &&
+    form.time_slot_ids
   )
 );
 
@@ -325,13 +332,13 @@ const deleteEntry = () => {
 
 // === Navigation ===
 const getDayName = (day) =>
-  ({
-    monday: "Monday",
-    tuesday: "Tuesday",
-    wednesday: "Wednesday",
-    thursday: "Thursday",
-    friday: "Friday",
-  }[day] || day);
+({
+  monday: "Monday",
+  tuesday: "Tuesday",
+  wednesday: "Wednesday",
+  thursday: "Thursday",
+  friday: "Friday",
+}[day] || day);
 
 const navigateToGridView = () => router.visit(route("timetable_entry:grid"));
 const navigateToAcademicPrograms = () => router.visit(route("academic_program:index"));
@@ -343,7 +350,7 @@ const navigateToSubjectTeacherManagement = () =>
   <LayoutAuthenticated>
 
     <Head title="Timetable Entries" />
-   <SectionMain v-if="['admin', 'teacher'].includes($page.props.auth.user.user_type) || hasPermission">
+    <SectionMain v-if="['admin', 'teacher'].includes($page.props.auth.user.user_type) || hasPermission">
 
       <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-6">
@@ -603,10 +610,10 @@ const navigateToSubjectTeacherManagement = () =>
                     subjectSearchTerm = sub.name;
                     showSubjectDropdown = false;
                     " :class="{
-                  'cursor-pointer p-2 text-sm transition duration-100': true,
-                  'hover:bg-indigo-50 dark:hover:bg-indigo-900/50 text-gray-900 dark:text-gray-100': true,
-                  'bg-indigo-100 dark:bg-indigo-900 font-semibold': String(form.subject_id) === String(sub.id)
-                }">
+                      'cursor-pointer p-2 text-sm transition duration-100': true,
+                      'hover:bg-indigo-50 dark:hover:bg-indigo-900/50 text-gray-900 dark:text-gray-100': true,
+                      'bg-indigo-100 dark:bg-indigo-900 font-semibold': String(form.subject_id) === String(sub.id)
+                    }">
                       {{ sub.name }}
                     </li>
                   </ul>
@@ -662,14 +669,20 @@ const navigateToSubjectTeacherManagement = () =>
 
               <div>
                 <InputLabel value="Time Slot" class="text-gray-700 dark:text-gray-300 mb-1" />
-                <select v-model="form.time_slot_id"
-                  class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
-                  <option value="">Select Time Slot</option>
-                  <option v-for="slot in filteredTimeSlots" :key="slot.id" :value="slot.id">
-                    {{ slot.name || slot.id }} ({{ slot.start_time }} - {{ slot.end_time }})
-                  </option>
-                </select>
+
+                <div class="space-y-2">
+                  <div v-for="slot in filteredTimeSlots" :key="slot.id" class="flex items-center gap-2">
+                    <input type="checkbox" :value="slot.id" v-model="form.time_slot_ids"
+                      class="h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+
+                    <label class="text-gray-900 dark:text-gray-100">
+                      {{ slot.name || slot.id }} ({{ slot.start_time }} - {{ slot.end_time }})
+                    </label>
+                  </div>
+                </div>
               </div>
+
+
 
             </div>
 
