@@ -1,15 +1,16 @@
 <?php
 
 namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    public function run() : void
+    public function run(): void
     {
         \App\Models\User::factory()->create();
-      
-      
+
+
 
         $this->call(
             [
@@ -17,6 +18,7 @@ class DatabaseSeeder extends Seeder
                 UserTypeSeeder::class,
                 AcademicYearSeeder::class,
                 AcademicProgramSeeder::class,
+                AcademicLevelSeeder::class,
                 TeacherSeeder::class,
                 SectionSeeder::class,
                 ClassroomSeeder::class,

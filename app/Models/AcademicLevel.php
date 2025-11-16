@@ -15,7 +15,7 @@ class AcademicLevel extends Model
         'academic_year_id',
         'program_id',
         'name',
-        'semester',
+        'semester_id',
         'status',
     ];
 
@@ -39,8 +39,13 @@ class AcademicLevel extends Model
             'academic_year_id' => 'required|exists:academic_years,id',
             'program_id' => 'required|exists:academic_programs,id',
             'name' => 'required|in:First Year,Second Year,Third Year,Fourth Year,Fifth Year,Coursework,Thesis',
-            'semester' => 'required|in:First Semester,Second Semester',
+            /* 'semester_id' => 'required', */
         ];
+
+    }
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class, 'semester_id');
     }
 
 

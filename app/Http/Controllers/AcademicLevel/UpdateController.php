@@ -11,10 +11,11 @@ class UpdateController extends Controller
 {
     public function __invoke(Request $request, AcademicLevel $academicLevel)
     {
+       /*  return $request->all(); */
         $request->validate(AcademicLevel::getValidationRules());
 
         // Get active academic year
-        $activeAcademicYear = AcademicYear::getActiveYears();
+        $activeAcademicYear = AcademicYear::getActiveYears()->first();
 
         // Validate that the program belongs to the active academic year
         $program = \App\Models\AcademicProgram::find($request->program_id);
@@ -23,12 +24,14 @@ class UpdateController extends Controller
         }
 
         // Temporarily set values to validate
+        $academicLevel->academic_year_id = $request->academic_year_id;
         $academicLevel->program_id = $request->program_id;
         $academicLevel->name = $request->name;
+        $academicLevel->semester_id= $request->semester_id;
 
-        if (!$academicLevel->validateLevelForProgramType()) {
+       /*  if (!$academicLevel->validateLevelForProgramType()) {
             return back()->withErrors(['name' => 'This level is not allowed for the selected program type.']);
-        }
+        } */
 
         try {
             $academicLevel->save();

@@ -8,10 +8,11 @@ use App\Models\AcademicLevel;
 use App\Models\AcademicProgram;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
+use App\Models\Semester;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Enums\SemesterName;
+
 
 class IndexController extends Controller
 {
@@ -28,7 +29,8 @@ class IndexController extends Controller
             'academicProgram',
             'sections',
             'sections.classroom',
-            'sections.sectionHeadTeacher'
+            'sections.sectionHeadTeacher',
+            'semester',
         ])->whereIn('program_id', $academicPrograms->pluck('id'));
 
         // Apply filters
@@ -57,6 +59,7 @@ class IndexController extends Controller
                   ->whereNotNull('section_head_teacher_id');
         })->orderBy('name')->get();
 
+        $semesters= Semester::where("status","active")->get();
         return Inertia::render('AcademicLevel/Index', [
             'levels' => $levels,
             'assignClassrooms' => $assignClassrooms,
@@ -67,7 +70,8 @@ class IndexController extends Controller
             'teachers' => $teachers,
             'filters' => $request->only('filterName', 'filterProgram', 'filterSemester'),
             'fixedLevels' => LevelName::cases(),
-            'semesters' => SemesterName::cases(), // or use SemesterName::cases() if you have an Enum
+            'semesters' => $semesters,
+            
         ]);
     }
 }

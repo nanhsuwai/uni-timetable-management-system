@@ -22,7 +22,8 @@ const props = defineProps({
   academicYears: { type: Array, default: () => [] },
   teachers: { type: Array, default: () => [] },
   assignTeachers: { type: Array, default: () => [] },
-  assignClassrooms: { type: Array, default: () => [] }
+  assignClassrooms: { type: Array, default: () => [] },
+  semesters: { type: Array, default: () => [] },
 });
 // Filters
 
@@ -43,7 +44,7 @@ const form = useForm({
   academic_year_id: "",
   program_id: "",
   name: "",
-  semester: "",
+  semester_id: "",
 });
 
 // Section Form
@@ -318,7 +319,7 @@ const toggleSectionStatus = (section, newStatus) => {
                   {{ level.academic_program.name }}
                 </td>
                 <td class="px-4 py-3 text-left">
-                  {{ level.semester }}
+                  {{ level.semester.name }}
                 </td>
 
                 <td class="px-4 py-3 space-x-2 whitespace-nowrap">
@@ -393,8 +394,18 @@ const toggleSectionStatus = (section, newStatus) => {
                 </select>
                 <InputError :message="form.errors.name" />
               </div>
-
               <div>
+                <InputLabel for="semester_id" value="Semester Name" class="dark:text-gray-300" />
+                <select id="semester_id" v-model="form.semester_id"
+                  class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400">
+                  <option value="">Select Semester</option>
+                  <option v-for="semester in props.semesters" :key="semester.id" :value="semester.id">
+                    {{ semester.name }}
+                  </option>
+                </select>
+                <InputError :message="form.errors.semester_id" />
+              </div>
+             <!--  <div>
                 <InputLabel for="semester" value="Semester" class="dark:text-gray-300" />
                 <select id="semester" v-model="form.semester" class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg shadow-sm
     focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400">
@@ -404,7 +415,7 @@ const toggleSectionStatus = (section, newStatus) => {
 
                 </select>
                 <InputError :message="form.errors.semester" />
-              </div>
+              </div> -->
 
 
               <div class="mt-6 flex justify-end space-x-3 pt-4">

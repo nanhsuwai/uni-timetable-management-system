@@ -13,6 +13,7 @@ class CreateController extends Controller
 {
     public function __invoke(Request $request)
     {
+        /* return $request->all(); */
         // Validate including semester
         $request->validate(AcademicLevel::getValidationRules());
         $activeAcademicYear = AcademicYear::getActiveYears()->first();
@@ -22,20 +23,21 @@ class CreateController extends Controller
         // Check if level already exists for the given program, semester, and name
         $exists = AcademicLevel::where('program_id', $request->program_id)
             ->where('name', $request->name)
-            ->where('semester', $request->semester)
+            ->where('semester_id', $request->semester_id)
             ->exists();
 
-        if ($exists) {
+        /*   if ($exists) {
             return back()->withErrors([
                 'name' => 'This level with the selected semester already exists for this program.',
             ])->withInput();
-        }
+        } */
 
         // Create new level
         $level = AcademicLevel::create([
+            'academic_year_id' => $request->academic_year_id,
             'program_id' => $request->program_id,
             'name'       => $request->name,
-            'semester'   => $request->semester,
+            'semester_id'   => $request->semester_id,
         ]);
 
         return to_route('academic_level:all')
