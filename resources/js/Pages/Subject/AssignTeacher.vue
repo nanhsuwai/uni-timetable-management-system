@@ -160,7 +160,7 @@ let hasPermission = ref(checkPermissionComposable("teacher_assign_manage"));
 
         <!-- Subject Info -->
         <CardBox class="mt-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-4 md:grid-cols-3">
             <div>
               <label class="block text-sm font-medium text-gray-700">Subject Code</label>
               <div class="mt-1 text-lg font-semibold">{{ subject.code }}</div>
@@ -169,10 +169,10 @@ let hasPermission = ref(checkPermissionComposable("teacher_assign_manage"));
               <label class="block text-sm font-medium text-gray-700">Subject Name</label>
               <div class="mt-1 text-lg font-semibold">{{ subject.name }}</div>
             </div>
-            <div>
+            <!--  <div>
               <label class="block text-sm font-medium text-gray-700">Program</label>
               <div class="mt-1">{{ subject.program || 'N/A' }}</div>
-            </div>
+            </div> -->
             <div>
               <label class="block text-sm font-medium text-gray-700">Semester</label>
               <div class="mt-1">{{ subject.semester || 'N/A' }}</div>

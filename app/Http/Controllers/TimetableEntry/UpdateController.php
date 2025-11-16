@@ -22,7 +22,7 @@ class UpdateController extends Controller
             'subject_id' => 'required|exists:subjects,id',
             'teacher_ids' => 'required|array|min:1',
             'teacher_ids.*' => 'exists:teachers,id',
-            'time_slot_id' => 'required|exists:time_slots,id',
+            'time_slot_ids' => 'required|exists:time_slots,id',
             'day_of_week' => 'nullable|string',
             'start_time' => 'nullable',
             'end_time' => 'nullable',
@@ -32,9 +32,9 @@ class UpdateController extends Controller
 // dd($request->all());
         $data = $request->except('teacher_ids');
 
-        // If time_slot_id is provided, populate start_time, end_time, and day_of_week from the time slot
-        if ($request->filled('time_slot_id')) {
-            $timeSlot = TimeSlot::find($request->time_slot_id);
+        // If time_slot_ids is provided, populate start_time, end_time, and day_of_week from the time slot
+        if ($request->filled('time_slot_ids')) {
+            $timeSlot = TimeSlot::find($request->time_slot_ids);
             if ($timeSlot) {
                 $data['start_time'] = $timeSlot->start_time;
                 $data['end_time'] = $timeSlot->end_time;
