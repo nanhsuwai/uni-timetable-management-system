@@ -6,27 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    public function up(): void
     {
         Schema::table('academic_levels', function (Blueprint $table) {
-            $table->unique(['program_id', 'name']);
+
+
+
+            $table->unique(['program_id', 'name', 'semester_id'], 'academic_levels_unique');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+    public function down(): void
     {
         Schema::table('academic_levels', function (Blueprint $table) {
-            $table->dropUnique(['program_id', 'name']);
+            $table->dropUnique('academic_levels_unique');
         });
     }
 };
