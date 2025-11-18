@@ -9,11 +9,16 @@ use Inertia\Inertia;
 use App\Enums\LevelName;
 use App\Enums\ProgramOption;
 use App\Enums\SemesterName;
+use App\Models\User;
 
 class IndexController extends Controller
 {
     public function __invoke(Request $request)
     {
+        $id = auth()->id();
+        $teacher = User::find($id);
+        $isTeacher = $teacher->isTeacher();
+        $subjectIds = $teacher->teacher?->subjects->pluck('id')->toArray();
         $query = Subject::query();
 
         // Filters
@@ -33,12 +38,16 @@ class IndexController extends Controller
             $query->where('level', $request->filterLevel);
         }
 
-       /*  if ($request->filled('filterProgram')) {
+        /*  if ($request->filled('filterProgram')) {
             $query->where('program', $request->filterProgram);
         } */
 
         $subjects = $query->orderBy('name')->paginate(10)->withQueryString();
-
+        $subjects->getCollection()->transform(function ($subject) use ($subjectIds) {
+            $subject->my_subject = in_array($subject->id, $subjectIds);
+            return $subject;
+        });
+       /*  dd($subjects); */
         // Enum dropdowns for frontend
         $semesters = SemesterName::cases();
         $levels = LevelName::cases();

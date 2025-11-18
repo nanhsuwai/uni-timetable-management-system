@@ -82,6 +82,9 @@ class User extends Authenticatable
         return $this->user_type == 'teacher';
     }
 
-
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class, 'user_id', 'id');
+    }
 
 }

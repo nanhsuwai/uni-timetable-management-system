@@ -8,7 +8,8 @@ use App\Models\{
     TimetableEntry,
     TimeSlot,
     Subject,
-    AcademicLevel
+    AcademicLevel,
+    Section
 };
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -45,7 +46,9 @@ class CreateController extends Controller
 
         $sectionId = $validated['section_id'];
         $subjectId = $validated['subject_id'];
-
+        
+        $checkSection = Section::with('academicLevel')->find($validated['section_id']);
+        /* dd($checkSection); */
         // Fetch all selected time slots
         $timeSlots = TimeSlot::whereIn('id', $validated['time_slot_ids'])->get();
 

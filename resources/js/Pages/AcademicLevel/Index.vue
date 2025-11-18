@@ -77,6 +77,7 @@ const deletingLevel = ref(null);
 const showingSectionsModal = ref(false);
 const showingSectionFormModal = ref(false);
 const selectedLevel = ref(null);
+const selectedProgram = ref(null);
 const editingSection = ref(null);
 const deletingSection = ref(null);
 
@@ -156,7 +157,7 @@ const deleteLevel = () => {
 };
 
 // Sections
-const openSectionsModal = (level) => {
+/* const openSectionsModal = (level) => {
   selectedLevel.value = level;
   showingSectionsModal.value = true;
 };
@@ -166,8 +167,32 @@ const closeSectionsModal = () => {
   sectionForm.reset();
   editingSection.value = null;
   selectedLevel.value = null;
+}; */
+const openSectionsModal = (level) => {
+  selectedLevel.value = level;
+
+  // 1. Find the Program using the level's program_id
+  selectedProgram.value = props.academicPrograms.find(
+    (p) => p.id === level.program_id
+  );
+
+  // 2. Find the Semester using the level's semester_id
+  // Note: Assuming 'semester' property exists on 'level' object based on your 'form' reset logic
+  // If semester is attached directly to the level data from the backend, use that.
+  // If it's a separate ID, you'll need to find it from props.semesters.
+  // We'll rely on the level object having the semester attached for simplicity, 
+  // or define a temporary ref if needed, but for now, we'll use a computed property in the template.
+
+  showingSectionsModal.value = true;
 };
 
+const closeSectionsModal = () => {
+  showingSectionsModal.value = false;
+  sectionForm.reset();
+  editingSection.value = null;
+  selectedLevel.value = null;
+  selectedProgram.value = null; // Resetting this is good practice
+};
 const openEditSectionModal = (section) => {
   editingSection.value = section;
   if (section) {
@@ -181,7 +206,11 @@ const openEditSectionModal = (section) => {
   }
   showingSectionFormModal.value = true;
 };
-
+const selectedSemesterName = computed(() => {
+  if (!selectedLevel.value?.semester_id) return '';
+  const semester = props.semesters.find(s => s.id === selectedLevel.value.semester_id);
+  return semester ? semester.name : '';
+});
 const closeEditSectionModal = () => {
   showingSectionFormModal.value = false;
   editingSection.value = null;
@@ -405,7 +434,7 @@ const toggleSectionStatus = (section, newStatus) => {
                 </select>
                 <InputError :message="form.errors.semester_id" />
               </div>
-             <!--  <div>
+              <!--  <div>
                 <InputLabel for="semester" value="Semester" class="dark:text-gray-300" />
                 <select id="semester" v-model="form.semester" class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg shadow-sm
     focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400">
@@ -457,8 +486,18 @@ const toggleSectionStatus = (section, newStatus) => {
         <Modal :show="showingSectionsModal" @close="closeSectionsModal" :maxWidth="'2xl'">
           <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
             <div class="flex justify-between items-center mb-6 border-b pb-3 dark:border-gray-700">
+              <!--  <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                Sections for <span class="text-indigo-600 dark:text-indigo-400">{{ selectedLevel?.name }}({{ selectedProgram?.name }})</span>
+              </h2> -->
               <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                Sections for <span class="text-indigo-600 dark:text-indigo-400">{{ selectedLevel?.name }}</span>
+                Sections for
+                <span class="text-indigo-600 dark:text-indigo-400">
+                  {{ selectedLevel?.name }}
+                  ({{ selectedProgram?.name }})
+                  <template v-if="selectedSemesterName">
+                    ({{ selectedSemesterName }})
+                  </template>
+                </span>
               </h2>
               <PrimaryButton @click="openEditSectionModal(null)" class="ml-2 shadow-md">
                 + Add Section
@@ -551,7 +590,13 @@ const toggleSectionStatus = (section, newStatus) => {
           <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 border-b pb-3 mb-4 dark:border-gray-700">
               {{ editingSection ? "Edit Section" : "Add Section" }} -
-              <span class="text-indigo-600 dark:text-indigo-400">{{ selectedLevel?.name }}</span>
+              <span class="text-indigo-600 dark:text-indigo-400">
+                {{ selectedLevel?.name }}
+                ({{ selectedProgram?.name }})
+                <template v-if="selectedSemesterName">
+                  ({{ selectedSemesterName }})
+                </template>
+              </span>
             </h2>
             <form @submit.prevent="saveSection" class="space-y-5">
               <div>

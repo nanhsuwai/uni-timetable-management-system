@@ -251,19 +251,22 @@ const assignTeachers = (subject) => {
                     </span>
                   </td> -->
                   <td class="px-4 py-3 space-x-2 flex justify-center items-center">
-                    <button @click.prevent="assignTeachers(subject)"
-                      class="px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition shadow-md dark:bg-green-700 dark:hover:bg-green-600">
-                      Assign Teachers
-                    </button>
+                    <template v-if="subject.my_subject">
+                      <button @click.prevent="assignTeachers(subject)"
+                        class="px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition shadow-md dark:bg-green-700 dark:hover:bg-green-600">
+                        Assign Teachers
+                      </button>
 
-                    <button @click.prevent="showEditModal(subject)"
-                      class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition shadow-md dark:bg-blue-700 dark:hover:bg-blue-600">
-                      Edit
-                    </button>
-                    <button @click.prevent="showDeleteSubjectModal(subject)"
-                      class="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-700 transition shadow-md dark:bg-red-700 dark:hover:bg-red-600">
-                      Delete
-                    </button>
+                      <button @click.prevent="showEditModal(subject)"
+                        class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition shadow-md dark:bg-blue-700 dark:hover:bg-blue-600">
+                        Edit
+                      </button>
+
+                      <button @click.prevent="showDeleteSubjectModal(subject)"
+                        class="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-700 transition shadow-md dark:bg-red-700 dark:hover:bg-red-600">
+                        Delete
+                      </button>
+                    </template>
                   </td>
                 </tr>
                 <tr v-if="props.subjects.data.length === 0">
@@ -360,7 +363,8 @@ const assignTeachers = (subject) => {
             <div class="mt-6 flex justify-end space-x-2">
               <SecondaryButton @click.prevent="closeDeleteModal">Cancel</SecondaryButton>
               <PrimaryButton class="bg-red-500 hover:bg-red-600" :disabled="form.processing"
-                @click.prevent="deleteSubject">Delete</PrimaryButton>
+                @click.prevent="deleteSubject">
+                Delete</PrimaryButton>
             </div>
           </div>
         </Modal>

@@ -124,7 +124,7 @@ const toggleAvailability = (classroom) => {
                 {{ classroom.room_no }}
               </h2>
               <div class="flex flex-col items-end gap-2">
-               <!--  <span :class="{
+                <!--  <span :class="{
                   'bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100':
                     classroom.status === 'active',
                   'bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100':
@@ -155,7 +155,7 @@ const toggleAvailability = (classroom) => {
                 {{
                   classroom.section
                     ? `${classroom.section.academic_level.name} - ${classroom.section.name}
-                (${classroom.section.academic_level.academic_program.name})`
+                (${classroom.section.academic_level.academic_program.name})(${classroom.section.academic_level.semester_id})`
                     : 'Unassigned'
                 }}
               </p>
@@ -171,8 +171,8 @@ const toggleAvailability = (classroom) => {
               <button @click.prevent="toggleAvailability(classroom)"
                 class="text-xs px-3 py-1.5 rounded-lg font-semibold text-white transition duration-150 shadow-md"
                 :class="classroom.is_available
-                    ? 'bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700'
-                    : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'
+                  ? 'bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700'
+                  : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'
                   ">
                 {{ classroom.is_available ? 'Mark Assigned' : 'Mark Available' }}
               </button>
