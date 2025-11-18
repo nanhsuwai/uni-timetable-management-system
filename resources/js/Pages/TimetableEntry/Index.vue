@@ -153,6 +153,18 @@ const getUniqueItems = (items, key) => {
     return true;
   });
 };
+watch(() => form.subject_id, (newSubject) => {
+  if (!newSubject) {
+    form.teacher_ids = [];
+    return;
+  }
+
+  // Load teachers filtered by subject
+  const teachers = filteredTeachers.value;
+
+  // Auto-select all assigned teachers
+  form.teacher_ids = teachers.map(t => t.id);
+});
 
 const getDayName = (day) => DAY_NAMES_MAP[day] || day;
 
