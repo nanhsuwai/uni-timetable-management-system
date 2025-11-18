@@ -41,13 +41,17 @@ class IndexController extends Controller
         /*  if ($request->filled('filterProgram')) {
             $query->where('program', $request->filterProgram);
         } */
+        if ($isTeacher) {
+            $subjects = $query->orderBy('name')->paginate(10)->withQueryString();
+            $subjects->getCollection()->transform(function ($subject) use ($subjectIds) {
+                $subject->my_subject = in_array($subject->id, $subjectIds);
+                return $subject;
+            });
+        }else{
+            $subjects = $query->orderBy('name')->paginate(10)->withQueryString();
+        }
 
-        $subjects = $query->orderBy('name')->paginate(10)->withQueryString();
-        $subjects->getCollection()->transform(function ($subject) use ($subjectIds) {
-            $subject->my_subject = in_array($subject->id, $subjectIds);
-            return $subject;
-        });
-       /*  dd($subjects); */
+        /*  dd($subjects); */
         // Enum dropdowns for frontend
         $semesters = SemesterName::cases();
         $levels = LevelName::cases();

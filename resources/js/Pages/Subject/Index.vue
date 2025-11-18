@@ -250,7 +250,7 @@ const assignTeachers = (subject) => {
                       {{ subject.status }}
                     </span>
                   </td> -->
-                  <td class="px-4 py-3 space-x-2 flex justify-center items-center">
+                  <!--  <td class="px-4 py-3 space-x-2 flex justify-center items-center">
                     <template v-if="subject.my_subject">
                       <button @click.prevent="assignTeachers(subject)"
                         class="px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition shadow-md dark:bg-green-700 dark:hover:bg-green-600">
@@ -267,7 +267,47 @@ const assignTeachers = (subject) => {
                         Delete
                       </button>
                     </template>
+</td> -->
+                  <td class="px-4 py-3 space-x-2 flex justify-center items-center">
+
+                    <!-- Admin always sees all buttons -->
+                    <template v-if="$page.props.auth.user.user_type === 'admin'">
+                      <button @click.prevent="assignTeachers(subject)"
+                        class="px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-medium">
+                        Assign Teachers
+                      </button>
+
+                      <button @click.prevent="showEditModal(subject)"
+                        class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-medium">
+                        Edit
+                      </button>
+
+                      <button @click.prevent="showDeleteSubjectModal(subject)"
+                        class="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium">
+                        Delete
+                      </button>
+                    </template>
+
+                    <!-- Teacher sees buttons ONLY when subject.my_subject = true -->
+                    <template v-else-if="subject.my_subject">
+                      <button @click.prevent="assignTeachers(subject)"
+                        class="px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-medium">
+                        Assign Teachers
+                      </button>
+
+                      <button @click.prevent="showEditModal(subject)"
+                        class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-medium">
+                        Edit
+                      </button>
+
+                      <button @click.prevent="showDeleteSubjectModal(subject)"
+                        class="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium">
+                        Delete
+                      </button>
+                    </template>
+
                   </td>
+
                 </tr>
                 <tr v-if="props.subjects.data.length === 0">
                   <td colspan="8" class="py-10 text-gray-500 dark:text-gray-400 text-base italic">
