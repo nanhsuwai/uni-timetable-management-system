@@ -417,7 +417,7 @@ const getRowIndex = (index) =>
             <select v-model="filters[filter.model]"
               class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2.5 transition">
               <option value="">All {{ filter.label }}s</option>
-              <option v-for="item in filter.options" :key="item.id || item.value" :value="item.id || item.value">
+              <option v-for="item in filter.options" :key="item.id || item.value" :value="item.name || item.value">
                 {{ item[filter.key] || item.name }}
               </option>
             </select>

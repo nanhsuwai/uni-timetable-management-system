@@ -66,12 +66,69 @@ class IndexController extends Controller
             'filterDay' => 'day_of_week',
         ];
 
-        foreach ($filters as $requestKey => $column) {
+        /*  foreach ($filters as $requestKey => $column) {
+            if ($request->filled('filterSection')) {
+                $section = Section::where('name', $request->filterSection)->first();
+                if ($section) {
+
+                    $query->where('section_id', $section->id);
+                }
+            }
+
             if ($request->filled($requestKey)) {
                 $query->where($column, $request->$requestKey);
             }
-        }
+        } */
+        if ($request->filled('filterYear')) {
+            // Get the AcademicYear record based on the name from request
+            $year = AcademicYear::where('name', $request->filterYear)->first();
 
+            // Make sure a year was found
+            if ($year) {
+                $query->where('academic_year_id', $year->id);
+            }
+        }
+        if ($request->filled('filterSemester')) {
+            // Get the AcademicYear record based on the name from request
+            $semester = Semester::where('name', $request->filterSemester)->first();
+
+            // Make sure a semester was found
+            if ($semester) {
+                $query->where('semester_id', $semester->id);
+            }
+        }
+        if ($request->filled('filterProgram')) {
+            // Get the AcademicYear record based on the name from request
+            $program = AcademicProgram::where('name', $request->filterProgram)->first();
+
+            // Make sure a year was found
+            if ($program) {
+                $query->where('program_id', $program->id);
+            }
+        }
+        if ($request->filled('filterLevel')) {
+            // Get all level IDs that match the name
+            $levelIds = AcademicLevel::where('name', $request->filterLevel)->pluck('id')->toArray();
+
+            // Only filter if we found matching IDs
+            if (!empty($levelIds)) {
+                $query->whereIn('level_id', $levelIds);
+            }
+        }
+        if ($request->filled('filterSection')) {
+            // Get the Section record based on the name from request
+            $sectionIds = Section::where('name', $request->filterSection)->pluck('id')->toArray();
+            // Make sure a section was found
+            if (!empty($sectionIds)) {
+                $query->whereIn('section_id', $sectionIds);
+            }
+        }
+        if ($request->filled('filterDay')) {
+            $filterDay =  strtolower($request->filterDay);
+            if ($filterDay) {
+                $query->where('day_of_week', $filterDay);
+            }
+        }
         // 🎯 OPTIMIZATION: Custom Ordering by Day of the Week (Monday to Friday)
         $query->orderBy(DB::raw("FIELD(LOWER(day_of_week), 'monday', 'tuesday', 'wednesday', 'thursday', 'friday')"));
 
@@ -88,8 +145,8 @@ class IndexController extends Controller
                 'academicYears' => AcademicYear::select('id', 'name')->get(),
                 'semesters' => Semester::select('id', 'name', 'academic_year_id')->get(),
                 'programs' => AcademicProgram::select('id', 'name', 'academic_year_id')->get(),
-                'levels' => AcademicLevel::select('id', 'name', 'program_id','semester_id')->get(),
-                'sections' => Section::select('id', 'name', 'level_id')->get(),
+                'levels' => AcademicLevel::select('id', 'name', 'program_id', 'semester_id')->get(),
+                'sections' => Section::select('id', 'name', 'level_id')->distinct('name')->get(),
                 'classrooms' => Classroom::select('id', 'room_no', 'section_id')->get(),
                 'subjects' => Subject::with('teachers:id,name')->select('id', 'name', 'semester')->whereIn('id', $subjectIds)->get(),
                 'teachers' => Teacher::with('subjects:id,name')->select('id', 'name')->get(),
@@ -100,8 +157,8 @@ class IndexController extends Controller
                 'academicYears' => AcademicYear::select('id', 'name')->get(),
                 'semesters' => Semester::select('id', 'name', 'academic_year_id')->get(),
                 'programs' => AcademicProgram::select('id', 'name', 'academic_year_id')->get(),
-                'levels' => AcademicLevel::select('id', 'name', 'program_id','semester_id')->get(),
-                'sections' => Section::select('id', 'name', 'level_id')->get(),
+                'levels' => AcademicLevel::select('id', 'name', 'program_id', 'semester_id')->get(),
+                'sections' => Section::select('id', 'name', 'level_id')->distinct('name')->get(),
                 'classrooms' => Classroom::select('id', 'room_no', 'section_id')->get(),
                 'subjects' => Subject::with('teachers:id,name')->select('id', 'name', 'semester')->get(),
                 'teachers' => Teacher::with('subjects:id,name')->select('id', 'name')->get(),
